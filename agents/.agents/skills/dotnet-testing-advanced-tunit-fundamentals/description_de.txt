@@ -1,0 +1,3 @@
+TUnit: Der komplette Einsteigerleitfaden zum Next-Gen Testing Framework.
+Behandelt quellgeneratorgesteuerte Testerkennung, AOT-Kompilierungsunterstützung und fließende asynchrone Behauptungen.
+Beinhaltet Projekterstellung, das Attribut [Test], Lebenszyklusverwaltung, Parallelitätskontrolle und xUnit-Syntaxzuordnung.

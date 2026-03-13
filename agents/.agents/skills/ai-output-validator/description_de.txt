@@ -1,0 +1,1 @@
+Fähigkeit zur automatischen Validierung der Qualität von KI-Ausgaben. Führt Faktenprüfung, Logikbewertung, Konsistenzbewertung, Halluzinationserkennung, Bias-Analyse und Sicherheitsüberprüfungen durch und liefert Verbesserungsvorschläge.

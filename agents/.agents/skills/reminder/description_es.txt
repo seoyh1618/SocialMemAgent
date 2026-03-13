@@ -1,0 +1,1 @@
+Cree recordatorios y eventos de calendario cuando los usuarios mencionen tareas, citas o eventos futuros. Active frases como "recordarme", "establecer un recordatorio", "tengo una reunión", "no lo olvides" o cualquier mención de tareas futuras basadas en el tiempo.

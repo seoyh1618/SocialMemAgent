@@ -1,0 +1,1 @@
+Mettez à jour les fichiers de la banque de mémoire. Déclencheurs : mémoire, souvenirs, progression, sauvegarde, synchronisation, là où je me suis arrêté.

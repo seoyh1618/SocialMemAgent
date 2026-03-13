@@ -1,0 +1,1 @@
+Integración front-end y back-end. Utilice esta habilidad cuando los usuarios necesiten verificar la integración de API de front-end y back-end, depurar llamadas de interfaz y garantizar formatos de datos consistentes.

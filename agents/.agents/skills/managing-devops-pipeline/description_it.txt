@@ -1,0 +1,1 @@
+Gestisci le operazioni di compilazione per la pipeline Blue Shield, tra cui l'interrogazione della cronologia delle build, il recupero dei parametri di avvio, il controllo dello stato delle build e l'avvio delle build. Utilizzalo quando gli utenti menzionano pipeline, compilazione, distribuzione, CI/CD, Blue Shield o devono attivare un'attività di compilazione.

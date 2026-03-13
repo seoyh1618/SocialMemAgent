@@ -1,0 +1,1 @@
+创建 docker compose 相关操作。DevOps 基础技能，自动激活。触发词：docker compose creator、docker creator、docker。属于 DevOps 基础技能类别，在使用 docker compose 相关功能时使用。

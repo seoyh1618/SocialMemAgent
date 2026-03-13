@@ -1,0 +1,2 @@
+Habilidad de capa de mejora de SuperClaude, que proporciona mejoras de capacidad de SuperClaude para otras habilidades.  
+Admite análisis previo, revisión posterior, sugerencias inteligentes y otros modos de mejora.

@@ -1,0 +1,1 @@
+Expert en développement Web Rust. Gère axum, actix, HTTP, REST, API, base de données, gestion d'état et problèmes associés. Mots déclencheurs : web, HTTP, REST, API, axum, actix, handler, base de données, développement web, serveur, routage

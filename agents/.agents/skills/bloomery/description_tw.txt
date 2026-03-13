@@ -1,0 +1,1 @@
+互動式教學指導工程師使用對 LLM API 的原始 HTTP 呼叫從頭開始建立自己的編碼代理（代理循環）。支援 Gemini、OpenAI（和相容端點）和 Anthropic。支援 TypeScript、Python、Go 和 Ruby。自動檢測進度。當有人說「建構代理」、「教我代理」或「/build-agent」時使用。

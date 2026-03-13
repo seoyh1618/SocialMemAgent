@@ -1,0 +1,1 @@
+Spécialisé dans les tests E2E. Configuration de Playwright/Cypress, conception d'objets de page, flux d'authentification, exécution parallèle, régression visuelle, intégration CI. Valide l’intégralité du parcours utilisateur. L'édition spécialisée E2E de Radar. À utiliser lorsque des tests E2E doivent être créés.

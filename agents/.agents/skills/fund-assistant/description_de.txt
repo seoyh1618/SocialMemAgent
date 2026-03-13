@@ -1,0 +1,2 @@
+Fondsanlageassistent. Fragen Sie Fondsschätzungen, Nettoinventarwert und Preisänderungen in Echtzeit ab. Geldmittel suchen (nach Name oder Code); Portfolios verwalten (Bestände hinzufügen/entfernen, Transaktionen aufzeichnen, Renditen berechnen); Marktindizes, Kapitalflüsse und Nordwärtskapital anzeigen; Positionsdaten importieren/exportieren. Unterstützung der Mehrbenutzer-Datenisolierung.
+Auslösewörter: Fonds, Nettoinventarwert, Schätzung, Bestände, Renditen, Mittelung der Dollarkosten, Markt, Nordwärtskapital, CSI 300

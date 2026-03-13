@@ -1,0 +1,2 @@
+Une compétence pour récupérer l'historique du navigateur Arc et le sortir au format Markdown.
+Quand l'utiliser : (1) Lorsque vous souhaitez vérifier les sites récemment consultés (2) Lorsque vous souhaitez rechercher une URL spécifique dans l'historique

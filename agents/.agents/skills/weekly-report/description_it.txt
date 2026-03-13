@@ -1,0 +1,1 @@
+Aiuta gli utenti a organizzare i report settimanali, presentando il valore e i limiti del lavoro in modo completo e logico. Si attiva quando l'utente dice "scrivi report settimanale", "report settimanale", "organizza report settimanale" o "organizza il lavoro".

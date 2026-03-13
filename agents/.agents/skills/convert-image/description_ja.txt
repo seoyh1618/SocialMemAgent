@@ -1,0 +1,1 @@
+PNG/JPG/JPEG 画像を WebP、ICO、SVG 形式に変換します。 「convert image」や「convert to webp」などのコマンドと一緒に使用します。

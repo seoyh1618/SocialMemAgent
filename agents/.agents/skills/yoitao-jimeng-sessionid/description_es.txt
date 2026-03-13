@@ -1,0 +1,1 @@
+Se utiliza cuando necesita obtener o actualizar la cookie de ID de sesión en el estado de inicio de sesión de Jimeng (jimeng.jianying.com). Abre automáticamente el sitio web de Jimeng para verificar el estado de inicio de sesión y devuelve el valor de ID de sesión a la persona que llama si ya inició sesión.

@@ -1,0 +1,1 @@
+Skill M (Motion) - Coreógrafo de movimiento digital. Experto en React Native Reanimated, gestos y física. Usar para: animaciones a 120fps, transiciones Shared Element, springs y micro-interacciones.

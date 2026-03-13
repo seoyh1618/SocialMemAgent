@@ -1,0 +1,4 @@
+Nisso Assistant – un outil de décision assisté par l'IA pour ranger votre boîte de réception de connaissances.
+L'Agent propose « conserver/supprimer » avec motifs ; vous confirmez et agissez à la main.
+Suivez la règle « collecter sans juger, décider au quotidien » : terminez le tri quotidien des connaissances en 5 à 10 minutes.
+Déclencheurs : /daily-review, /日清, /review

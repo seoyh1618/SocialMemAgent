@@ -1,0 +1,1 @@
+Responsable de la gestion des exigences de type CBF (Commanded Behaviour Frame). Lit la structure du répertoire des spécifications, génère/examine la conception et la mise en œuvre côté commande. Prend en charge Java, TypeScript et Go multilingue.

@@ -1,0 +1,1 @@
+Unified Development Orchestrator: Integriert das Superpowers-Methodik-Framework tief in die AI-Code-Fabrik, um einen einheitlichen Entwicklungsworkflow zu erstellen, der TDD-Disziplin, SoT-Konformität und automatisierte Codegenerierung kombiniert.

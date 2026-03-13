@@ -1,0 +1,1 @@
+Converti ogni pagina di un file PDF in file immagine; supporta formati immagine personalizzati (PNG/JPG) e risoluzione; adatto per l'elaborazione di documenti, l'archiviazione di immagini e scenari simili.

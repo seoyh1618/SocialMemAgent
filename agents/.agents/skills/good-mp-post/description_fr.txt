@@ -1,0 +1,1 @@
+Gestion complète du processus de publication d'articles de compte public WeChat, y compris la création, la génération d'images, le formatage et la publication assistés par l'IA.

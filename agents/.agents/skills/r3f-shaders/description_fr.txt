@@ -1,0 +1,1 @@
+React Three Fiber – shaders GLSL, shaderMaterial, uniforms, effets personnalisés. À utiliser pour créer des effets visuels, modifier les vertices, écrire des fragment shaders ou étendre les matériaux intégrés.

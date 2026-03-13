@@ -1,0 +1,1 @@
+Consulte les fonds communs de placement d’Argentine (CAFCI) via les endpoints de lecture Anduin. À utiliser pour : fonds par catégorie, historique d’un fonds, performance par période, comparaison entre fonds, classements de performance, catégories, statistiques agrégées, dates disponibles ou fiche détaillée d’un fonds.

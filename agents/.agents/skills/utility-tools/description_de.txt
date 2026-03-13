@@ -1,0 +1,1 @@
+Bietet praktische Hilfsfunktionen wie IP-Adresssuche, Textübersetzung, QR-Code-Generierung, Hash-Berechnung, Webseiten-Metadatenextraktion, Domänen-WHOIS-Abfrage und Passwortgenerierung.

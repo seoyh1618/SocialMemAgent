@@ -1,0 +1,1 @@
+Dataverse 환경에서 GitHub Copilot용 MCP 서버를 구성합니다.

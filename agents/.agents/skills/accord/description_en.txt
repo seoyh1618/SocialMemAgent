@@ -1,0 +1,1 @@
+Create a cross-functional specification package that unites the business, development, and design teams. Build shared understanding through a progressive elaboration template (L0 vision → L1 requirements → L2 team-specific details → L3 acceptance criteria). No code is written.

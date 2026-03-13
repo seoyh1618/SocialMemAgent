@@ -1,0 +1,3 @@
+Spezialkenntnisse in der Erstellung und Konfiguration von xUnit-Testprojekten.  
+Wird beim Einrichten eines Testprojekts, Einrichten der Projektstruktur, Konfigurieren von NuGet-Paketen und Organisieren von Testordnern verwendet.  
+Behandelt die csproj-Konfiguration, Paketverwaltung, Projektstruktur und xunit.runner.json-Einstellungen.

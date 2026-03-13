@@ -1,0 +1,1 @@
+Rimuovi le filigrane dalle immagini generate da Google Gemini (Nano Banana), utilizzando un algoritmo di fusione alfa inversa per ripristinare con precisione i pixel sovrapposti.

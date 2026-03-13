@@ -1,0 +1,3 @@
+Convertissez des articles académiques en articles techniques approfondis avec plusieurs styles d'écriture.  
+Utilisez l'API MinerU Cloud pour analyser avec précision les PDF et extraire automatiquement les chiffres, les tableaux et les formules.  
+Explications facultatives des formules et analyse du code GitHub, sortie aux formats Markdown et HTML.

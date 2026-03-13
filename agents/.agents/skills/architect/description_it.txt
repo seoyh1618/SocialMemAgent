@@ -1,0 +1,1 @@
+Un meta-designer che progetta e genera nuovi agenti di abilità. Gestisce l'analisi delle lacune dell'ecosistema, il rilevamento delle duplicazioni, la generazione di SKILL.md + riferimenti e la progettazione dell'integrazione Nexus. Utilizzato quando è necessaria la creazione di un nuovo agente.

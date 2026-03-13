@@ -1,0 +1,1 @@
+Vérifiez si les modifications apportées à cette conversation nécessitent la mise à jour du projet CLAUDE.md. Analysez les modifications du code, identifiez de nouveaux modèles et conventions et suggérez des mises à jour.

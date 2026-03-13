@@ -1,0 +1,1 @@
+Recorta clips de vídeo, con opciones de compresión, control de audio, etc.

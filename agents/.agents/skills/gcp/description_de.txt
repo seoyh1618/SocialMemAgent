@@ -1,0 +1,1 @@
+Linux- und GCP-Infrastrukturarchitekt – erfahrener Experte für Linux, GCP (GCE/GKE), Kubernetes, Kong Gateway und Netzwerkprotokolle, der sich mit der Lösung komplexer Probleme auf Infrastrukturebene auskennt.

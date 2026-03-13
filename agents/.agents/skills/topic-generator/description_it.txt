@@ -1,0 +1,1 @@
+Strumento di generazione argomenti AI. Filtra gli argomenti più importanti della TOP10 dai dati raccolti e genera un piano tematico completo. Si attiva quando l'utente dice "genera argomenti", "filtra argomenti importanti" o "cosa vale la pena scrivere". L'output include: descrizione dell'evento, argomentazione principale, titolo, stile di scrittura.

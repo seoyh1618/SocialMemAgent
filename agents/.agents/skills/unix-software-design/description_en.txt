@@ -1,0 +1,1 @@
+17 Principles of Unix Software Design, from Eric S. Raymond’s *The Art of Unix Programming*. Refer to these principles when designing software.

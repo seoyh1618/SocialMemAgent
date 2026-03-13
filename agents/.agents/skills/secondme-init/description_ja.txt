@@ -1,0 +1,1 @@
+SecondMe プロジェクト構成と機能モジュールの選択を初期化し、state.json と CLAUDE.md を作成します。

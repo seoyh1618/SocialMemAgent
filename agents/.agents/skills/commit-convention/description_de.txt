@@ -1,0 +1,1 @@
+Git-Commit-Nachrichtenstandards. Konzentrieren Sie sich auf Formatierung und stilistische Konsistenz von Commit-Nachrichten. Priorisieren Sie das Lernen und das Befolgen des bestehenden Commit-Verlaufsstils des Projekts. Wenn kein klarer Stil vorhanden ist oder es sich um ein neues Projekt handelt, befolgen Sie die Spezifikation für konventionelle Commits.

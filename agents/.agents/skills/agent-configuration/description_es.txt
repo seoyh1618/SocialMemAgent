@@ -1,0 +1,1 @@
+Guía de seguridad y política de configuración del agente AI. Cómo escribir archivos de descripción de proyectos, configuración de ganchos/habilidades/complementos, políticas de seguridad, definición de flujo de trabajo para compartir equipos.

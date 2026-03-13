@@ -1,0 +1,1 @@
+Úselo cuando el código de front-end necesite producir evidencia en forma de "inventario de páginas → puntos de características → procesos de negocios → reglas de negocios" y el proyecto tiene múltiples puntos de entrada de enrutamiento no únicos, enrutamiento dinámico/permisos/menús de backend complejos y el equipo es propenso a hacer suposiciones o faltar cadenas de evidencia.

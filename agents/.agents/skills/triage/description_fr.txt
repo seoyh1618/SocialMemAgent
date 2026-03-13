@@ -1,0 +1,1 @@
+Réponse initiale aux incidents, identification de la portée de l'impact, développement de procédures de récupération, création post-mortem. Utilisé lorsqu'une réponse aux incidents et une reprise après incident sont nécessaires. Aucun code n'est écrit (les correctifs sont délégués au Builder).

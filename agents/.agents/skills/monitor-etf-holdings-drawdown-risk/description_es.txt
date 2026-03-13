@@ -1,0 +1,1 @@
+Detectar el fenómeno de divergencia en el que "los precios de las materias primas aumentan pero las correspondientes tenencias físicas de ETF/fideicomisos disminuyen" y utilizar la validación cruzada de indicadores múltiples para evaluar si existe riesgo de escasez de oferta física o presión de entrega.

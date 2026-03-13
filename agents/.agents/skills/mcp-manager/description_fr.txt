@@ -1,0 +1,1 @@
+Assistant de gestion intelligente du serveur MCP. Détecte automatiquement la disponibilité du MCP, commute intelligemment, fournit des questions et réponses sur les fonctionnalités et offre une expérience de gestion MCP conviviale.

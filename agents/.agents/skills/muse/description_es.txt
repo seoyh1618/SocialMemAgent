@@ -1,0 +1,1 @@
+Definir y gestionar tokens de diseño, aplicar tokens al código existente y crear un sistema de diseño. Responsable de diseñar el sistema de tokens, unificar espaciado, color y tipografía e implementar soporte para modo oscuro. Úselo cuando se requiera diseño de token de diseño y coherencia de la interfaz de usuario.

@@ -1,0 +1,1 @@
+Skill L (Conector) - Ingegnere delle integrazioni dello squadrone BLAST. Si occupa di validare credenziali, MCP e connessioni esterne. Usa questo skill per: verificare API, configurare database, validare token, stabilire connessioni con servizi esterni (Supabase, Notion, ecc.).

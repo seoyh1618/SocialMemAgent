@@ -1,0 +1,9 @@
+À utiliser uniquement lorsque l'utilisateur demande explicitement de « vérifier/optimiser les citations dans le corps de la revue `{topic}_review.tex` » ou de « lancer check-review-alignment ».
+
+Grâce à la compréhension sémantique de l'IA hôte, vérifiez chaque citation par rapport au contenu source ; **uniquement lorsqu'une erreur de citation fatale est trouvée**, effectuez la réécriture minimale de la "phrase contenant la citation" et réutilisez le script de rendu `systematic-literature-review` pour produire un PDF/Word (le script lui-même n'appelle pas d'API LLM localement).
+
+Principe de base : **ne changez pas pour changer**. Si vous ne savez pas s'il s'agit d'une erreur fatale, laissez-la telle quelle et signalez un avertissement dans le rapport.
+
+⚠️ Non applicable pour :
+- Les utilisateurs qui souhaitent simplement générer un texte de revue systématique (utilisez une revue systématique de la littérature)
+- Les utilisateurs qui souhaitent uniquement ajouter/vérifier des entrées BibTeX (utiliser le workflow de gestion des dossards dédié)

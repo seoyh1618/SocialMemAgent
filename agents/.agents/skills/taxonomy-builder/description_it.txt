@@ -1,0 +1,6 @@
+Costruisci una tassonomia di 2+ livelli (`outline/taxonomy.yml`) da un insieme di documenti principali e vincoli di ambito, con brevi descrizioni per nodo.  
+**Trigger**: tassonomia, generatore di tassonomia, 分类, 主题树, tassonomia.yml.  
+**Utilizzare quando**: fase di struttura del sondaggio/istantanea (NO PROSA), `papers/core_set.csv` esiste già, è necessaria una struttura di argomenti mappabile e di facile lettura.  
+**Salta se**: esiste già una tassonomia approvata e mappabile (nessun refactoring senza senso).  
+**Rete**: nessuno.  
+**Guardrail**: evita bucket di segnaposto generici; mantieni 2+ livelli e descrizioni concrete per ogni nodo.

@@ -1,0 +1,1 @@
+Giorno 1 Abilità per l'esperienza. Utilizzato per la richiesta "/day1-test-skill", "test skill".

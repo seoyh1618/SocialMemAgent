@@ -1,0 +1,1 @@
+Experte für Fehlerbehandlung. Behandelt Ergebnis, Option, Panik usw., diesen Fehler, benutzerdefinierte Fehler, Fehlerweitergabe und verwandte Probleme. Auslösewörter: Ergebnis, Fehler, Panik, ?, Auspacken, Erwarten, Wie auch immer, dieser Fehler, Fehlerbehandlung, Fehlertypen

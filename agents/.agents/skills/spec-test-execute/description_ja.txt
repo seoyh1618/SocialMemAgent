@@ -1,0 +1,1 @@
+Spec Pack の検証段階で `{FEATURE_DIR}/verification/report-{date}-{version}.md` (テスト レポート) を作成する必要がある場合に使用し、テスト ケースと欠陥リファレンスまで遡ることができる成果物の結論を提供します。

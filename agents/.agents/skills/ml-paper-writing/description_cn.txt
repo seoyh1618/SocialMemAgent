@@ -1,0 +1,1 @@
+为 NeurIPS、ICML、ICLR、ACL、AAAI、COLM 撰写可发表的 ML/AI 论文。 Use when drafting papers from research repos, conducting literature reviews, finding related work, verifying citations, or preparing camera-ready submissions.包括 LaTeX 模板、引文验证工作流程和论文发现/评估标准。

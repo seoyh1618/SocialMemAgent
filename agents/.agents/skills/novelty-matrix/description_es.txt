@@ -1,0 +1,6 @@
+Cree una matriz de novedad/trabajo anterior que compare las contribuciones de la presentación con el trabajo relacionado (superposiciones versus deltas).
+**Activador**: matriz de novedad, matriz de trabajo anterior, superposición/delta, comparación de trabajo relacionado, matriz de novedad.
+**Utilizar cuando**: evaluar la novedad/posicionamiento en la revisión por pares; Es necesario alinear las contribuciones con el trabajo relacionado elemento por elemento y proporcionar evidencia de las diferencias.
+**Omitir si**: faltan reclamos (ejecute primero `claims-extractor`) o no tiene intención de realizar un análisis de posicionamiento de novedad.
+**Red**: ninguna (la recuperación de trabajos relacionados adicionales está fuera del alcance a menos que se proporcione).
+**Barandilla**: indique claramente la superposición y el delta; proporcione fuentes de evidencia rastreables (de manuscritos/citas/declaraciones del autor) siempre que sea posible.

@@ -1,0 +1,1 @@
+Analizza i dati sanitari, calcola i punteggi sanitari e identifica gli indicatori anomali

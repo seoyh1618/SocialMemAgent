@@ -1,0 +1,1 @@
+當用戶要求“代碼轉換”、“React 生成”、“Tailwind 代碼”、“組件代碼”、“設計到代碼”、“來自 .pen 文件的代碼”，或者當他們想要將 Pencil 設計轉換為 React + Tailwind CSS 代碼時，應該使用該技術。

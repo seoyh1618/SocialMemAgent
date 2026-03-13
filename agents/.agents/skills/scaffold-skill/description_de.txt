@@ -1,0 +1,1 @@
+Systeminitialisierungsgerüst. Wird zum Klonen und Initialisieren des SOP-Engine-Kerns in neuen Projekten verwendet.

@@ -1,0 +1,1 @@
+Esegui analisi non distruttive della coerenza tra artefatti e della qualità sui tre documenti principali spec.md, plan.md e task.md. Dopo la generazione dell'attività, identificare gli elementi incoerenti, duplicati, vaghi o sottospecificati. Le parole chiave includono: "specit-analyze", "speckit分析", "文档一致性分析", "规范分析", "质量检查", "工件分析", "spec分析", "plan分析", "compito 分析".

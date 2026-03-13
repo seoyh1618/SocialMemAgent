@@ -1,0 +1,1 @@
+Strumento di acquisizione di prototipi MockingBot. Cattura automaticamente tutte le pagine, gli screenshot e le annotazioni dai collegamenti al prototipo di MockingBot e genera documenti Markdown. I casi d'uso includono: (1) Acquisire pagine prototipo (2) Generare screenshot di pagine (3) Estrarre contenuto di annotazioni (4) Esportare documenti Markdown

@@ -1,0 +1,1 @@
+Bereitstellung von Produktplanungs-, Anforderungsanalyse-, Marktforschungs- und Geschäftsanalysefunktionen. Verwenden Sie es, wenn Produktentscheidungen, Anforderungsanalysen oder Marktforschung erforderlich sind.

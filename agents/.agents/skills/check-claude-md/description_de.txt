@@ -1,0 +1,1 @@
+Überprüfen Sie, ob die Änderungen in dieser Konversation eine Aktualisierung des Projekts CLAUDE.md erfordern. Analysieren Sie die Codeänderungen, identifizieren Sie neue Muster und Konventionen und schlagen Sie Aktualisierungen vor.

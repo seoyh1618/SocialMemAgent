@@ -1,0 +1,1 @@
+Fähigkeit zur Frontend-Entwicklungsunterstützung. Wandelt vage Anforderungen in strukturierte Entwicklungspläne um, erkennt automatisch den Tech-Stack des Projekts und generiert Genehmigungsflüsse, Arbeitsabläufe und Klärungsfragen. Verwenden Sie es, wenn Sie Frontend-Entwicklungsaufgaben wie das Hinzufügen von Seiten, das Beheben von Fehlern oder das Optimieren von Code starten.

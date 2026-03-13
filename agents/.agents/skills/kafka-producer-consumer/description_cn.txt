@@ -1,0 +1,3 @@
+管理kafka生产者消费者操作。自动激活后端开发技能。
+Triggers on: kafka producer consumer, kafka producer consumer
+后端开发技能类别的一部分。 Use when working with kafka producer consumer functionality. Trigger with phrases like "kafka producer consumer", "kafka consumer", "kafka".

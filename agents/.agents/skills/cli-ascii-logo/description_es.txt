@@ -1,0 +1,1 @@
+Genere un logotipo/banner CLI con diseño ASCII (con bordes de dibujo de cuadros, █ caracteres de bloque, gradientes ANSI de 24 bits) y proporcione scripts ejecutables más código de integración. Ideal para necesidades de “crear un logotipo de terminal como CLI del kit de especificaciones/banner ASCII colorido/encabezado estilo figlet/pantalla de presentación CLI”.

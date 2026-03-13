@@ -1,0 +1,1 @@
+Synchronisation multilingue README. Déclencheur : i18n, traduction, multilingue, synchronisation readme.

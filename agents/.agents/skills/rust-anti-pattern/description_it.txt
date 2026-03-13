@@ -1,0 +1,1 @@
+Anti-ruggine ed errori comuni. Affrontare revisioni del codice, clonare, unwrap, utilizzo di stringhe, iteratori e altro ancora. Parole chiave: anti-pattern, errore comune, clone, unwrap, revisione del codice, odore del codice, errore comune, revisione del codice, refactoring, refactoring

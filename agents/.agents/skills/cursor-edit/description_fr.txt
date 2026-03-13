@@ -1,0 +1,1 @@
+Effectuez des modifications réelles du code via Cursor CLI. Après avoir reçu les résultats de l'analyse/planification, transmettez-les à l'agent curseur pour déléguer l'édition du code. Utilisez-le lorsque de réelles modifications de fichiers sont nécessaires, telles que la modification du code, la refactorisation, l'ajout de fonctionnalités ou la correction de bogues.

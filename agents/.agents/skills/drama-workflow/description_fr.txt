@@ -1,0 +1,1 @@
+Coordonnez le flux de travail d'analyse des fonctions dramatiques des points de tracé, en gérant le prétraitement du texte, l'analyse parallèle et l'intégration des résultats. Convient pour analyser les points de l'intrigue et les fonctions dramatiques dans des textes longs et des scénarios nécessitant des rapports d'analyse structurés.

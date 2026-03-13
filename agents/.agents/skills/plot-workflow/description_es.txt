@@ -1,0 +1,1 @@
+Organice y coordine un flujo de trabajo con un solo clic para generar puntos de trazado principales y puntos de trazado detallados. Adecuado para análisis estructurados de historias extensas y tareas complejas que requieren colaboración modular de agentes.

@@ -1,0 +1,1 @@
+Unterstützung und Inspektion der DDD-Architektur. Auslöser: Architektur, neues Feature, neues Modul, Domäne, Struktur.

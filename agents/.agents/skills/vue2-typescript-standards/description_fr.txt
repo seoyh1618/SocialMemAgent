@@ -1,0 +1,1 @@
+Normes de codage TypeScript et normes de définition de type pour les projets Vue 2. Applicable à des scénarios tels que l'écriture de code TypeScript, la définition d'interfaces de type, l'utilisation du modèle décorateur et le développement de fonctions utilitaires.

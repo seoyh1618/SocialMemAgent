@@ -1,0 +1,1 @@
+Pipeline外掛程式開發完整指南，涵蓋外掛程式建立、task.json配置規格、多語言範例（Python/Java/NodeJS/Golang）、輸入/輸出規格、錯誤碼標準、發布流程和偵錯方法。在開發 BlueShield 管道插件、配置 task.json、處理插件 I/O 或排除插件錯誤時使用。

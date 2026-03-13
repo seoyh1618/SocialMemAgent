@@ -1,0 +1,3 @@
+TUnit Advanced Application Complete Guide – Datengesteuertes Testen, Abhängigkeitsinjektion und Integrationstests in der Praxis.
+Behandelt MethodDataSource, ClassDataSource, Matrixtests und Eigenschaftenfilterung.
+Beinhaltet Wiederholungs-/Timeout-Steuerung, WebApplicationFactory-Integration und Testcontainers Multi-Service-Orchestrierung.

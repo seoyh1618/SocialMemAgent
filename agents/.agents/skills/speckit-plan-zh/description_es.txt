@@ -1,0 +1,1 @@
+Lleve a cabo el flujo de trabajo de planificación de la implementación, utilizando plantillas de planes para generar artefactos de diseño. Frase desencadenante: "plan speckit".

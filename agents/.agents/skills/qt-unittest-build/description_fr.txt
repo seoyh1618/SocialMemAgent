@@ -1,0 +1,1 @@
+Générez un framework de tests unitaires pour les projets Qt. Comprend des dépendances complètes, des sous-agents et des scripts de luminaires ; Génération en un clic du framework d'autotests.

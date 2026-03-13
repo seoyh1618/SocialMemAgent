@@ -1,0 +1,1 @@
+Verwenden Sie den 14-Perioden-ATR mit exponentiellem gleitendem Durchschnitt, um zu erkennen, ob der Markt von einem geordneten Trend zu einem volatilitätsbedingten Engpass übergegangen ist, und geben Sie eine praktische Bewertung der technischen Niveaus, Stopps und Handelshaltedauern ab.

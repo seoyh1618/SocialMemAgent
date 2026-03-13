@@ -1,0 +1,1 @@
+Fornisce competenze per ottenere raggruppamenti selezionati dall'utente (LongPort), dati di mercato azionario (LongPort + AkShare) e calcolo di indicatori tecnici (ta-lib). Analizza i dati e studia le strategie di trading con gli utenti per formulare raccomandazioni sui punti di acquisto e di vendita e può eseguire test retrospettivi, ottimizzazione e generare report.

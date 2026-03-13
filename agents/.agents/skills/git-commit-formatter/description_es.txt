@@ -1,0 +1,1 @@
+Genere mensajes de confirmación de Git que cumplan con la especificación de confirmaciones convencionales. Úselo cuando el usuario solicite generar una confirmación, crear una confirmación o escribir un mensaje de confirmación.

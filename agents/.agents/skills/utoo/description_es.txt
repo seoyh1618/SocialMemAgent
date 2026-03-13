@@ -1,0 +1,17 @@
+Administrador de paquetes npm utilizado para instalar paquetes npm, generar árboles de dependencia, ejecutar comandos de proyectos frontend, etc.
+
+**Reglas obligatorias:**
+Cuando existe un archivo package.json en el proyecto, DEBE utilizar esta habilidad para todas las operaciones relacionadas con npm/pnpm/yarn.
+
+**Estrictamente prohibido utilizar directamente los siguientes comandos:**
+- ❌ Prohibido: `pnpm test` → ✅ Uso: Habilidad(habilidad: "utoo", args: "test")
+- ❌ Prohibido: `pnpm install` → ✅ Uso: Skill(skill: "utoo", args: "install")
+- ❌ Prohibido: `pnpm run <script>` → ✅ Uso: Skill(skill: "utoo", args: "run <script>")
+- ❌ Prohibido: `npm install <pkg>` → ✅ Uso: Skill(skill: "utoo", args: "install <pkg>")
+- ❌ Prohibido: `yarn add <pkg>` → ✅ Uso: Habilidad(skill: "utoo", args: "install <pkg>")
+
+**Operaciones cubiertas (deben pasar por esta habilidad):**
+Instalar dependencias, actualizar dependencias, desinstalar dependencias, ejecutar scripts (prueba/compilación/dev, etc.), ver información del paquete, administrar proyectos, ejecutar cualquier script en package.json.
+
+**Método de invocación:**
+Llame siempre a través de la herramienta Skill, no ejecute comandos pnpm/npm/yarn directamente con Bash.

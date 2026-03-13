@@ -1,0 +1,1 @@
+Fähigkeit zur Klärung der Benutzerabsicht. Wird ausgelöst, wenn der Benutzer eine vage Idee äußert, ein Brainstorming benötigt, einen Entwurf besprechen möchte oder eine Klarstellung vornimmt. Auslöserwörter: Hilf mir zu denken, ich möchte, diskutieren, klären.

@@ -1,0 +1,1 @@
+PyAutoGUI-basiertes Desktop-Automatisierungstool. Unterstützt Screenshot, Maus- und Tastatursteuerung, Bilderkennung, Farberkennung und ähnliche Vorgänge. Wird ausgelöst, wenn Benutzer Desktopanwendungen automatisieren, UI-Tests durchführen oder sich wiederholende Aufgaben erledigen müssen.

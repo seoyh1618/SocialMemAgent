@@ -1,0 +1,2 @@
+Effectuez une analyse comparative multidimensionnelle basée sur les options techniques saisies par l'utilisateur ou les exigences du projet, et générez un rapport structuré de sélection de technologie.  
+Scénarios applicables : sélection du cadre front-end, comparaison des technologies back-end, sélection de la base de données, évaluation du plan de déploiement

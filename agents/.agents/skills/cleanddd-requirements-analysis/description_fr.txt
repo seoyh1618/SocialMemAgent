@@ -1,0 +1,1 @@
+Clarification et ventilation des exigences, identification des parties prenantes et étiquetage de chaque élément d'exigence avec son propriétaire et son entité commerciale ; produire uniquement des descriptions d'exigences structurées, pas de définitions de modélisation, pour servir d'entrée à la modélisation ultérieure

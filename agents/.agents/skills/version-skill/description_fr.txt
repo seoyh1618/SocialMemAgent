@@ -1,0 +1,1 @@
+Compétence en gestion de versions. Déclenché lorsque des tests A/B, un changement de version ou une restauration sont nécessaires. Déclencheurs : version, version, test A/B, changement, restauration, promotion.

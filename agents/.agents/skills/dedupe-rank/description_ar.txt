@@ -1,0 +1,1 @@
+تم تغيير اسم الملف إلى Papers/papers_raw.jsonl`، وقم بتغيير `papers/papers_dedup.jsonl` إلى `papers/core_set.csv`.

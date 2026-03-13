@@ -1,0 +1,1 @@
+Competenze per aderire alle regole per la creazione di componenti jp-ui e pagine di Storybook. Criteri per i wrapper dell'interfaccia utente di base, mantenimento di rendering/usoRender e applicazione di regole di layout/spaziatura/larghezza.

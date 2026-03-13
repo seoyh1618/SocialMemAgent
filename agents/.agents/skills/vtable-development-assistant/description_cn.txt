@@ -1,0 +1,1 @@
+帮助用户使用@visactor/vtable开发高性能表格组件，涵盖ListTable、Pivo​​tTable和PivotChart类型、13种单元格类型、样式主题、自定义渲染、事件系统和完整API。

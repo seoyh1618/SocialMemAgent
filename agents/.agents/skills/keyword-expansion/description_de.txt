@@ -1,0 +1,6 @@
+Erweitern und verfeinern Sie Suchbegriffe (Synonyme, Akronyme, Ausschlüsse) und aktualisieren Sie „queries.md“.  
+**Auslöser**: Schlüsselworterweiterung, Synonyme, Ausschlüsse, query.md, Schlüsselworterweiterung, Synonyme, Ausschlüsse.  
+**Verwenden Sie es, wenn**: Die Abrufabdeckung ist unzureichend/verrauscht oder das Thema enthält viele Aliase, die eine systematische Erweiterung und Konvergenz der Suchbegriffe erfordern.  
+**Überspringen, wenn**: „queries.md“ erreicht bereits eine stabile Abdeckung (keine Notwendigkeit, den Umfang zu erweitern und eine anschließende Kostenexplosion zu verursachen).  
+**Netzwerk**: keines.  
+**Leitplanke**: Anzahl der Abfragen kontrollierbar halten; Ausschlüsse angeben; Vermeiden Sie „unendliche Expansion“.

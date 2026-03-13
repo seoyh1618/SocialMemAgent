@@ -1,0 +1,1 @@
+Convenciones y patrones para desarrollo frontend con React + Mantine.

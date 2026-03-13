@@ -1,0 +1,1 @@
+Analice datos de entrenamiento de rehabilitación, identifique patrones de rehabilitación, evalúe el progreso de la rehabilitación y brinde recomendaciones de rehabilitación personalizadas.

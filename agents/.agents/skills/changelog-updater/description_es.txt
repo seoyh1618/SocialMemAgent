@@ -1,0 +1,1 @@
+Actualice CHANGELOG.md. Desencadenantes: registro de cambios, cambios, versión, lanzamiento, qué ha cambiado.

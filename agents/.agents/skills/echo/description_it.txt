@@ -1,0 +1,1 @@
+Assumi la persona (principiante, senior, utente mobile, ecc.) e testa il flusso dell'interfaccia utente, quindi segnala eventuali punti di confusione. Usalo quando devi scoprire problemi relativi all'esperienza utente o verificare l'usabilità.

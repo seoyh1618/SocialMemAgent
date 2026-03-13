@@ -1,0 +1,3 @@
+Una guida completa per l'integrazione di AutoFixture con Bogus.  
+Combinazione di dati di test anonimi con generazione di dati realistici e semantici.  
+Copre l'integrazione di SpecimenBuilder, i generatori ibridi, le data factory di test e la gestione dei riferimenti circolari.

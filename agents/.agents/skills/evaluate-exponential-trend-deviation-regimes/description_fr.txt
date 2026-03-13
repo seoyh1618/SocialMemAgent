@@ -1,0 +1,1 @@
+Calculez l'écart du prix de l'actif par rapport à sa tendance de croissance exponentielle à long terme pour évaluer s'il se situe dans une fourchette historique extrême, et effectuez éventuellement une analyse macrofactorielle pour juger de la santé du marché.

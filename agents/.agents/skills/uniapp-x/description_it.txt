@@ -1,0 +1,1 @@
+motore di sviluppo di applicazioni multipiattaforma uni-app x. Adatto per funzionalità e utilizzo durante lo sviluppo di applicazioni Android/iOS/HarmonyOS/Web/Mini-Program utilizzando la sintassi UTS, uvue e Vue.

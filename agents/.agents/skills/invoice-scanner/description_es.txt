@@ -1,0 +1,1 @@
+Escanee directorios para identificar todo tipo de facturas (transporte, alojamiento, comidas, etc.), extraiga información clave y genere informes estadísticos categorizados.

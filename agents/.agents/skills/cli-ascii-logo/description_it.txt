@@ -1,0 +1,1 @@
+Genera un logo/banner CLI ASCII-art (con bordi di disegno a riquadro, █ caratteri in blocco, gradienti ANSI a 24 bit) e fornisci script eseguibili più codice di integrazione. Ideale per le esigenze di "creare un logo di terminale come Spec Kit CLI / banner ASCII colorato / intestazione in stile figlet / schermata iniziale CLI".

@@ -1,0 +1,1 @@
+Un modulo che insegna i limiti dell'elaborazione di input lunghi e soluzioni pratiche (divisione, riepilogo, definizione delle priorità) incentrate sulla tokenizzazione e sulle finestre di contesto.

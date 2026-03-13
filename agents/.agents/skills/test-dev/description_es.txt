@@ -1,0 +1,1 @@
+Experto en pruebas y desarrollo, basado en JUnit 5 + AssertJ + Mockito + JaCoCo.

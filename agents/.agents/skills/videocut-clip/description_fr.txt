@@ -1,0 +1,1 @@
+Exécutez le montage vidéo. Effectuez des coupes FFmpeg en fonction des tâches de suppression confirmées, bouclez jusqu'à zéro glissement de langue, générez des sous-titres. Mots déclencheurs : exécuter la coupe, démarrer la coupe, confirmer la coupe.

@@ -1,0 +1,1 @@
+Experte für Makro- und prozedurale Metaprogrammierung. Behandelt Macro_rules!, Ableitung, Proc-Makro, generische Makros und Berechnungen zur Kompilierungszeit. Auslösewörter: Makro, Ableitung, Proc-Makro, Makroregeln, Regeln, Berechnung, Berechnung zur Kompilierungszeit

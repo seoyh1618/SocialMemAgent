@@ -1,0 +1,1 @@
+Per sviluppare l'interfaccia utente OpenHarmony con ArkTS: trova layout, componenti, gestione dello stato, animazioni, navigazione o correggi errori come decoratori mancanti, stato non aggiornato, problemi di rendering, ecc.

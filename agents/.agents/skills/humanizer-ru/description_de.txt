@@ -1,0 +1,1 @@
+Entfernt Spuren der KI-Generierung aus Text. Macht Text natürlich und menschenähnlich. Basierend auf dem Wikipedia-Leitfaden „Signs of AI-generated text“.

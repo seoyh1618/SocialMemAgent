@@ -1,0 +1,1 @@
+Gestione delle watchlist. Aggiungi, rimuovi ed elenca le azioni.

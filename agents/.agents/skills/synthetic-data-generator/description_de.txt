@@ -1,0 +1,1 @@
+Fähigkeit zur Generierung synthetischer Daten zum Testen. Erzeugt realistische Benutzerdaten, Transaktionen, Protokolle, API-Antworten usw. Unterstützt DSGVO-Konformität, Faker-Integration, schemabasierte Generierung, Zeitreihendaten und Anomaliedatengenerierung.

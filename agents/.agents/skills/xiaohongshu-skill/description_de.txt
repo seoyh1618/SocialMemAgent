@@ -1,0 +1,1 @@
+Fähigkeiten zum Veröffentlichen von Inhalten in Xiaohongshu, Bereitstellung von Funktionen zum Überprüfen des Anmeldestatus und zum Posten von Bild-Text-Inhalten. Keine MCP-Abhängigkeit, Verwendung integrierter JavaScript-Skripte zur Ausführung von Xiaohongshu-bezogenen Vorgängen.

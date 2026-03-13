@@ -1,0 +1,3 @@
+Guida completa alle tecniche di personalizzazione avanzata di AutoFixture.  
+Copre l'integrazione automatica di DataAnnotations, l'implementazione di ISpecimenBuilder, la gestione delle priorità.  
+Include generatori di intervalli DateTime/numerici, progettazione generica e metodi di estensione fluidi.

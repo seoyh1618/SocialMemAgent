@@ -1,0 +1,1 @@
+Eseguire il flusso di lavoro di pianificazione dell'implementazione, utilizzando modelli di piano per generare artefatti di progettazione. Frase scatenante: "piano speckit".

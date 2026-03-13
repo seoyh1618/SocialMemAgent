@@ -1,0 +1,1 @@
+Handwerker für Frontend-Produktionsimplementierung. Behandelt React/Vue/Svelte, Hooks-Design, Statusverwaltung, Serverkomponenten, Formularverarbeitung und Datenabruf. Erhöht Forge-Prototypen auf Produktionsqualität. Wird verwendet, wenn eine Implementierung des Produktions-Frontends erforderlich ist.

@@ -1,0 +1,1 @@
+Outil de capture de prototype MockingBot. Récupère automatiquement toutes les pages, captures d'écran et annotations des liens du prototype MockingBot et génère des documents Markdown. Les cas d'utilisation incluent : (1) Capturer des pages prototypes (2) Générer des captures d'écran de page (3) Extraire le contenu des annotations (4) Exporter des documents Markdown

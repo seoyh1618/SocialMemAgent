@@ -1,0 +1,1 @@
+Identifica le aree dell'attuale specifica funzionale che non sono chiaramente definite ponendo fino a 5 domande di chiarimento altamente mirate e codifica le risposte nella specifica. Le parole chiave includono: "specit-clarify", "speckit澄清", "chiarimento delle specifiche", "chiarimento funzionale", "identificazione dell'ambiguità", "chiarimento dei requisiti".

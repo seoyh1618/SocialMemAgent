@@ -1,0 +1,1 @@
+Esta es una habilidad de Markdown directiva que se utiliza para explorar las habilidades requeridas para un proyecto a través de tres canales (buscar habilidades/popular/web) y revisar las habilidades instaladas existentes bajo el mismo criterio para aplicar el conjunto de habilidades final (mantener/instalar/eliminar).

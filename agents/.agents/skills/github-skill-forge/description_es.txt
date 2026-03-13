@@ -1,0 +1,1 @@
+Una "habilidad que crea habilidades". Esta herramienta automatiza todo el proceso de conversión de cualquier repositorio de GitHub en una habilidad Trae estandarizada y es la herramienta principal para ampliar las capacidades de los agentes de IA.

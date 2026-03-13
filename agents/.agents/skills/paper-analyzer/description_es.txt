@@ -1,0 +1,3 @@
+Convierta artículos académicos en artículos técnicos detallados con múltiples estilos de escritura.  
+Utilice la API de MinerU Cloud para analizar con precisión archivos PDF y extraer automáticamente figuras, tablas y fórmulas.  
+Explicaciones de fórmulas opcionales y análisis de código GitHub, generando formatos Markdown y HTML.

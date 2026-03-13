@@ -1,0 +1,1 @@
+Agregue noticias tecnológicas y genere un Markdown chino diariamente. Scrape Hacker News, GitHub Trending, etc., traduzca títulos y resúmenes y, opcionalmente, cargue imágenes en R2. Úselo cuando: el usuario diga "generar noticias tecnológicas de hoy", "noticias tecnológicas", "noticias tecnológicas", etc.

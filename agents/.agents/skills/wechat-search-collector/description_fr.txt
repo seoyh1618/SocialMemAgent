@@ -1,0 +1,1 @@
+Processus de collecte automatisé pour la recherche des canaux WeChat et le parcours des résultats (Android), prenant en charge la recherche complète de pages, la recherche de pages personnelles et d'autres scénarios.

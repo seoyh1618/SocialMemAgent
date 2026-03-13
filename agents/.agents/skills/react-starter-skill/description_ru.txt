@@ -1,0 +1,1 @@
+Скелет проекта React + Vite + Tailwind CSS v4 + React Query + Zustand + React Router + Lingui + shadcn + lucide-react. Использовать при создании нового React-проекта, инициализации фронтенда или настройке приложения React + Vite. Триггеры: «создать React-проект», «инициализировать фронтенд», «scaffold React», «create a new React app», «scaffold a frontend project».

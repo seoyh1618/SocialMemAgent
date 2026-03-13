@@ -1,0 +1,1 @@
+Automatice la creación y gestión de flujos de trabajo n8n. Utilice esta habilidad cuando los usuarios necesiten diseñar flujos de trabajo, configurar nodos, optimizar procesos de automatización o integrar múltiples servicios.

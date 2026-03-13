@@ -1,0 +1,1 @@
+La habilidad de analizar las diferencias de compromiso de git y refactorizar según las instrucciones del usuario. Puede proporcionar sugerencias de refactorización altamente coherentes y fáciles de mantener desde la perspectiva más poderosa, en función de los cambios entre la confirmación especificada y HEAD.

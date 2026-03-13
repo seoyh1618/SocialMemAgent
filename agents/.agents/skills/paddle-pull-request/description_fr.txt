@@ -1,0 +1,3 @@
+Créez ou mettez à jour automatiquement les requêtes Pull GitHub.
+Lors de la création d'un PR pour les référentiels liés à Paddle, utilisez d'abord cette compétence.
+Exigence particulière : vous devez utiliser le modèle officiel Paddle PR.

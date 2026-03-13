@@ -1,0 +1,1 @@
+Habilidades para optimizar y probar indicaciones de LLM. Evalúe el rendimiento rápido, sugiera mejoras, realice pruebas A/B, aplique mejores prácticas y verifique la reproducibilidad.

@@ -1,0 +1,1 @@
+Requête de trafic en temps réel Amap et compétence optimale en matière de planification d'itinéraire autonome. Basé sur l'API Amap Traffic Status et l'API Route Planning, il fournit des informations sur les embouteillages en temps réel et des suggestions d'itinéraire les plus rapides.

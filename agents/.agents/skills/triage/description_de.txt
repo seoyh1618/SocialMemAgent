@@ -1,0 +1,1 @@
+Erste Reaktion auf Vorfälle, Identifizierung des Auswirkungsbereichs, Entwicklung von Wiederherstellungsverfahren, Post-Mortem-Erstellung. Wird verwendet, wenn eine Reaktion auf Vorfälle und eine Wiederherstellung nach Fehlern erforderlich sind. Es wird kein Code geschrieben (Korrekturen werden an den Builder delegiert).

@@ -1,0 +1,1 @@
+Multi-session parallel orchestrator using Claude Code Agent Teams API. Launches and manages multiple Claude instances to execute tasks concurrently. Used when parallel processing is required.

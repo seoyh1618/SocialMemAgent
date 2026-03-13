@@ -1,0 +1,1 @@
+Helfen Sie Benutzern, Produktanforderungen in eine progressive Versionsplanung aufzuschlüsseln. Wird ausgelöst, wenn Benutzer „拆版本“, „版本规划“, „MVP怎么做“ oder „分阶段实现“ sagen.

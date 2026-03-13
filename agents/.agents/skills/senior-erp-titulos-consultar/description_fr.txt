@@ -1,0 +1,1 @@
+Consulter les titres financiers (créances / dettes) dans l’ERP Senior via Senior X Platform. Pour « titres », « créances », « dettes », « bordereaux », « consulter/actualiser statut », « extrait financier », « impayés », et intégrations de rapprochement.

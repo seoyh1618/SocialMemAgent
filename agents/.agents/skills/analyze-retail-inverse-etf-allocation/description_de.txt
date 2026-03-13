@@ -1,0 +1,1 @@
+Verwendung des Handelsverhältnisses von gehebelten inversen ETFs (Short) im Vergleich zu gehebelten Long-ETFs (Long) als Indikator für die Risikobereitschaft des Einzelhandels, um das spätere Abwärtsrisiko von SPX einzuschätzen.

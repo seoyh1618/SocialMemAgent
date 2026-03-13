@@ -1,0 +1,4 @@
+Kritische Analyse- und Ausführungsfähigkeiten für React/TypeScript-Code-Refactoring.  
+Wenn der Benutzer einen Komponentenpfad und seine Probleme angibt, wird jedes Problem aus der Perspektive eines „guten Codes“ kritisch überprüft, eine sequenzielle Schritt-für-Schritt-Analyse durchgeführt und ein Refactoring-Plan erstellt und ausgeführt.  
+
+Auslöser: Wird verwendet, wenn Schlüsselwörter wie „Refactoring“, „Ich möchte verbessern“, „Codestrukturänderung“, „Hook-Trennung“, „Kohäsion“, „Kopplung“ zusammen mit einem React-Komponentenpfad erwähnt werden.

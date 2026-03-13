@@ -1,0 +1,1 @@
+La compétence de rappel programmé par messagerie instantanée prend en charge les tâches ponctuelles et périodiques. Il réveille l'agent à l'heure spécifiée via une tâche cron, détecte automatiquement le canal de messagerie instantanée actuel et garantit que les messages sont transmis avec précision.

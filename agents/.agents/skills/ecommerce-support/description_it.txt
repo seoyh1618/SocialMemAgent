@@ -1,0 +1,1 @@
+Assistente al servizio clienti e-commerce AI, supporto per richieste di ordini, consigli sui prodotti e gestione dei ticket. Può utilizzare Playwright MCP per gestire automaticamente il backend dell'e-commerce e interrogare lo stato dell'ordine reale.

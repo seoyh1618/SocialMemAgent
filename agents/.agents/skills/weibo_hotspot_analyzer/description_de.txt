@@ -1,0 +1,1 @@
+Durchsuchen Sie Weibo-Trendthemen, suchen Sie automatisch nach Hintergrundinformationen, analysieren und generieren Sie Produktideen mithilfe von KI und geben Sie einen HTML-Analysebericht aus. Wird für Weibo-Trendthemen, Hotspot-Analyse, Produktideen-Mining, Trendlistenanalyse und Produktisierungsszenarien für aktuelle Themen verwendet.

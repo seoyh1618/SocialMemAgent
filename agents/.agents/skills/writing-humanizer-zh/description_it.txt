@@ -1,0 +1,2 @@
+Rimuovi le tracce AI dal testo. Ideale per modificare o rivedere i testi in modo che sembrino naturali e umani.  
+Basato sulla guida completa di Wikipedia sulle "impronte digitali per la scrittura dell'intelligenza artificiale". Rileva e correggi: simbolismo esagerato, linguaggio promozionale, analisi superficiale, attribuzione vaga, uso eccessivo del trattino, regola del tre, parole d'ordine dell'intelligenza artificiale, parallelismo negativo, connettivi eccessivi.

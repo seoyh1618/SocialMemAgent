@@ -1,0 +1,1 @@
+Verarbeiten Sie automatisch mehrere Rekrutierungsabschlagsdokumente, erkennen Sie Bildinhalte in den Dokumenten (einschließlich Online-Bildlinks), extrahieren Sie wichtige Informationen (Position, Gehalt, Frist usw.), filtern Sie nach Benutzerkriterien und erstellen Sie einen strukturierten zusammenfassenden Bericht.

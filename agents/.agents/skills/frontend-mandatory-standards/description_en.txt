@@ -1,0 +1,1 @@
+[Mandatory·Required] Company Front-End Development Mandatory Guidelines. You must read this skill before writing or modifying any front-end code. It covers all development constraints including Composition API mandatory rules, naming conventions, API call rules, Pinia state management, component splitting, etc.

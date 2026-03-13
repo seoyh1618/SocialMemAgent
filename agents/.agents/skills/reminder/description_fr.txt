@@ -1,0 +1,1 @@
+Créez des rappels et des événements de calendrier lorsque les utilisateurs mentionnent des tâches, des rendez-vous ou des événements futurs. Déclenchez des expressions telles que « rappelez-moi », « définissez un rappel », « J'ai un rendez-vous », « n'oubliez pas » ou toute mention de tâches futures basées sur le temps.

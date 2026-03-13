@@ -1,0 +1,1 @@
+Guida all'architettura del modulo di gestione dei progetti, che copre CRUD del progetto, gestione dei membri, configurazione del progetto, gestione dei tag e migrazione del progetto. Utilizzato quando gli utenti sviluppano funzionalità di gestione del progetto, gestiscono i membri del progetto, configurano gli attributi del progetto o implementano la logica relativa al progetto.

@@ -1,0 +1,6 @@
+Créez une taxonomie de plus de 2 niveaux (`outline/taxonomy.yml`) à partir d'un ensemble de documents de base et de contraintes de portée, avec de courtes descriptions par nœud.  
+**Déclencheur** : taxonomie, générateur de taxonomie, 分类, 主题树, taxonomy.yml.  
+**À utiliser lorsque** : étape de structure de l'enquête/instantané (PAS DE PROSE), `papers/core_set.csv` existe déjà, nécessite une structure de sujet cartographiable et conviviale.  
+**Ignorer si** : une taxonomie approuvée et mappable existe déjà (pas de refactorisation inutile).  
+**Réseau** : aucun.  
+**Garde-corps** : évitez les compartiments génériques ; conservez plus de 2 niveaux et des descriptions concrètes pour chaque nœud.

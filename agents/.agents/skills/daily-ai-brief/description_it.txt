@@ -1,0 +1,1 @@
+Monitoraggio e riepilogo giornalieri degli aggiornamenti delle fonti di contenuto AI. Copre specifici podcast di YouTube, blogger di Twitter/X e newsletter. Attivato dalle richieste degli utenti di "riepilogo RSS", "rapporto giornaliero" o "verifica aggiornamenti".

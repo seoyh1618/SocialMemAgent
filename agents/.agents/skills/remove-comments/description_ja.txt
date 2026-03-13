@@ -1,0 +1,1 @@
+自然言語命令を使用してコード コメントを削除します。これは、Python、JavaScript、TypeScript (.ts/.tsx)、Java、C/C++、Go、HTML、およびその他の言語の単純なシナリオに適しています。

@@ -1,0 +1,1 @@
+Diseño de pruebas A/B, creación de documentación de hipótesis, cálculo del tamaño de la muestra, implementación de indicadores de características, determinación de significancia estadística. Generación de informes de experimentos. Úselo cuando se requiera la validación de hipótesis.

@@ -1,0 +1,1 @@
+BK-CI支持模块架构指南，涵盖凭证管理（Ticket）、构建环境（Environment）、通知服务（Notify）、构建日志（Log）、质量门（Quality）、开放接口（OpenAPI）等支撑服务模块。当开发这些模块功能或者需要了解支撑服务架构时可以使用它。

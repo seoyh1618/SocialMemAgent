@@ -1,0 +1,1 @@
+C# 12 / .NET 8 Codierungsrichtlinien. Wissensbasiskompetenz, auf die vor und während des Codierens verwiesen wird. Moderne C#-Funktionen und Best Practices werden automatisch eingefügt.

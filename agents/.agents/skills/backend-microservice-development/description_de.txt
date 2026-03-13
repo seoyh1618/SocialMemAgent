@@ -1,0 +1,1 @@
+Backend-Microservice-Entwicklungsstandards, die Verzeichnisstruktur, mehrschichtige Architektur (API/Service/DAO), Abhängigkeitsinjektion, Konfigurationsmanagement und Spring Boot-Best Practices abdecken. Wird verwendet, wenn Benutzer eine Backend-Entwicklung durchführen, neue Microservices erstellen, Kotlin/Java-Code schreiben oder eine Servicearchitektur entwerfen.

@@ -1,0 +1,1 @@
+Analysetool für A-Aktien-Wertinvestitionen, das Aktienscreening, detaillierte Einzelaktienanalysen, Branchenvergleiche und Bewertungsberechnungsfunktionen bietet. Basierend auf der Value-Investing-Theorie nutzt es akshare, um öffentliche Finanzdaten zu erhalten, die für normale Anleger mit Niederfrequenzhandel geeignet sind.

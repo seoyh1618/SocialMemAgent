@@ -1,0 +1,1 @@
+Spec Pack의 검증 단계에서 `{FEATURE_DIR}/verification/usecase.md`(테스트 케이스)를 생성하거나 업데이트해야 할 때 사용하여 AC 추적성을 보장하고 구조에서 자동화된 스크립트 생성을 활성화합니다.

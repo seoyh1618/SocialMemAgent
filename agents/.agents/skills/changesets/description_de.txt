@@ -1,0 +1,1 @@
+Änderungssätze für die Versionierung und Änderungsprotokollverwaltung in Monorepos. Wird zum Verwalten von Paketversionen, zum Generieren von Änderungsprotokollen oder zum Veröffentlichen von Paketen verwendet. Verwendung für Changesets, Versionierung, Changelog, Semver, Monorepo-Versionierung, Release, Veröffentlichung, Bump.

@@ -1,0 +1,1 @@
+Genere/optimice/arregle/verifique archivos de índice automáticamente, asegurando que cada archivo de índice (index.ts/index.js) cumpla con la convención de exportación de barril. Principio básico: todos los archivos de índice deben seguir la convención de exportación de barriles.

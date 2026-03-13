@@ -1,0 +1,1 @@
+Utilizza l'ATR con media mobile esponenziale a 14 periodi per rilevare se il mercato è passato da un trend ordinato a una compressione guidata dalla volatilità e produrre una valutazione pratica dei livelli tecnici, degli stop e dei periodi di attesa delle transazioni.

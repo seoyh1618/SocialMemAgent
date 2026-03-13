@@ -1,0 +1,1 @@
+Stellen Sie den aktuellen Zweig in der Testumgebung bereit. Verwenden Sie dies, wenn der Benutzer eine Bereitstellung, eine Testfreigabe oder Tests in der Staging-Umgebung anfordert.

@@ -1,0 +1,1 @@
+Citations de propositions du NSFC et gestion des références : ajoutez/vérifiez les informations sur l'article (titre/auteurs/année/journal/DOI) et écrivez dans « references/ccs.bib » ou « references/mypaper.bib », en vous assurant qu'il n'y a pas de références hallucinées ; used when the user asks "add citation/supplement reference/verify paper info/write bibtex/update .bib".

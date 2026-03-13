@@ -1,0 +1,1 @@
+KI-gestützter E-Mail-Assistent, der den Nachrichteninhalt analysiert, Zusammenfassungen erstellt, bestimmt, ob eine Antwort erforderlich ist, und professionelle Antworten basierend auf dem Kontext entwirft.

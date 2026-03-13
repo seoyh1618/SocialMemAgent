@@ -1,0 +1,1 @@
+Kommunikation zwischen Instanzen für OpenClaw. Verwenden Sie diese Fähigkeit, wenn Nachrichten, Datensynchronisierung oder Remote-Befehlsausführung zwischen mehreren OpenClaw-Instanzen erforderlich sind. Behandelt Agent-zu-Agent-Messaging, nodes.run-Remoteausführung, Kommunikation auf Dateiebene und andere Methoden.

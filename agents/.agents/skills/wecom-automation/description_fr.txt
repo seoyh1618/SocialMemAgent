@@ -1,0 +1,1 @@
+Automatisation directe du compte personnel Enterprise WeChat. Construit sur le framework Wechaty pour recevoir des messages WeCom, accepter automatiquement les demandes d'amis, fournir des questions et réponses sur la base de connaissances et envoyer des alertes de transfert humain. Idéal pour les robots WeCom personnels et les assistants d'automatisation.

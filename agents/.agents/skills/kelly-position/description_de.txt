@@ -1,0 +1,1 @@
+Verwenden Sie die Kelly-Formel, um die Größe der Anlageposition wissenschaftlich zu berechnen. Verwenden Sie diese Option, wenn Benutzer nach der Positionsgröße, der Kapitalallokation oder der Kelly-Formel fragen. Unterstützt vollständige Kelly-, fraktionierte Kelly- und Portfoliooptimierung.

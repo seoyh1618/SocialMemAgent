@@ -1,0 +1,1 @@
+Compétences pour respecter les règles de création de composants jp-ui et de pages Storybook. Politiques pour les wrappers de l'interface utilisateur de base, la maintenance du rendu/utilisation du rendu et l'application des règles de disposition/espacement/largeur.

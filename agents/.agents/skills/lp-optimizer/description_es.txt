@@ -1,0 +1,5 @@
+Habilidades de análisis y optimización de terceros para páginas de marketing.  
+Objetivos: páginas de destino, páginas de inicio, páginas de precios, páginas de funciones, blogs.  
+Integra marcos de CRO y principios de respuesta directa (Schwartz/Hopkins/Ogilvy).  
+Úselo cuando: (1) audite o analice una página, (2) consulte sobre mejoras de conversión, (3) mejore el texto, (4) diseñe pruebas A/B, (5) priorice la implementación.  
+Ejemplos de desencadenantes: "analizar mi LP", "aumentar la tasa de conversión", "revisar la página de precios", "optimizar la sección principal", "optimizar la CTA", "ideas para mejorar la página de inicio".

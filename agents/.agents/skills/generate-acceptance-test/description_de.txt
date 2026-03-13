@@ -1,0 +1,1 @@
+Generieren/verwalten Sie BDD/ezSpec-Tests aus der Datei „acceptance.yaml“ im Spezifikationskatalog. Mithilfe einer Gherkin-ähnlichen Syntax generiert die KI automatisch Schrittdefinitionen (Entwickler müssen sie nicht von Hand schreiben), sodass die Abnahmetestspezifikation eine ausführbare Spezifikation ist.

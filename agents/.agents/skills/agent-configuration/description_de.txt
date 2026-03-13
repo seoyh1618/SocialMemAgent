@@ -1,0 +1,1 @@
+AI Agent-Konfigurationsrichtlinie und Sicherheitsleitfaden. Wie man Projektbeschreibungsdateien schreibt, Hooks/Skills/Plugins einrichtet, Sicherheitsrichtlinien, Team-Sharing-Workflow-Definition.

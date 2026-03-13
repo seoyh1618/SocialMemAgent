@@ -1,0 +1,1 @@
+Rédigez le brouillon du PRD, validez le format, puis guidez la soumission GitHub PR.

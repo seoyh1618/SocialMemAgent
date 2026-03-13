@@ -1,0 +1,1 @@
+À utiliser lorsque des plans de test, des cas, des suites ou des rapports doivent être générés/mis à jour pendant la phase de vérification du Spec Pack, avec un contrôle strict, une traçabilité complète et aucun routage non autorisé.

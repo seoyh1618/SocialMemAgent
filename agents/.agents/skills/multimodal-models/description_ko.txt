@@ -1,0 +1,1 @@
+"CLIP", "Whisper", "Stable Diffusion", "SDXL", "speech-to-text", "text-to-image", "이미지 생성", "전사", "제로샷 분류", "이미지-텍스트 유사성", "인페인팅", "ControlNet"인 경우 사용

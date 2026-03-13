@@ -1,0 +1,1 @@
+【WHEN】當使用者的指令明確包含「codex communications」、「codex synergy」、「cooperate with codex」或類似指令時啟用；【WHEN】 當使用者要求使用 Codex MCP 工具進行程式碼分析、原型產生、審查或其他協作開發場景時啟用。 【何時不宜】不要用於獨立的程式碼實作任務、純粹的文件編寫或不涉及 Codex 的常規開發工作流程。

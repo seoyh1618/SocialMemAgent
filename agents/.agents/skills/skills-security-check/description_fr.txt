@@ -1,0 +1,1 @@
+Utilisez des contrôles statiques et IA pour évaluer les risques de sécurité et les menaces potentielles dans Skills. Lorsqu'un utilisateur demande un contrôle ou une analyse de compétences, déclenchez la fonction d'évaluation des compétences.

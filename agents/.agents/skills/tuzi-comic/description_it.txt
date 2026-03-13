@@ -1,0 +1,1 @@
+Strumento di creazione di fumetti di conoscenza che supporta vari stili e toni artistici. Crea fumetti educativi originali con layout di storyboard dettagliati e generazione di immagini sequenziali. Utilizzato quando gli utenti richiedono la creazione di "fumetti conoscitivi", "fumetti educativi", "fumetti biografici" o "fumetti tutorial".

@@ -1,0 +1,1 @@
+Dabei handelt es sich um einen direktiven Markdown-Skill, mit dem die für ein Projekt erforderlichen Skills über drei Kanäle (Find-Skills/Popular/Web) untersucht und vorhandene installierte Skills nach denselben Kriterien überprüft werden, um den endgültigen Skill-Satz anzuwenden (behalten/installieren/entfernen).

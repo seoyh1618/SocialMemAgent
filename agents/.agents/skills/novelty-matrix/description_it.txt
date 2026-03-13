@@ -1,0 +1,6 @@
+Crea una matrice novità/lavoro precedente che confronti i contributi della proposta con il lavoro correlato (sovrapposizioni vs delta).
+**Trigger**: matrice della novità, matrice del lavoro precedente, sovrapposizione/delta, confronto del lavoro correlato, matrice della novità.
+**Utilizzare quando**: valutare la novità/posizionamento nella peer review; necessità di allineare i contributi con il lavoro correlato, elemento per elemento, e fornire prove delle differenze.
+**Salta se**: mancano i reclami (esegui prima `claims-extractor`) o non intendi eseguire un'analisi del posizionamento delle novità.
+**Rete**: nessuna (il recupero di lavoro correlato aggiuntivo non rientra nell'ambito, a meno che non venga fornito).
+**Guardrail**: indicare chiaramente sovrapposizione e delta; fornire fonti di prova tracciabili (da manoscritti/citazioni/dichiarazioni degli autori) quando possibile.

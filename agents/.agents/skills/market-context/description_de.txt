@@ -1,0 +1,1 @@
+Erstellen Sie ein normalisiertes JSON-Paket für den Marktkontext für ein einzelnes Symbol und einen Zeitstempel.

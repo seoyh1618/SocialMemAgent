@@ -1,0 +1,1 @@
+從目前會話中提取成功的模式並將其寫入project_memory.json

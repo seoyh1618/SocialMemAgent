@@ -1,0 +1,1 @@
+Workflow für die Entwicklung von Flutter-Funktionen: Ein vollständiger Prozess von der Datenerfassung bis zur UI-Präsentation. Verwenden Sie diesen Skill, wenn der Benutzer „Funktion erstellen“, „Neue Seite“, „Funktion entwickeln“ oder „Modul hinzufügen“ erwähnt.

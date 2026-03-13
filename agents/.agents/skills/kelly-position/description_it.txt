@@ -1,0 +1,1 @@
+Utilizza la formula di Kelly per calcolare scientificamente il dimensionamento della posizione di investimento. Da utilizzare quando gli utenti chiedono informazioni sul dimensionamento della posizione, sull'allocazione del capitale o sulla formula di Kelly. Supporta Kelly completa, Kelly frazionaria e ottimizzazione del portafoglio.

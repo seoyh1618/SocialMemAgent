@@ -1,0 +1,1 @@
+Defina los requisitos del producto a través del diálogo, haga preguntas específicas basadas en módulos seleccionados y actualice state.json

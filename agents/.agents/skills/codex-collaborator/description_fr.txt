@@ -1,0 +1,1 @@
+Flux de travail de collaboration Codex MCP. Scénarios de déclenchement : (1) développement de nouvelles fonctionnalités (2) refactorisation (3) logique métier complexe (4) révision du code. Fournit une collaboration en trois étapes : analyse des exigences → acquisition du prototype → examen, en mettant l'accent sur la pensée critique et la sécurité en lecture seule.

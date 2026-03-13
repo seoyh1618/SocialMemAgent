@@ -1,0 +1,1 @@
+Operazioni di gestione dei materiali. Utilizzato quando gli utenti richiedono di caricare immagini, scaricare risorse o gestire file multimediali in Feishu Docs.

@@ -1,0 +1,3 @@
+Estrai rapidamente i contenuti chiave dalle conversazioni e genera note di base (problema + soluzione).  
+Ideale per registrare correzioni di bug, domande e risposte tecniche, scoperte di strumenti e altri contenuti pratici.  
+Trigger: /note, /save

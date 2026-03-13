@@ -1,0 +1,1 @@
+Einheitliche Verwaltung von SVG-Symbolen in React TypeScript-Projekten; unterstützt die Kapselung von Symbolkomponenten, Namenskonventionen und Migrationsanleitungen; Geeignet für die Umgestaltung von Projektsymbolen, die Festlegung von Symbolstandards für neue Projekte und die Optimierung der Symbolpflege.

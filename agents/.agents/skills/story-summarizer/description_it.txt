@@ -1,0 +1,1 @@
+Estrai la trama principale e i punti chiave dal testo della storia per generare un riassunto completo della storia. Ideale per comprendere rapidamente il contenuto, adattare gli script e presentare progetti.

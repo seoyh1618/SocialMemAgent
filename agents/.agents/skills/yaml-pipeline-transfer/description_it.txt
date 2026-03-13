@@ -1,0 +1,1 @@
+Guida alla conversione della pipeline YAML, che copre la conversione bidirezionale tra YAML e modello, l'implementazione PAC (Pipeline as Code), i riferimenti ai modelli e la configurazione del trigger. Da utilizzare quando gli utenti devono analizzare pipeline YAML, implementare la modalità PAC, gestire modelli di pipeline o eseguire la convalida della sintassi YAML.

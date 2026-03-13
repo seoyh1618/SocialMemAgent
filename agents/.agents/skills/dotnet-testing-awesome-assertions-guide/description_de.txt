@@ -1,0 +1,3 @@
+Beherrschen Sie flüssige und lesbare Testaussagen mit AwesomeAssertions.
+Verwenden Sie es, wenn Sie klare Aussagen schreiben, Objekte vergleichen, Sammlungen validieren oder komplexe Übereinstimmungen verarbeiten müssen.
+Deckt die vollständige API ab, einschließlich Should(), BeEquivalentTo(), Contain(), ThrowAsync() und mehr.

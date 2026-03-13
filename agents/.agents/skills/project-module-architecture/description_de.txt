@@ -1,0 +1,1 @@
+Leitfaden zur Projektmanagementmodul-Architektur, der Projekt-CRUD, Mitgliederverwaltung, Projektkonfiguration, Tag-Verwaltung und Projektmigration abdeckt. Wird verwendet, wenn Benutzer Projektmanagementfunktionen entwickeln, Projektmitglieder verwalten, Projektattribute konfigurieren oder projektbezogene Logik implementieren.

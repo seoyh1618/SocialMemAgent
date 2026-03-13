@@ -1,0 +1,1 @@
+Orquestador de desarrollo unificado: integra profundamente el marco de metodología Superpowers con la fábrica de códigos de IA para crear un flujo de trabajo de desarrollo unificado que combina la disciplina TDD, el cumplimiento de SoT y la generación automatizada de código.

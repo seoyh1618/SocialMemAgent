@@ -1,0 +1,1 @@
+Principes fondamentaux du développement collaboratif des agents IA. Définissez la stratégie diviser pour mieux régner, la gestion du contexte, la sélection du niveau d'abstraction, la philosophie d'automatisation et la rétrospection de vérification. Appliquez des modèles de collaboration optimaux chaque fois que vous utilisez un agent IA.

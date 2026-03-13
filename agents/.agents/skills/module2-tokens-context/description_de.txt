@@ -1,0 +1,1 @@
+Ein Modul, das die Einschränkungen der Verarbeitung langer Eingaben und praktische Problemumgehungen (Aufteilen, Zusammenfassung, Priorisierung) mit Schwerpunkt auf Tokenisierung und Kontextfenstern vermittelt.

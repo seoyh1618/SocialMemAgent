@@ -1,0 +1,1 @@
+Berechnen Sie anhand öffentlicher Metallpreise und Bergbaukostenindikatoren (AISC/Gesamtkosten/Cash-Kosten) einen „Proxy für die Bruttomarge im Gold-/Silberbergbau“ und bestimmen Sie, ob sie sich derzeit auf einem historischen Höchst- oder Tiefstniveau befindet.

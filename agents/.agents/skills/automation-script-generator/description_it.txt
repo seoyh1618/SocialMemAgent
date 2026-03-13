@@ -1,0 +1,1 @@
+Abilità nella generazione di script di automazione per attività ripetitive. Crea script Shell, Python, PowerShell e Node.js. Automatizza le operazioni sui file, l'elaborazione dei dati, l'integrazione API, CI/CD, i backup, il monitoraggio e la generazione di report.

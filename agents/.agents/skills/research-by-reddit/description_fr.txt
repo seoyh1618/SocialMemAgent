@@ -1,0 +1,1 @@
+Menez des recherches approfondies via l'API Reddit et générez des rapports de recherche. Prend en charge la recherche, la récupération de publications, l'analyse des commentaires, l'analyse des sentiments et d'autres fonctionnalités.

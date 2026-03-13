@@ -1,0 +1,14 @@
+Konvertieren Sie das Codeprojekt in eine Obsidian-Wissensdatenbank. Aktivieren, wenn der Benutzer Obsidian, Projektdokumentation, Wissensdatenbank, Projekt analysieren, Projekt konvertieren erwähnt.
+
+【Muss nach der Aktivierung ausgeführt werden】:
+1. Lesen Sie zunächst die gesamte SKILL.md-Datei vollständig durch
+2. KI-Schreibregeln verstehen (Standard 00_Inbox/AI/, Anhängemodus, einheitliches Schema)
+3. Führen Sie SCHRITT 0 aus: Verwenden Sie AskUserQuestion, um den Benutzer um eine Bestätigung zu bitten
+4. Starten Sie erst nach Bestätigung durch den Benutzer den Projektscan von SCHRITT 1
+5. Halten Sie sich strikt an die Reihenfolge SCHRITT 0 → 1 → 2 → 3 → 4
+
+【Verbotene Aktionen】:
+- Analysieren Sie das Projekt nicht, ohne SKILL.md zu lesen
+- Überspringen Sie nicht die Benutzerbestätigung von SCHRITT 0
+- Nicht direkt in 30_Resources erstellen (zuerst zu 00_Inbox/AI/ gehen)
+- Legen Sie den Ausgabeort nicht selbst fest

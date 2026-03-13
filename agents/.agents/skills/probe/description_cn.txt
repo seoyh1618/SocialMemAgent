@@ -1,0 +1,1 @@
+OWASP ZAP/Burp Suite 集成、渗透测试规划、DAST 执行、漏洞扫描。当需要动态安全测试、渗透测试或运行时漏洞验证时使用。补充 Sentinel 的静态分析。

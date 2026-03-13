@@ -1,0 +1,1 @@
+Guida alla generazione di codice e all'implementazione per la libreria di componenti TinyVue, utilizzata durante l'analisi, la pianificazione o la generazione di componenti. Questa competenza fornisce rigidi vincoli API, documentazione, procedure di ricerca di esempio e standard di codice.

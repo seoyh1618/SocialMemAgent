@@ -1,0 +1,1 @@
+Analice en profundidad enlaces, documentos o códigos y cree notas de estudio "todo en uno a nivel de mentor" (de cero a dominio). Incluye verificación de "anclaje de la verdad" que señala automáticamente alucinaciones e información desactualizada.

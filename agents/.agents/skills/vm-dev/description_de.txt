@@ -1,0 +1,1 @@
+Experte für die Entwicklung virtueller Maschinen, spezialisiert auf Bytecode, Anweisungen, Stapelrahmen, Speicherverwaltung und Speicherbereinigung.

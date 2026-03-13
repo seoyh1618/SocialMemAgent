@@ -1,0 +1,1 @@
+Prompt Master: seleziona in modo intelligente la competenza di dominio appropriata e genera prompt, con classificazione e pianificazione automatica del dominio

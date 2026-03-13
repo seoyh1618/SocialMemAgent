@@ -1,0 +1,1 @@
+Se utiliza para desarrollar respuestas interactivas en flujos de trabajo FastGPT. Detalla la arquitectura de los nodos de interacción, el proceso de desarrollo y los archivos que deben modificarse.

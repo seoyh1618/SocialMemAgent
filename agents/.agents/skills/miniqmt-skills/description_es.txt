@@ -1,0 +1,1 @@
+Documentación de la API XtQuant: una API de Python para operaciones cuantitativas, que incluye funciones de recuperación de datos de mercado, ejecución de operaciones y pruebas retrospectivas de estrategias.

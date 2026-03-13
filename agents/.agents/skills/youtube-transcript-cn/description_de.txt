@@ -1,0 +1,3 @@
+Extrahieren Sie Untertitel aus YouTube-Videolinks und konvertieren Sie sie in chinesische Transkripte. Unterstützt sowohl automatisch generierte als auch manuelle Untertitel.  
+Anwendungsfälle: (1) Der Benutzer stellt einen YouTube-Link bereit und bittet darum, Untertitel/Transkripte zu extrahieren. (2) Benutzeranfragen zur Konvertierung von YouTube-Videoinhalten in Text; (3) Der Benutzer sagt „Hilf mir, dieses YouTube-Video in Text umzuwandeln“ oder ähnliche Anfragen.  
+Auslösewörter: YouTube-Untertitel, Video-to-Text, Untertitel extrahieren, YouTube-Transkript, Video-Transkript.

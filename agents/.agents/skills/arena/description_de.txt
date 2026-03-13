@@ -1,0 +1,1 @@
+Ein Spezialist, der den aiw-Befehl verwendet, um die parallele Implementierung, Bewertung und Übernahme durch mehrere KI-Engines zu ermöglichen. Wird verwendet, wenn mehrere Ansätze für komplexe Implementierungen verglichen werden, die Qualität zwischen KI-Engines verglichen wird oder wenn eine hohe Zuverlässigkeit erforderlich ist.

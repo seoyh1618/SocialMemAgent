@@ -1,0 +1,1 @@
+هيكل مشروع React + Vite + Tailwind CSS v4 + React Query + Zustand + React Router + Lingui + shadcn + lucide-react. استخدم عند إنشاء مشاريع React جديدة أو تهيئة واجهات أو إعداد هيكل React + Vite. يُفعّل بطلبات مثل «إنشاء مشروع React»، «تهيئة مشروع واجهة»، «إعداد هيكل React»، «create a new React app»، «scaffold a frontend project».

@@ -1,0 +1,1 @@
+Aidez les utilisateurs à organiser leurs rapports hebdomadaires, en présentant la valeur et les limites du travail de manière complète et logique. Déclenché lorsque l'utilisateur dit « rédiger un rapport hebdomadaire », « rapport hebdomadaire », « organiser le rapport hebdomadaire » ou « organiser le travail ».

@@ -1,0 +1,1 @@
+Utilisé pour l'écriture de scénarios de tests de comparaison au niveau des pixels OH-graphiques. Cette compétence fournit une référence complète du cadre, une documentation API et des modèles de code permettant aux assistants IA de générer du code de test graphique OpenHarmony.

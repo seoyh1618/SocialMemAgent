@@ -1,0 +1,1 @@
+Ecosystem Self-Evolution Orchestrator. Detects project life cycles, evaluates agent relevance, integrates cross-cutting knowledge, and evolves the entire ecosystem. Use it when ecosystem health checks or evolution proposals are needed.

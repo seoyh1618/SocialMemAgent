@@ -1,0 +1,1 @@
+Convenciones de confirmación de Git que cubren el formato del mensaje de confirmación (feat/fix/refactor), vinculación de problemas, denominación de ramas, preparación de relaciones públicas y uso de rebase. Se utiliza al confirmar código, escribir mensajes de confirmación, crear ramas o preparar relaciones públicas.

@@ -1,0 +1,1 @@
+Orquesta subagentes y herramientas MCP de Black-Tortoise siguiendo un flujo DDD/Signals-first con cambios mínimos. Usar al coordinar varios agentes o MCP, planificar flujos multi-paso o cuando se requieran cambios quirúrgicos.

@@ -1,0 +1,6 @@
+Amplíe y refine las palabras clave de búsqueda (sinónimos, acrónimos, exclusiones) y actualice `queries.md`.  
+**Activador**: expansión de palabras clave, sinónimos, exclusiones, queries.md, expansión de palabras clave, sinónimos, exclusiones.  
+**Utilizar cuando**: la cobertura de recuperación es insuficiente/ruidosa, o el tema tiene muchos alias que requieren una expansión sistemática y convergencia de los términos de búsqueda.  
+**Omitir si**: `queries.md` ya logra una cobertura estable (no es necesario ampliar el alcance y provocar una explosión de costos posterior).  
+**Red**: ninguna.  
+**Guardrail**: mantenga controlable el recuento de consultas; especificar exclusiones; Evite la “expansión infinita”.

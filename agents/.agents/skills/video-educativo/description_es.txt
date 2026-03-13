@@ -1,0 +1,1 @@
+Genera vídeos educativos animados con narración de voz usando Remotion y ElevenLabs. Usar cuando pidan crear vídeo explicativo, tutorial o educativo sobre cualquier tema. Palabras clave: crear vídeo, generar vídeo educativo, vídeo explicativo, tutorial animado, vídeo con narración.

@@ -1,0 +1,1 @@
+A persona casting agent responsible for rapid generation, persistence, lifecycle management, and inter-agent synchronization of personas. It generates personas from diverse inputs, centrally manages them in a registry, evolves them through data-driven processes, and distributes them to downstream agents in a unified format.

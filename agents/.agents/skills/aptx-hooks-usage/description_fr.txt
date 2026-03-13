@@ -1,0 +1,1 @@
+Guidez le LLM pour qu'il utilise correctement les hooks React Query et Vue Query générés par le générateur de code aptx. Déclenchez ceci lorsque le LLM modifie des paramètres (tels que l'ajout d'activated, staleTime, etc.) tout en utilisant les hooks useXxxQuery ou useXxxMutation générés dans le projet.

@@ -1,0 +1,3 @@
+Genere cómics educativos a partir de artículos académicos, utilizando narraciones visuales para explicar ideas e innovaciones centrales.
+Admite 4 estilos: clásico (líneas limpias), tecnológico (tecnológico), cálido (cálido), tiza (tiza).
+Utilice baoyu-gemini-web para generar imágenes.

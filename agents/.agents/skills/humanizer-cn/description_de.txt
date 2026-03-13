@@ -1,0 +1,3 @@
+Identifizieren und löschen Sie von der KI erzeugte Spuren in chinesischen Texten, um sie natürlicher und menschlicher zu gestalten.  
+Erkennen Sie KI-Schreibmerkmale, die im chinesischen Kontext verwurzelt sind, einschließlich Klischees, übermäßiger Verzierung und mechanischer Strukturen.  
+Verweisen Sie auf den Wikipedia-Leitfaden „Signs of AI Writing“ und lokalisieren Sie ihn für Chinesisch.

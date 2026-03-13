@@ -1,0 +1,1 @@
+Esperto di tipo lineare e gestione delle risorse. Si occupa di distruttibile, pulizia delle risorse, RAII, oggetto univoco, semantica lineare, semantica lineare, proprietà delle risorse, semantica esclusiva

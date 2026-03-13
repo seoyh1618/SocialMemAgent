@@ -1,0 +1,1 @@
+Développement C#/.NET basé sur TDD. Écrivez d’abord les tests, puis implémentez-les. Appliquer l’ordre Rouge-Vert-Refactor. Délégué à l'agent csharp-expert.

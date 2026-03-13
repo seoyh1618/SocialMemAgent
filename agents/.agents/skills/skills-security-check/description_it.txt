@@ -1,0 +1,1 @@
+Utilizza controlli statici e di intelligenza artificiale per valutare i rischi per la sicurezza e le potenziali minacce in Skills. Quando un utente richiede un controllo o una scansione delle abilità, attiva la funzione di valutazione delle abilità.

@@ -1,0 +1,1 @@
+Competenze per l'implementazione basata su jp-ui Foundation (colori/tipografia/icone/forme/ombre). Aggiorna questa abilità ogni volta che i token della Fondazione o i file correlati vengono aggiornati.

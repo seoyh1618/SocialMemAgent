@@ -1,0 +1,1 @@
+Führen Sie die Videobearbeitung durch. Führen Sie FFmpeg-Schnitte basierend auf den bestätigten Löschaufgaben durch, führen Sie eine Schleife durch, bis keine Versprecher mehr vorhanden sind, und generieren Sie Untertitel. Auslösewörter: Schnitt ausführen, Schnitt starten, Schnitt bestätigen.

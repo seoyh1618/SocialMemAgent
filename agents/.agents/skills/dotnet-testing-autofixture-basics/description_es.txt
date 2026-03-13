@@ -1,0 +1,3 @@
+Habilidades básicas para generar datos de prueba automáticamente con AutoFixture.  
+Úselo cuando necesite crear objetos de prueba rápidamente, reducir el código repetitivo o implementar pruebas anónimas.  
+Cubre Fixture.Create, CreateMany, manejo de referencias circulares e integración con xUnit.

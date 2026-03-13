@@ -1,0 +1,1 @@
+Multimodale Bildverarbeitungsfähigkeiten, die Text-zu-Bild, Bild-zu-Bild, Bild-zu-Text und das Zusammenfügen langer Bilder unterstützen. Wird ausgelöst, wenn der Benutzer Schlüsselwörter wie Bild, Bild, Bild generieren, Infografik, OCR erwähnt.

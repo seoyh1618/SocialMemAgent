@@ -1,0 +1,1 @@
+Entwicklungsspezifikation für das Notfallmanagementsystem-Berechtigungssystem. Diese Fähigkeit muss beim Erstellen neuer Funktionsmodule, beim Konfigurieren von Menüberechtigungen oder beim Festlegen von Datenberechtigungen verwendet werden. Das Generieren von Menüberechtigungsmigrations-SQL ist beim Ausführen von CX-Befehlen obligatorisch.

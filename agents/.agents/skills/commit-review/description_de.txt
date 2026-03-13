@@ -1,0 +1,1 @@
+Fähigkeiten zur Überprüfung nativer Projektcode-Einreichungen des WeChat Mini-Programms, Überprüfung von Architekturbeschränkungen, Best Practices und häufigen Problemen

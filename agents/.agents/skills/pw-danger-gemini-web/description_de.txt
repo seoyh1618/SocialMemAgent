@@ -1,0 +1,24 @@
+Text- und Bildgenerierung über die rückentwickelte Gemini-Web-API.
+
+Kernkompetenzen:
+- Textgenerierung: Generieren Sie Textantworten mithilfe des Gemini-Modells
+- Bildgenerierung: Erstellen Sie Bilder aus Textaufforderungen und speichern Sie sie lokal
+- Visuelle Eingabe: Unterstützt Referenzbilder für Bild-zu-Bild oder Bild-zu-Text
+- Multi-Turn-Dialog: Kontinuität des Kontexts durch SessionId aufrechterhalten
+
+Wann zu verwenden:
+- Wenn Sie hochwertige KI-Bilder (Cover, Illustrationen usw.) generieren müssen
+- Wenn Sie eine Textgenerierung über das Gemini-Modell benötigen
+- Wenn Sie Varianten oder Beschreibungen basierend auf einem Referenzbild erstellen möchten
+- Als Backend zur Bildgenerierung für andere Fähigkeiten (pw-cover-image, pw-redbook-image)
+
+Nicht geeignet für:
+- Produktionsumgebungen, die offizielle API-Unterstützung und Stabilitätsgarantien erfordern
+– Kritische Geschäftsprozesse, die empfindlich auf API-Änderungen reagieren
+- Hochfrequente Batch-Aufrufe (können Ratenbegrenzungen auslösen)
+
+Wichtige Hinweise:
+- Bei der erstmaligen Nutzung ist die Einwilligung des Nutzers zum Haftungsausschluss erforderlich
+- Authentifizierung des Google-Kontos erforderlich (Browser-Anmeldung wird automatisch geöffnet)
+– Proxy-Konfiguration auf dem chinesischen Festland erforderlich
+– Dies ist eine inoffizielle API und kann jederzeit kaputt gehen

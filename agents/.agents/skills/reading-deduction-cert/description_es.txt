@@ -1,0 +1,1 @@
+Extrae datos estructurados de imágenes de certificados de deducciones (primas de seguros de vida, primas de seguros contra terremotos, etc.). Puede ser invocado por otras habilidades o directamente por el usuario.

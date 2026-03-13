@@ -1,0 +1,1 @@
+Konvertieren Sie die rohen JSON/JSONL-Protokolle einer Agentensitzung in lesbaren Text und geben Sie einige grundlegende Statistiken aus. Verwenden Sie diese Option, wenn Sie eine Agentensitzung wiedergeben oder Sitzungs-JSON/JSONL in ein für Menschen lesbares Format konvertieren müssen.

@@ -1,0 +1,1 @@
+Gestión de listas de vigilancia. Agregue, elimine y enumere acciones.

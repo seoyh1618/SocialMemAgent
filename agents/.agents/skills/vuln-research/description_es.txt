@@ -1,0 +1,12 @@
+Metametodología para la investigación de seguridad: un marco de búsqueda de vulnerabilidades extraído de más de 5600 artículos de seguridad sobre la comunidad Xianzhi.
+
+Utilice esta habilidad cuando:
+- Realizar búsqueda de errores e investigaciones de seguridad, necesitando un marco de pensamiento sistemático.
+- Análisis de rutas de ataque para tipos de vulnerabilidad específicos (inyección web, deserialización, binario, penetración de AD, etc.)
+- Requerir mentalidades para eludir las defensas (WAF, EDR, sandbox)
+- Realizar auditorías de código que necesitan metodología de análisis Source-Sink.
+- Operaciones del equipo rojo que exigen una planificación completa de la cadena de destrucción
+- Concursos CTF que necesitan ideas de resolución rápida.
+- Revertir el malware que necesita orientación metodológica
+
+Desencadenantes: búsqueda de errores, investigación de seguridad, pruebas de penetración, auditoría de código, ofensiva del equipo rojo, CTF, ingeniería inversa, derivación de WAF, evasión AV, escalada de privilegios, movimiento lateral, penetración de AD, deserialización, seguridad binaria, fuzzing

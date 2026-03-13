@@ -1,0 +1,1 @@
+Index de la documentation officielle et meilleures pratiques couvrant tous les composants principaux d'Ant Design (Antd). Utilisez-le pour rechercher les API de composants, les définitions d'accessoires et les dernières fonctionnalités.

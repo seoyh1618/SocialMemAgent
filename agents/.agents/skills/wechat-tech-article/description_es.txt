@@ -1,0 +1,1 @@
+Un flujo de trabajo estructurado para escribir artículos técnicos sobre cuentas oficiales de WeChat. Caso de uso: cuando un usuario necesita redactar una publicación de WeChat, crear el esquema del artículo, organizar materiales e iterar borradores. Siga estrictamente las convenciones de nomenclatura y la estructura de directorios especificadas en blogs/wechat/README.md.

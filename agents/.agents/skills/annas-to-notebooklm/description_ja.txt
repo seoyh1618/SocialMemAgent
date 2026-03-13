@@ -1,0 +1,1 @@
+Anna's Archive から書籍を自動的にダウンロードし、Google NotebookLM にアップロードします。 PDF/EPUB 形式、自動変換、ワンクリックでのナレッジベース作成をサポートします。

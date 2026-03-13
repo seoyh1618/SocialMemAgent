@@ -1,0 +1,1 @@
+Automatización del navegador Chrome. Utilice esta habilidad cuando los usuarios necesiten automatizar operaciones del navegador, pruebas web, extracción de datos o automatización de la interfaz de usuario.

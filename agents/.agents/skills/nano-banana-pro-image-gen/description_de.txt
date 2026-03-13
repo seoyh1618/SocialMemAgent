@@ -1,0 +1,1 @@
+Fähigkeit zur Bildgenerierung, die verwendet wird, wenn der Benutzer Bilder generieren, visuelle Darstellungen erstellen oder vorhandene Bilder bearbeiten/ändern/anpassen muss. Unterstützt 10 Seitenverhältnisse (1:1, 16:9, 9:16 usw.) und 3 Auflösungen (1K, 2K, 4K) mit Text-zu-Bild- und Bild-zu-Bild-Bearbeitungsfunktionen.

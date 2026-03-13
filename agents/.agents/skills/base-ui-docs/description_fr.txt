@@ -1,0 +1,1 @@
+Une compétence pour se référer à la documentation officielle de Base UI (@base-ui/react) et vérifier son API. Utilisez-le lorsque des questions sur les composants/manuels/aperçus de l'interface utilisateur de base sont posées.

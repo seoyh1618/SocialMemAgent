@@ -1,0 +1,1 @@
+Installa il server MCP nel progetto Cocos

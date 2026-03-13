@@ -1,0 +1,1 @@
+Laden Sie Bücher automatisch von der Z-Library herunter und laden Sie sie auf Google NotebookLM hoch. Unterstützt PDF/EPUB-Formate, automatische Konvertierung und Erstellung einer Wissensdatenbank mit einem Klick.

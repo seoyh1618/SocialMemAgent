@@ -1,0 +1,2 @@
+Integra i risultati di competenze atomiche come ricerca approfondita, ricerca di immagini ed elaborazione di immagini per creare un articolo di uso generale riccamente illustrato.  
+L'articolo di output è un "intermedio" che può essere ulteriormente convertito in formati adatti a diverse piattaforme.

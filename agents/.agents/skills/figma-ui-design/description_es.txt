@@ -1,0 +1,1 @@
+Diseño automatizado de UI de Figma. Utilice esta habilidad cuando los usuarios necesiten crear borradores de diseño, generar componentes, exportar activos o automatizar el flujo de trabajo de diseño.

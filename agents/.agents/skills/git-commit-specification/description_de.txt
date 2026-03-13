@@ -1,0 +1,1 @@
+Git-Commit-Konventionen, die das Commit-Nachrichtenformat (feat/fix/refactor), die Problemverknüpfung, die Benennung von Zweigen, die PR-Vorbereitung und die Rebase-Nutzung abdecken. Wird beim Festschreiben von Code, beim Schreiben von Festschreibungsnachrichten, beim Erstellen von Zweigen oder beim Vorbereiten von PRs verwendet.

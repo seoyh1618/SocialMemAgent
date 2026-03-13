@@ -1,0 +1,1 @@
+Abilità di assistenza allo sviluppo frontend. Converte requisiti vaghi in piani di sviluppo strutturati, rileva automaticamente lo stack tecnologico del progetto e genera flussi di approvazione, flussi di lavoro e domande di chiarimento. Da utilizzare quando si avviano attività di sviluppo frontend come l'aggiunta di pagine, la correzione di bug o l'ottimizzazione del codice.

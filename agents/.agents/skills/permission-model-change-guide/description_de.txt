@@ -1,0 +1,1 @@
+Regeln zur Änderung des IAM-RBAC-Berechtigungsmodells, einschließlich Ressourcentypdefinitionen, Betriebsberechtigungskonfiguration, Berechtigungsmigrationsskripts und IAM-Callback-Implementierung. Wird verwendet, wenn Benutzer das Berechtigungsmodell ändern, neue Ressourcentypen hinzufügen, Betriebsberechtigungen konfigurieren oder Berechtigungsmigrationsskripts schreiben.

@@ -1,0 +1,1 @@
+Documentation de la plateforme cloud SiliconFlow. Utilisé pour les appels d'API de modèles de langage volumineux, la génération d'images, les modèles vectoriels, l'utilisation de SiliconFlow dans Claude Code, l'API de complétion de chat, le mode Stream, etc.

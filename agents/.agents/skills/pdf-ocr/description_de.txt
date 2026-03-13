@@ -1,0 +1,1 @@
+Die Dual-Engine-Funktion zur PDF-OCR-Erkennung kann Textinhalte aus gescannten PDF-Dateien und Bilddateien extrahieren.

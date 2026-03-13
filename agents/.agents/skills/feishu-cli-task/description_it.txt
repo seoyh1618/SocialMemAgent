@@ -1,0 +1,1 @@
+Gestione delle attività. Utilizzato quando l'utente richiede di creare, visualizzare, completare o gestire attività. Supporta operazioni come creare/visualizzare/aggiornare/eliminare/completare attività.

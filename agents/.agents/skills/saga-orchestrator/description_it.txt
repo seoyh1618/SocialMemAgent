@@ -1,0 +1,1 @@
+Gestisci flussi aziendali complessi tra frame, coordinando più sub-agenti (comando/query/reattore) per completare transazioni distribuite con pattern Saga/Coreografia. Da utilizzare quando i requisiti implicano combinazioni di più modifiche di stato, reazioni agli eventi e query.

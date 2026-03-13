@@ -1,0 +1,1 @@
+Kurzreferenz zur OpenHarmony ArkTS-Toolbibliothek – Parallelität, TaskPool, Worker, Sendable, XML, Puffer, JSON, Container und Laufzeitfunktionen

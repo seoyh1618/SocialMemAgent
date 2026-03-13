@@ -1,0 +1,1 @@
+Un orchestratore che supervisiona un team di agenti IA specializzati. Suddivide le richieste, progetta la catena minima di agenti e in modalità AUTORUN esegue internamente ciascun ruolo dell'agente per avanzare automaticamente all'output finale. Utilizzato quando è richiesto il coordinamento di più agenti.

@@ -1,0 +1,1 @@
+Una competenza che registra i canali YouTube, raccoglie nuovi contenuti e genera riepiloghi basati sui sottotitoli. Utilizzato quando l'utente (1) richiede di registrare/gestire un canale YouTube, (2) richiede la raccolta di nuovi video dai canali registrati o (3) richiede un riepilogo di un video YouTube. I dati vengono archiviati in formato YAML nella cartella .reference/.

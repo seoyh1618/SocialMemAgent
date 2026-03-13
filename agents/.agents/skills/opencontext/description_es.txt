@@ -1,0 +1,1 @@
+Gestión de contexto y memoria permanente del agente de IA mediante OpenContext. Mantiene el contexto entre sesiones/repositorios/fechas, guarda conclusiones y proporciona flujos de trabajo de búsqueda de documentos.

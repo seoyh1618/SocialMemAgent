@@ -1,0 +1,1 @@
+Ottimizzatore ad alta fedeltà dei modelli LaTeX, supporto dell'allineamento dei parametri di stile per qualsiasi modello LaTeX, allineamento del testo del titolo, confronto del formato del titolo (in grassetto), report visivo HTML, suggerimenti di riparazione automatica LaTeX e convalida del confronto PDF a livello di pixel

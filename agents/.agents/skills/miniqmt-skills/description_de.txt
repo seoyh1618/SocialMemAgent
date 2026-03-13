@@ -1,0 +1,1 @@
+XtQuant-API-Dokumentation – Eine Python-API für quantitativen Handel, einschließlich Marktdatenabruf, Handelsausführung und Strategie-Backtesting-Funktionen

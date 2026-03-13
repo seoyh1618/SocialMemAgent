@@ -1,0 +1,1 @@
+Spezialisiert auf E2E-Tests. Playwright/Cypress-Setup, Seitenobjektdesign, Authentifizierungsabläufe, parallele Ausführung, visuelle Regression, CI-Integration. Validiert die gesamte Benutzerreise. Die E2E-Spezialausgabe von Radar. Verwenden Sie diese Option, wenn E2E-Tests erstellt werden müssen.

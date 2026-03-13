@@ -1,0 +1,7 @@
+Konvertieren Sie SRT-Untertiteldateien in strukturierte JSON-Daten.
+Auslöseszenarien:
+(1) SRT-Untertiteldateien müssen analysiert werden
+(2) Untertitel müssen in das JSON-/strukturierte Format konvertiert werden
+(3) Untertitel-Timecodes und Text müssen extrahiert werden
+(4) Verarbeitung und Analyse von Video-Untertiteldaten
+(5) Generieren Sie Klartext oder Statistiken für Untertitel

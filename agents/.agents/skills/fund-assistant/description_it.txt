@@ -1,0 +1,2 @@
+Assistente agli investimenti dei fondi. Interrogare le stime dei fondi in tempo reale, il NAV e le variazioni di prezzo; ricerca fondi (per nome o codice); gestire i portafogli (aggiungere/rimuovere partecipazioni, registrare transazioni, calcolare rendimenti); visualizzare gli indici di mercato, i flussi di capitale e i capitali diretti a nord; importare/esportare dati di posizione. È supportato l'isolamento dei dati multiutente.
+Parole chiave: fondo, NAV, stima, partecipazioni, rendimenti, media del costo in dollari, mercato, capitale northbound, CSI 300

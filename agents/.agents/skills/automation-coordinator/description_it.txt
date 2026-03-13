@@ -1,0 +1,1 @@
+Esperto di orchestrazione dell'automazione che gestisce attività pianificate, orchestrazione del flusso di lavoro, avvisi intelligenti e sistemi di monitoraggio.

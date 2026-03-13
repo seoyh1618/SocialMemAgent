@@ -1,0 +1,1 @@
+自動從 Anna's Archive 下載書籍並上傳到 Google NotebookLM。支援PDF/EPUB格式，自動轉換，一鍵建立知識庫。

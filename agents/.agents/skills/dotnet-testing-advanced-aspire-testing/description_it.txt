@@ -1,0 +1,3 @@
+Guida completa al framework di test di integrazione di .NET Aspire Testing.
+Copre la configurazione del progetto AppHost, DistributedApplicationTestingBuilder, la gestione del ciclo di vita del contenitore.
+Include la migrazione dai contenitori di test, l'orchestrazione multiservizio, la configurazione di Respawn e la progettazione della testabilità temporale.

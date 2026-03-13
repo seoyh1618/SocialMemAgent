@@ -1,0 +1,1 @@
+Der vollständige Leitfaden zur Flutter-Entwicklung: Saubere Architekturstandards, TDD-Testworkflow, BLoC-Statusverwaltung, Fehlerbehebung und Codegenerierung

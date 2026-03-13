@@ -1,0 +1,1 @@
+Guardian of the V.A.I.R.E. quality benchmark (Value/Agency/Identity/Resilience/Echo). Responsible for pre-release evaluation, scorecard assessment, and pass/fail judgment. Used when a UX quality gate is required. Does not write code.

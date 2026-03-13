@@ -1,0 +1,1 @@
+Portfoliomanagement. Anzeige der Bestandsliste, Transaktionsaufzeichnungen und Strukturanalyse. Eingabedatengrundlage für Stresstests.

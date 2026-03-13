@@ -1,0 +1,1 @@
+Controlla se le modifiche in questa conversazione richiedono l'aggiornamento del progetto CLAUDE.md. Analizza le modifiche al codice, identifica nuovi modelli e convenzioni e suggerisce aggiornamenti.

@@ -1,0 +1,1 @@
+Analice dependencias, referencias circulares y clases de Dios, luego cree ADR/RFC. Úselo cuando sea necesario mejorar la arquitectura, dividir módulos o evaluar la deuda técnica.

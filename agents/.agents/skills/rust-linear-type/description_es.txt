@@ -1,0 +1,1 @@
+Experto en tipología lineal y gestión de recursos. Se ocupa de Destructible, limpieza de recursos, RAII, objeto único, semántica lineal, semántica lineal, propiedad de recursos, semántica exclusiva

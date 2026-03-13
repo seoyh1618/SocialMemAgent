@@ -1,0 +1,1 @@
+Distribuire il ramo corrente nell'ambiente di test. Utilizzarlo quando l'utente richiede la distribuzione, il rilascio per test o il test nell'ambiente di staging.

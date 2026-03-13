@@ -1,0 +1,14 @@
+Convierta el proyecto de código en una base de conocimientos de Obsidian. Activar cuando el usuario menciona obsidiana, documentación del proyecto, base de conocimientos, analizar proyecto, convertir proyecto.
+
+【Debe ejecutarse después de la activación】:
+1. Primero lea todo el archivo SKILL.md en su totalidad
+2. Comprender las reglas de escritura de AI (predeterminado en 00_Inbox/AI/, modo anexar, esquema unificado)
+3. Ejecute el PASO 0: use AskUserQuestion para solicitar confirmación al usuario.
+4. Solo después de la confirmación del usuario, inicie el escaneo del proyecto del PASO 1.
+5. Siga estrictamente el orden PASO 0 → 1 → 2 → 3 → 4
+
+【Acciones prohibidas】:
+- No analices el proyecto sin leer SKILL.md
+- No omita la confirmación del usuario del PASO 0
+- No crear directamente en 30_Resources (vaya primero a 00_Inbox/AI/)
+- No decida usted mismo la ubicación de salida

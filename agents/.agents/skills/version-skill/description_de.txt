@@ -1,0 +1,1 @@
+Kenntnisse im Versionsmanagement. Wird ausgelöst, wenn A/B-Tests, ein Versionswechsel oder ein Rollback erforderlich sind. Auslöser: Version, Version, A/B-Test, Wechsel, Rollback, Heraufstufen.

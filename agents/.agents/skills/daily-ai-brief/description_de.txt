@@ -1,0 +1,1 @@
+Tägliche Nachverfolgung und Zusammenfassung der KI-Inhaltsquellenaktualisierungen. Deckt bestimmte YouTube-Podcasts, Twitter/X-Blogger und Newsletter ab. Wird durch Benutzeranfragen nach „RSS-Zusammenfassung“, „Tagesbericht“ oder „Updates prüfen“ ausgelöst.

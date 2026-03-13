@@ -1,0 +1,1 @@
+Experto en desarrollo frontend ANTLR4, especializado en análisis léxico/sintáctico, construcción AST, patrón de visitante.

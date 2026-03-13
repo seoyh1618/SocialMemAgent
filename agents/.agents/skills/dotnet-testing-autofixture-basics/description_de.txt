@@ -1,0 +1,3 @@
+Grundkenntnisse zur automatischen Generierung von Testdaten mit AutoFixture.  
+Verwenden Sie diese Option, wenn Sie schnell Testobjekte erstellen, Standardcode reduzieren oder anonyme Tests implementieren müssen.  
+Behandelt Fixture.Create, CreateMany, die Handhabung von Zirkelverweisen und die Integration mit xUnit.

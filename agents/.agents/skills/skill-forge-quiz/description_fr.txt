@@ -1,0 +1,1 @@
+Générateur d'examen Skill Forge. Prend en charge la génération d'IA et l'importation JSON.

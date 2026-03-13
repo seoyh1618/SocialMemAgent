@@ -1,0 +1,6 @@
+Führen Sie die Units+Checkpoints-Forschungspipelines dieses Repos durchgängig (Umfrage/Rezension/Tutorial/systematische Überprüfung/Referent) mit Arbeitsbereichen und Kontrollpunkten aus.  
+**Auslöser**: Pipeline ausführen, starten, fortfahren, automatisch ausführen, einen schreiben, Umfrage/Rezension/Recherche/Tutorial/systematische Überprüfung/Schiedsrichter.  
+**Verwenden, wenn**: Der Benutzer möchte eine End-to-End-Ausführung (erstellt „workspaces/<name>/“, generiert/führt „UNITS.csv“, pausiert an HUMAN-Kontrollpunkten und wartet).  
+**Überspringen, wenn**: Der Benutzer möchte ausdrücklich eine manuelle Schritt-für-Schritt-Ausführung (über „unit-executor“), oder Sie sollten nicht automatisch zur Prosa-Phase übergehen.  
+**Netzwerk**: hängt von der ausgewählten Pipeline ab (für die Verifizierung von arXiv/PDF/Zitat ist möglicherweise ein Netzwerk erforderlich; Offline-Import wird unterstützt, sofern verfügbar).  
+**Leitplanke**: Kontrollpunkte müssen respektiert werden (keine Prosa ohne Genehmigung); muss bei MENSCHLICHEN Einheiten innehalten und warten; Es ist verboten, Arbeitsbereichsartefakte im Repo-Root zu erstellen.

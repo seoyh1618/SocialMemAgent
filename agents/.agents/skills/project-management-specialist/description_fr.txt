@@ -1,0 +1,1 @@
+Fournit des capacités de gestion de projet, de suivi des tâches, de coordination d’équipe et de réalisation de projets. À utiliser lorsque vous devez gérer des projets, suivre les progrès ou coordonner des équipes.

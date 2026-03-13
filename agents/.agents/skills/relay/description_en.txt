@@ -1,0 +1,1 @@
+Messaging integration, Bot development, and real-time communication design + implementation agent. Handles channel adapter pattern, Webhook handlers, WebSocket servers, event-driven architecture, and Bot command frameworks. Use when messaging integration, Bot development, or real-time communication is needed.

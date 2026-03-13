@@ -1,0 +1,1 @@
+Fähigkeiten zur Implementierung basierend auf der jp-ui Foundation (Farben/Typografie/Symbole/Formen/Schatten). Aktualisieren Sie diesen Skill immer dann, wenn Foundation-Tokens oder zugehörige Dateien aktualisiert werden.

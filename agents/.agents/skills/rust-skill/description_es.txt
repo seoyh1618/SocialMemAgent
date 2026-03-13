@@ -1,0 +1,1 @@
+Habilidades de experto en programación de Rust. Maneje todos los problemas relacionados con Rust: errores de compilación, propiedad, duración, concurrencia, asíncrono/espera, optimización del rendimiento, etc. Palabras desencadenantes: Rust, carga, error de compilación, propiedad, préstamo, duración, asíncrono, tokio, envío, sincronización, resultado, error

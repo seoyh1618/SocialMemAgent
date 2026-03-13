@@ -1,0 +1,1 @@
+Verantwortlich für die Handhabung der RIF-Typanforderungen (Required Behavior Frame). Lesen Sie die Spezifikationsverzeichnisstruktur, generieren/überprüfen Sie das Design und die Implementierung des Event-Handlers. Unterstützt Idempotenz, Wiederholungsversuche und Warteschlangen für unzustellbare Nachrichten.

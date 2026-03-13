@@ -1,0 +1,3 @@
+Organisationsworkflow der Obsidian-Wissensdatenbank.
+Auslöseszenarien: Benutzer erwähnt „Obsidian organisieren“, „Ordner bereinigen“, „Wissensdatenbank ist unordentlich“, „zu viele Verzeichnisse“, „Kategorien zusammenführen“.
+Anwendbar für: persönliches Wissensmanagement, Notizenorganisation, Ordnerumstrukturierung.

@@ -1,0 +1,7 @@
+Fonction d'enregistrement de la mémoire du système de mémoire personnelle AI. Extrait automatiquement les informations clés des conversations et les enregistre au niveau approprié.  
+Cas d'utilisation :  
+(1) Lorsque l'utilisateur dit « enregistrer dans le système de mémoire », « mémoriser ceci » ou « enregistrer cette conversation » ;  
+(2) Lorsque des événements, décisions ou expressions de préférences importants sont détectés ;  
+(3) Lorsque l'utilisateur termine une tâche importante ou prend une décision.  
+
+Cette compétence détermine automatiquement s'il faut enregistrer dans la couche contextuelle L1, la couche comportementale L2, la couche cognitive L3 ou suggère de mettre à jour la couche principale L4.

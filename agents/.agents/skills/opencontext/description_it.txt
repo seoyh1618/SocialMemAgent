@@ -1,0 +1,1 @@
+Memoria permanente dell'agente AI e gestione del contesto utilizzando OpenContext. Mantiene il contesto tra sessioni/repository/date, salva le conclusioni, fornisce flussi di lavoro di ricerca di documenti.

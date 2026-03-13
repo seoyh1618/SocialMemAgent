@@ -1,0 +1,1 @@
+Wandeln Sie Markdown-Inhalte in wunderschöne Bildposter um. Ideal, um Podcast-Zusammenfassungen oder Artikel in für soziale Medien geeignete Bilder umzuwandeln. Festes Seitenverhältnis von 3:4, unterstützt YouTube-Video-Cover als Header-Bilder. Auslöserwörter: „zum Bild“, „Markdown zum Bild“, „Poster generieren“, „Bild teilen“, „dies in ein Bild umwandeln“.

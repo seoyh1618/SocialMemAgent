@@ -1,0 +1,1 @@
+Guide de l'utilisateur de LangChain 1.0. Une référence rapide pour les concepts de base tels que l'agent, l'outil, la mémoire et le middleware. Activé lorsque les utilisateurs doivent créer un agent AI, intégrer LangChain ou résoudre des problèmes liés à LangChain.

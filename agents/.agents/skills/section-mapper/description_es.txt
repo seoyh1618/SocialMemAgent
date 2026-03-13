@@ -1,0 +1,6 @@
+Asigne los artículos del conjunto principal a cada subsección del esquema y escriba `outline/mapping.tsv` para realizar un seguimiento de la cobertura.  
+**Activador**: mapeador de secciones, mapeo.tsv, cobertura, mapeo de papel a sección, mapeo de papel, cobertura.  
+**Cuándo usarlo**: etapa de estructura (C2), cuando ya existen `papers/core_set.csv` + `outline/outline.yml`, para garantizar que cada subsección tenga suficientes documentos de respaldo antes de pasar a evidencia/escritura.  
+**Omitir si**: aún no hay un esquema (ejecute primero `outline-builder`) o el conjunto principal aún no ha convergido.  
+**Red**: ninguna.  
+**Barandillas**: la cobertura debe ser auditable (evite reutilizar el mismo lote de documentos para todas las subsecciones); deje instrucciones claras de solución para las subsecciones mal cubiertas (ampliar consulta/fusionar subsección).

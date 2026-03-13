@@ -1,0 +1,1 @@
+Audite la evidencia que respalda cada afirmación y escriba los vacíos/dudas en `output/MISSING_EVIDENCE.md`.

@@ -1,0 +1,1 @@
+Directrices de desarrollo del marco de autenticación de permisos de Sa-Token. Se utiliza automáticamente para autenticación de inicio de sesión, verificación de permisos, administración de roles y manejo de tokens JWT.

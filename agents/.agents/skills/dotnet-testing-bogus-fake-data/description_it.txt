@@ -1,0 +1,3 @@
+Abilità specializzata nell'utilizzo di Bogus per generare dati falsi realistici.
+Utilizzato quando sono necessari nomi, indirizzi, numeri di telefono, e-mail, informazioni aziendali e altri dati di test realistici.
+Copre la classe Faker, il supporto multilingue, le regole personalizzate e la generazione di dati in blocco.

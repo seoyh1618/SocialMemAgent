@@ -1,0 +1,1 @@
+Outil d'examen de sujets. Vérifie si un sujet répond aux normes de publication, donne un jugement de réussite/échec et des suggestions de révision. Déclenché lorsque l'utilisateur dit « réviser le sujet », « ce sujet est-il correct » ou « aidez-moi à voir si cela peut être écrit ».

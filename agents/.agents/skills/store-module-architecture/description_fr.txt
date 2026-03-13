@@ -1,0 +1,1 @@
+Guide d'architecture du module R&D Store, couvrant la gestion des plugins/modèles/images, la publication des versions, le processus de révision, le marché et le mécanisme de point d'extension. Utilisé lorsque les utilisateurs développent des fonctionnalités R&D Store, publient des plugins, gèrent des modèles ou implémentent des points d'extension.

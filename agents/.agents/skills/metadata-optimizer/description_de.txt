@@ -1,0 +1,1 @@
+Analysieren und optimieren Sie die Metadaten von Next.js-Projekten, einschließlich Titel, Beschreibung, Open Graph und Twitter Cards. App Router oder Pages Router automatisch erkennen, Längenvorschläge, Keyword-Optimierung und Best-Practice-Anleitungen bereitstellen. Unterstützt zweisprachige SEO-Analyse in Chinesisch und Englisch.

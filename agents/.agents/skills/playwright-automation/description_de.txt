@@ -1,0 +1,1 @@
+Dramatiker-Browserautomatisierung. Wird für automatisiertes Web-Scraping, Datenerfassung, Formularausfüllung, UI-Tests und andere Browser-Automatisierungsszenarien verwendet. Kein manueller Eingriff erforderlich, geeignet für geplante Cron-Aufgaben.

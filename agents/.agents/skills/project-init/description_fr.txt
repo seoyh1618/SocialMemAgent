@@ -1,0 +1,1 @@
+Initialisez un nouveau projet. Déclencheurs : init, nouveau projet, initialiser, créer un projet.

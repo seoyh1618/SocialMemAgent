@@ -1,0 +1,1 @@
+Generatore di esami di Skill Forge. Supporta la generazione AI e l'importazione JSON.

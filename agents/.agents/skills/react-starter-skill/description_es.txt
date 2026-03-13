@@ -1,0 +1,1 @@
+Plantilla de proyecto React + Vite + Tailwind CSS v4 + React Query + Zustand + React Router + Lingui + shadcn + lucide-react. Usar al crear proyectos React, inicializar frontend o montar apps React + Vite. Palabras clave: «crear proyecto React», «inicializar frontend», «scaffold React», «create a new React app».

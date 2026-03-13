@@ -1,0 +1,1 @@
+Optimizador de alta fidelidad de plantillas LaTeX, compatible con la alineación de parámetros de estilo para cualquier plantilla LaTeX, alineación del texto del título, comparación del formato del título (negrita), informe visual HTML, sugerencias de reparación automática de LaTeX y validación de comparación de PDF a nivel de píxeles

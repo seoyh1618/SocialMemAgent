@@ -1,0 +1,2 @@
+Eine Fähigkeit zum Abrufen des Arc-Browserverlaufs und zur Ausgabe im Markdown-Format.
+Verwendungszweck: (1) Wenn Sie kürzlich angesehene Websites überprüfen möchten. (2) Wenn Sie im Verlauf nach einer bestimmten URL suchen möchten

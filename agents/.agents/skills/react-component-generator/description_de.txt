@@ -1,0 +1,1 @@
+Generieren Sie eine React-Komponente, die den Projektspezifikationen entspricht. Verwenden Sie dies, wenn der Benutzer eine Komponente, eine neue React-Komponente oder eine Komponentendatei erstellen möchte.

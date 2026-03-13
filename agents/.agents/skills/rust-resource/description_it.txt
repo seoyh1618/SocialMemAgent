@@ -1,0 +1,1 @@
+Puntatore intelligente ed esperto di gestione delle risorse. Gestisce Box, Rc, Arc, Weak, RefCell, Cell, mutabilità interna, RAII, Drop, allocazione heap, conteggio dei riferimenti, puntatori intelligenti

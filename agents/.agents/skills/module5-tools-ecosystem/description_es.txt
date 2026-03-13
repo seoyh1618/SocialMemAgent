@@ -1,0 +1,1 @@
+Un módulo que compara y selecciona ecosistemas de herramientas de desarrollo/utilización de IA (LangChain, LangGraph, CrewAI, agentes de codificación, etc.) según su propósito.

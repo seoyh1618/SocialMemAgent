@@ -1,0 +1,1 @@
+Implementare controlli di pre-confidenza. Utilizzato prima di iniziare attività complesse come lo sviluppo di nuove funzionalità, correzioni di bug e refactoring del codice. Attivato automaticamente, non è richiesta alcuna invocazione manuale.

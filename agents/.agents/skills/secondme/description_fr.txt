@@ -1,0 +1,1 @@
+Création unique du projet d'intégration SecondMe, exécution de l'initialisation, de la définition des exigences et de la génération du projet en séquence.

@@ -1,0 +1,1 @@
+Infrastruttura della Forgia delle Abilità. Inizializza il database, esegui il server Dashboard, gestisci la cronologia dell'apprendimento.

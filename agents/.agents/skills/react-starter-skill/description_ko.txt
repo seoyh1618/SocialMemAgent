@@ -1,0 +1,1 @@
+새 React 프로젝트용 스캐폴드. React + Vite + Tailwind CSS v4 + React Query + Zustand + React Router + Lingui + shadcn + lucide-react. 프론트 초기화·React+Vite 앱 구축 시 사용. «React 프로젝트 만들어», «create a new React app» 등으로 트리거.

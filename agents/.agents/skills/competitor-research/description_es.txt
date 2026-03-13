@@ -1,0 +1,1 @@
+Investigación automatizada de la competencia en la web, recopilando perfiles de empresas, precios de productos, reseñas de usuarios y generando informes de análisis competitivos estructurados.

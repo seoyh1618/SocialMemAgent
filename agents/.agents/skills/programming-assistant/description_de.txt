@@ -1,0 +1,1 @@
+Full-Stack-Entwicklungs- und Architekturdesign-Assistent, der Szenarien wie „Entwicklung, Implementierung, Codierung, Weiterentwicklung, Fehlerbehebung, Code-Refactoring, Architekturdesign, technische Lösungsbewertung/Codeüberprüfung“ abdeckt und für Full-Stack-F&E-Aufgaben sowohl in neuen Projekten als auch in bestehenden Codebasen geeignet ist.

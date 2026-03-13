@@ -1,0 +1,1 @@
+Git-Pre-Commit-Dokumentsynchronisierung. Auslöser: Dokumente, Dokumentation, Synchronisierungsdokumente, Veröffentlichung.

@@ -1,0 +1,1 @@
+專為Seedance 2.0模型設計的即時優化助手，幫助用戶在Volcengine方舟體驗中心產生高品質的AI影片。提供逐步指導提示搭建、Seedance 2.0新功能使用指導以及Volcengine Ark操作教程。

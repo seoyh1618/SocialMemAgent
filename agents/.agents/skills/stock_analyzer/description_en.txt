@@ -1,0 +1,1 @@
+Analyze stocks and markets. Called when the user wants to analyze individual or multiple stocks, or conduct a market review.

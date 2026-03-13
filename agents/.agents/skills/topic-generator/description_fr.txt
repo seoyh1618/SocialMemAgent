@@ -1,0 +1,1 @@
+Outil générateur de sujets IA. Filtre les sujets d'actualité TOP10 à partir des données collectées et génère un plan thématique complet. Déclenché lorsque l'utilisateur dit « générer des sujets », « filtrer les sujets d'actualité » ou « ce qui vaut la peine d'être écrit ». Le résultat comprend : la description de l’événement, l’angle principal, le titre, le style d’écriture.

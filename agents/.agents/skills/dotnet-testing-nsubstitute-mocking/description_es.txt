@@ -1,0 +1,3 @@
+Habilidades especializadas para crear dobles de prueba (Mocks, Stubs, Spies) con NSubstitute.  
+Úselo al aislar dependencias externas, simular el comportamiento de la interfaz o verificar llamadas a métodos.  
+Cubre Sustituto.Por, Devoluciones, Recibidos, Lanzamientos y orientación completa.

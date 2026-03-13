@@ -1,0 +1,12 @@
+Skill to design a paid/free split strategy for serialized articles on note. It covers the placement of free and paid episodes across the series, setting the paywall within a single article, pricing, and magazine structure.  
+When to use:  
+(1) When you want to write paid articles on note  
+(2) When designing monetization for a series  
+(3) When deciding where to place the paywall  
+(4) When planning magazine structure  
+(5) When consulting on pricing  
+
+Trigger phrases:  
+“I want to make it paid on note,” “monetization design for the series,” “where should the paywall start?” “I want to earn on note,” “how to structure the magazine,” “paywall line,” “pricing.”  
+
+Can be used together with the ai-interview-article skill.

@@ -1,0 +1,3 @@
+Aufgabenstart-Assistent – ​​Generieren Sie automatisch ein praktisches Aufgabenausführungsdokument, bevor Sie mit Arbeitsaufgaben/Fehlerbehebungen/Funktionsentwicklung/Inhaltserstellung beginnen.
+Löst das Problem des „Bedauerns im Nachhinein“, indem zu Beginn ein Aufzeichnungsrahmen erstellt wird, der es Ihnen ermöglicht, während der Aufzeichnung aufzuzeichnen und automatisch eine Retrospektive zu erstellen.
+Auslöser: /task-start, /kickoff, /start

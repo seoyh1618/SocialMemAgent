@@ -1,0 +1,1 @@
+Comando combinato di creazione ed esecuzione di OpenHarmony XTS. Compilazione ed esecuzione one-stop del progetto di test XTS. Utilizza questa competenza quando è necessario un flusso di test XTS completo: (1) crea il progetto XTS per generare file HAP, (2) esegui test XTS e visualizza i risultati. Supporta il passaggio dei parametri --package e --api alla fase di esecuzione.

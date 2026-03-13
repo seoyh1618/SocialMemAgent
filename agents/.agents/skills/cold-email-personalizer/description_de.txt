@@ -1,0 +1,1 @@
+Personalisierter Kalt-E-Mail-Generator, der automatisch hochgradig personalisierte Outreach-E-Mails basierend auf Interessenteninformationen erstellt, um die Öffnungs- und Antwortraten zu steigern.

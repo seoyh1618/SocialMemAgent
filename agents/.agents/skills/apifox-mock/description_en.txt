@@ -1,0 +1,1 @@
+Apifox Mock Data Generation Specification. Use this skill when generating mock data, Apifox Mock JSON, or Apifox Mock scripts. Supports Mock.js syntax JSON generation, advanced Mock scripts (field correlation, conditional logic, reading request parameters), and local mock files. Covers general rules such as field semantic inference, type tracing, and enumeration recognition.

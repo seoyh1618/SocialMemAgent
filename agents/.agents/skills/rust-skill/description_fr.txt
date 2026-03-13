@@ -1,0 +1,1 @@
+Compétences d’expert en programmation Rust. Gérez tous les problèmes liés à Rust : erreurs de compilation, propriété, durées de vie, concurrence, async/wait, optimisation des performances, etc. Mots déclencheurs : Rust, cargo, erreur de compilation, propriété, emprunt, durée de vie, async, tokio, Send, Sync, Result, Error

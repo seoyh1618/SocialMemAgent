@@ -1,0 +1,1 @@
+Remplacez les chaînes codées en dur par la fonction t(), formatez les dates/devises avec l'API Intl. Utilisé lorsqu'une prise en charge multilingue, une internationalisation, une préparation de traduction ou une localisation sont nécessaires.

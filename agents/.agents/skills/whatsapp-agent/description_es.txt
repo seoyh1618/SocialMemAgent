@@ -1,0 +1,1 @@
+Envía mensajes por WhatsApp (contactos y grupos) reutilizando las secuencias del macro-agent. Los mensajes se normalizan a minúsculas y sin acentos. Comandos: list, send <contacto> <mensaje>.

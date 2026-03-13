@@ -1,0 +1,1 @@
+Habilidad ejecutada cíclicamente. Se activa cuando se necesita repetición hasta que se cumpla una condición. Palabras desencadenantes: bucle, bucle, repetición, hasta, hasta, continuamente.

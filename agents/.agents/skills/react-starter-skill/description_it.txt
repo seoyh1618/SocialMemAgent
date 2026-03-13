@@ -1,0 +1,1 @@
+Scaffold per progetti React + Vite + Tailwind CSS v4 + React Query + Zustand + React Router + Lingui + shadcn + lucide-react. Usa quando crei un nuovo progetto React, inizializzi un frontend o imposti un'app React + Vite. Trigger: "crea progetto React", "inizializza frontend", "scaffold React", "create a new React app", "scaffold a frontend project".

@@ -1,0 +1,1 @@
+Flujo de trabajo de colaboración de Codex MCP. Escenarios desencadenantes: (1) desarrollo de nuevas funciones (2) refactorización (3) lógica empresarial compleja (4) revisión de código. Proporciona colaboración en tres etapas: análisis de requisitos → adquisición de prototipos → revisión, enfatizando el pensamiento crítico y la seguridad de solo lectura.

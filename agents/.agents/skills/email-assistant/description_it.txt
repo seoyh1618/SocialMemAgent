@@ -1,0 +1,1 @@
+Assistente e-mail basato sull'intelligenza artificiale che analizza il contenuto del messaggio, genera riepiloghi, determina se è necessaria una risposta e redige risposte professionali in base al contesto.

@@ -1,0 +1,1 @@
+MockingBot-Prototyp-Erfassungstool. Erfasst automatisch alle Seiten, Screenshots und Anmerkungen von MockingBot-Prototyp-Links und generiert Markdown-Dokumente. Zu den Anwendungsfällen gehören: (1) Erfassen von Prototypseiten (2) Generieren von Seiten-Screenshots (3) Extrahieren von Anmerkungsinhalten (4) Exportieren von Markdown-Dokumenten

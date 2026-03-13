@@ -1,0 +1,1 @@
+各主張を裏付ける証拠を監査し、ギャップ/疑問を「output/MISSING_EVIDENCE.md」に書き込みます。

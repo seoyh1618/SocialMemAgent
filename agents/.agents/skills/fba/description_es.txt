@@ -1,0 +1,9 @@
+Guía de desarrollo de proyectos FastAPI Best Architecture (fba). Proporciona especificaciones arquitectónicas completas, estilo de codificación y guía para el desarrollo de complementos.
+
+Escenarios de uso:
+- Desarrollar nuevas funciones o módulos en el proyecto fba.
+- Crear o modificar complementos (nivel de aplicación/nivel de extensión)
+- Escribir API, servicios, CRUD, modelos, esquemas
+- Migración de bases de datos y diseño de modelos.
+- Autenticación JWT y configuración de permisos RBAC
+- Revisión de código y verificación de estilo.

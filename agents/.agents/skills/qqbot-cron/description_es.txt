@@ -1,0 +1,1 @@
+Función de recordatorio inteligente de QQ Bot. Admite recordatorios únicos, tareas recurrentes y respaldo automático para garantizar la entrega. Puede configurar, consultar y cancelar recordatorios.

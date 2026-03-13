@@ -1,0 +1,7 @@
+Convertissez les fichiers de sous-titres SRT en données JSON structurées.
+Scénarios de déclenchement :
+(1) Besoin d'analyser les fichiers de sous-titres SRT
+(2) Besoin de convertir les sous-titres au format JSON/structuré
+(3) Besoin d'extraire les codes temporels et le texte des sous-titres
+(4) Traitement et analyse des données de sous-titres vidéo
+(5) Générer du texte brut ou des statistiques de sous-titres

@@ -1,0 +1,1 @@
+각 주장을 뒷받침하는 증거를 감사하고 `output/MISSING_EVIDENCE.md`에 공백/의심점을 기록합니다.

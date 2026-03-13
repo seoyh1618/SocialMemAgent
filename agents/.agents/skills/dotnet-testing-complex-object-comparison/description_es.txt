@@ -1,0 +1,3 @@
+Habilidades especializadas para manejar la comparación de objetos complejos y la validación de nivel profundo.
+Úselo cuando se necesita una comparación profunda de objetos, se deben excluir propiedades específicas, se deben manejar referencias circulares o se requiere validación de DTO/entidad.
+Cubre BeEquivalentTo, Excluyendo, Incluyendo y reglas de coincidencia personalizadas.

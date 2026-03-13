@@ -1,0 +1,1 @@
+Gestione unificata delle icone SVG nei progetti React TypeScript; supporta l'incapsulamento dei componenti delle icone, le convenzioni di denominazione e le indicazioni sulla migrazione; adatto per il refactoring delle icone dei progetti, per stabilire standard di icone per nuovi progetti e per ottimizzare la manutenzione delle icone.

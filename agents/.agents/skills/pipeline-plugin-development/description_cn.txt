@@ -1,0 +1,1 @@
+Pipeline插件开发完整指南，涵盖插件创建、task.json配置规范、多语言示例（Python/Java/NodeJS/Golang）、输入/输出规范、错误码标准、发布流程和调试方法。在开发 BlueShield 管道插件、配置 task.json、处理插件 I/O 或排除插件错误时使用。

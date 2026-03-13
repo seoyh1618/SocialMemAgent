@@ -1,0 +1,1 @@
+Pautas de desarrollo y estilo del código del proyecto Vue 2, que cubren convenciones de nomenclatura, organización del código, estándares de comentarios y manejo de errores. Aplicable a todos los escenarios de escritura de código para garantizar la coherencia, legibilidad y mantenibilidad.

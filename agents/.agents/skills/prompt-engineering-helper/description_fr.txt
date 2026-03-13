@@ -1,0 +1,1 @@
+Compétences en optimisation et test des invites LLM. Évaluez les performances rapides, suggérez des améliorations, effectuez des tests A/B, appliquez les meilleures pratiques et vérifiez la reproductibilité.

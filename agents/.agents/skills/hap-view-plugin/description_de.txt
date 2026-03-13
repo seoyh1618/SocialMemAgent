@@ -1,0 +1,1 @@
+Kenntnisse zum Erstellen und Entwickeln benutzerdefinierter MingDao Cloud HAP-Ansichts-Plugins. Diese Fähigkeit sollte verwendet werden, wenn der Benutzer ein benutzerdefiniertes HAP-Ansichts-Plugin entwickeln, die lokale Entwicklungsumgebung initialisieren, Abhängigkeiten installieren und mit dem Debuggen beginnen muss.

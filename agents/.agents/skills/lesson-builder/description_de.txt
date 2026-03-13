@@ -1,0 +1,1 @@
+Helfen Sie Benutzern, Kursbeschreibungen und Kursunterlagen durch Diskussionen zu vervollständigen. Wird ausgelöst, wenn der Benutzer „备课“, „做课件“, „准备课程“ oder „Lektionsbauer“ sagt.

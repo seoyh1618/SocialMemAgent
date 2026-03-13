@@ -1,0 +1,1 @@
+Klärung und Aufschlüsselung der Anforderungen, Identifizierung von Stakeholdern und Kennzeichnung jedes Anforderungselements mit seinem Eigentümer und seiner Geschäftseinheit; Erstellen Sie nur strukturierte Anforderungsbeschreibungen, keine Modellierungsdefinitionen, die als Eingabe für die nachfolgende Modellierung dienen

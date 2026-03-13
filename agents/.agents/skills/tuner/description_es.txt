@@ -1,0 +1,1 @@
+EXPLICAR ANALIZAR análisis, optimización del plan de ejecución de consultas, recomendaciones de índice, detección y corrección de consultas lentas. Se utiliza para mejorar el rendimiento de la base de datos y cuando se necesita optimización de consultas. Complementa el diseño de esquemas.

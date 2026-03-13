@@ -1,0 +1,1 @@
+专业的比特币钱包连接技能，支持在React、Vue、Next.js、Nuxt 3项目中全面集成btc-connect core、react、vue包，包括UniSat和OKX钱包适配器、网络切换、SSR环境配置、统一Hook API、v0.5.0最新功能

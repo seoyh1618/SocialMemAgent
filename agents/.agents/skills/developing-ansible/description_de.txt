@@ -1,0 +1,1 @@
+Guidelines for writing, reviewing, and refactoring Ansible playbooks, roles, and tasks. Delegierte verweisen auf Dokumente nach Themen. Verwenden Sie diese Option, wenn ein Benutzer erwähnt, dass er ein neues Playbook schreibt, eine Rolle erstellt oder ändert, Ansible-Aufgaben bearbeitet, Inventar oder Variablen verwaltet oder darum bittet, Ansible-Code zu überprüfen.

@@ -1,0 +1,1 @@
+Comunicación entre instancias para OpenClaw. Utilice esta habilidad cuando se requieran mensajes, sincronización de datos o ejecución remota de comandos entre múltiples instancias de OpenClaw. Cubre la mensajería de agente a agente, la ejecución remota de nodes.run, la comunicación a nivel de archivos y otros métodos.

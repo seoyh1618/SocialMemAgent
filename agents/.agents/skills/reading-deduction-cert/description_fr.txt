@@ -1,0 +1,1 @@
+Extrait des données structurées à partir d'images d'attestations de déduction (primes d'assurance vie, primes d'assurance tremblement de terre, etc.). Il peut être invoqué par d'autres compétences ou directement par l'utilisateur.

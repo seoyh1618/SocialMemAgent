@@ -1,0 +1,1 @@
+Consolida le conclusioni della discussione dalla modalità Plan in progetti Markdown eseguibili. Utilizzalo quando l'utente termina la discussione del Piano ed è pronto per entrare nella fase di sviluppo. Genera documenti Overview.md (strategic layer), taskXX_*.md (tactical layer) e summary.md (audit layer) per serializzare il contesto e prevenire la deriva del piano-codice.

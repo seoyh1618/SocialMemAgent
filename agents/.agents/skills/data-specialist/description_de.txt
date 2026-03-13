@@ -1,0 +1,1 @@
+Bietet Datenbankdesign-, Optimierungs-, Daten-Engineering- und Datenanalysefunktionen. Wird verwendet, wenn Datenbankoperationen, Datenpipelines oder Datenanalysen erforderlich sind.

@@ -1,0 +1,1 @@
+Capacité de réflexion et de synthèse. Déclenché lorsqu'une tâche est terminée ou échoue et qu'une révision est nécessaire. Mots déclencheurs : réfléchir, revoir, résumer, réfléchir, rétrospective, leçons apprises.

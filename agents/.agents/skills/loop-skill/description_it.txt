@@ -1,0 +1,1 @@
+Abilità eseguita ciclicamente. Attivato quando è necessaria la ripetizione finché non viene soddisfatta una condizione. Parole trigger: loop, loop, ripeti, fino a quando, fino a quando, continuamente.

@@ -1,0 +1,1 @@
+La capacità di promemoria programmato di messaggistica istantanea supporta attività singole e periodiche. Riattiva l'agente all'ora specificata tramite cron job, rileva automaticamente il canale IM corrente e garantisce che i messaggi vengano recapitati in modo accurato.

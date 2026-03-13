@@ -1,0 +1,1 @@
+Utilisez Chrome CDP pour récupérer n'importe quelle URL et la convertir en Markdown. Prend en charge deux modes : grattage automatique après le chargement de la page ou attente d'un signal utilisateur (convient aux pages qui nécessitent une connexion). À utiliser lorsque l'utilisateur demande à enregistrer une page Web au format Markdown.

@@ -1,0 +1,3 @@
+Führen Sie eine Web-Bildersuche für das angegebene Thema durch, um geeignete Bilder zu finden.  
+Verwenden Sie die DuckDuckGo-Bildsuche mit Filterung nach Größe, Farbe, Typ und Lizenz.  
+Geben Sie strukturierte Informationen zurück, einschließlich Bild-URL, Miniaturansicht und Quelle.

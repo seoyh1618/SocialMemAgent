@@ -1,0 +1,1 @@
+KPI-Definition, Tracking-Event-Design, Erstellung von Dashboard-Spezifikationen. North-Star-Metriken, Trichteranalyse, Kohortenanalysedesign. GA4/Amplitude/Mixpanel-Integration. Wird verwendet, wenn eine Metrikgrundlage benötigt wird.

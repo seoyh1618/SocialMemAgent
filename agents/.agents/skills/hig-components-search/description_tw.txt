@@ -1,0 +1,1 @@
+針對導航相關元件（包括搜尋欄位、頁面控制項和路徑控制項）的 Apple HIG 指南。當使用者說「搜尋應該如何在我的應用程式中運作」、「我需要麵包屑」、「如何對內容分頁」或詢問搜尋欄位、搜尋列、頁面控制、路徑控制、麵包屑、導覽元件、搜尋使用者體驗、搜尋建議、搜尋範圍、分頁內容導覽或檔案路徑層次結構顯示時，請使用此技能。交叉引用：hig-components-menus、hig-components-controls、hig-components-dialogs、hig-patterns。

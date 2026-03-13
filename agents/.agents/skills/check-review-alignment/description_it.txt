@@ -1,0 +1,9 @@
+Utilizzare solo quando l'utente richiede esplicitamente di "controllare/ottimizzare le citazioni nel corpo della recensione `{topic}_review.tex`" o di "eseguire check-review-alignment".
+
+Tramite la comprensione semantica dell'IA host, verifica ogni citazione rispetto al contenuto originale; **solo quando viene trovato un errore di citazione irreversibile**, esegui la riscrittura minima della "frase contenente la citazione" e riutilizza lo script di rendering `systematic-literature-review` per produrre PDF/Word (lo script stesso non chiama un'API LLM localmente).
+
+Principio fondamentale: **non cambiare per il gusto di cambiare**. Se non sei sicuro che si tratti di un errore fatale, lascialo così com'è e contrassegna un avviso nel rapporto.
+
+⚠️ Non applicabile per:
+- Utenti che desiderano semplicemente generare testo di revisione sistematica (utilizzare la revisione sistematica della letteratura)
+- Utenti che desiderano solo aggiungere/verificare le voci BibTeX (utilizzare il flusso di lavoro dedicato alla gestione dei pettorali)

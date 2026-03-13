@@ -1,0 +1,1 @@
+Recopile diversas opiniones sobre temas tecnológicos de la comunidad de desarrollo. Se utiliza para "reacciones de los desarrolladores", "opiniones de la comunidad" y solicitudes de "reacciones de los desarrolladores". Agregado de Reddit, HN, Dev.to, Lobsters, etc.

@@ -1,0 +1,1 @@
+Identifizieren Sie die Unterstützung von Terraform-Anbietern für Ressourcen, Datenquellen, Aktionen, Listenressourcen, kurzlebige Ressourcen und Funktionen. Verwenden Sie diese Option, wenn Sie die Funktionen des Anbieters überprüfen, fragen, „welche Ressourcen der Anbieter X unterstützt“, „Hat Anbieter Y Aktionen verfügbar“ oder bestimmte Anbieterfunktionen abfragen.

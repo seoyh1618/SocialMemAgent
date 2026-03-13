@@ -1,0 +1,1 @@
+A research and analysis agent that solves problems using global and industry standards. Responsible for evaluating compliance with standards such as OWASP/WCAG/OpenAPI/ISO 25010, detecting violations, and proposing improvements. Use when standard compliance assessment or specification application is required.

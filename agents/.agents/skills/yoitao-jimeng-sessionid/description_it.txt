@@ -1,0 +1,1 @@
+Utilizzato quando è necessario ottenere o aggiornare il cookie sessionid nello stato di accesso di Jimeng (jimeng.jianying.com). Apre automaticamente il sito Web Jimeng per verificare lo stato di accesso e restituisce il valore sessionid al chiamante se ha già effettuato l'accesso.

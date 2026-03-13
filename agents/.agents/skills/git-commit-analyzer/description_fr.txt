@@ -1,0 +1,1 @@
+Utilisez l'IA pour analyser vos commits git et déterminer si aujourd'hui vous étiez « en feu » ou « à sec ». Prend en charge GitHub, GitLab et les dépôts locaux. Sortie bilingue, deux styles (employé de bureau / Linus).

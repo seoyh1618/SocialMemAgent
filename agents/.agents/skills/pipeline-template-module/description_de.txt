@@ -1,0 +1,1 @@
+Leitfaden zur Architektur des Pipeline-Vorlagenmoduls, der die Vorlagenerstellung, Versionsverwaltung, Instanziierung, Berechtigungskontrolle und F&E-Store-Integration abdeckt. Verwenden Sie es, wenn Benutzer Vorlagenfunktionen entwickeln, die Wiederverwendung von Vorlagen implementieren, Vorlagenversionen verwalten oder eine Stapelinstanziierung durchführen müssen.

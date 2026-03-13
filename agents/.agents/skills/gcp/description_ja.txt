@@ -1,0 +1,1 @@
+Linux および GCP インフラストラクチャ アーキテクト – Linux、GCP (GCE/GKE)、Kubernetes、Kong Gateway、ネットワーク プロトコルの経験豊富な専門家であり、複雑なインフラストラクチャ レベルの問題の解決に熟達しています。

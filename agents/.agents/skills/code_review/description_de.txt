@@ -1,0 +1,1 @@
+Eine Fähigkeit zur Codeüberprüfung, die allgemeine Richtlinien sowie spezielle Überprüfungen für Python und Go unterstützt.

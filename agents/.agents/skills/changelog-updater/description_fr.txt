@@ -1,0 +1,1 @@
+Mettez à jour CHANGELOG.md. Déclencheurs : journal des modifications, modifications, version, version, ce qui a changé.

@@ -1,0 +1,1 @@
+Taglia i video clip, con opzioni di compressione, controllo audio, ecc.

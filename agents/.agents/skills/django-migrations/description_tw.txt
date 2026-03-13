@@ -1,0 +1,1 @@
+PostHog 的 Django 遷移模式和安全工作流程。在建立、調整或審查 Django/Postgres 遷移時使用，包括非阻塞索引/約束變更、多階段架構變更、資料回填、遷移衝突變基以及需要SeparateDatabaseAndState 的產品模型移動。

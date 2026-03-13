@@ -1,0 +1,1 @@
+Il s'agit d'une compétence Markdown directive utilisée pour explorer les compétences requises pour un projet sur trois canaux (trouver des compétences/populaire/web) et examiner les compétences installées existantes selon les mêmes critères pour appliquer l'ensemble de compétences final (conserver/installer/supprimer).

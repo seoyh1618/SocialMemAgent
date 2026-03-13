@@ -1,0 +1,1 @@
+Terminal recording and CLI demo video generation. Creating declarative CLI demos as GIFs/videos using VHS/terminalizer/asciinema. Used when you need to record terminal sessions, create CLI demos, or make GIFs for READMEs.

@@ -1,0 +1,18 @@
+Uno strumento specializzato per generare splendide immagini di copertina per il contenuto dell'articolo.
+
+Caratteristiche principali:
+- Analizza il contenuto dell'articolo e seleziona automaticamente lo stile visivo più adatto
+- Genera immagini di copertina di alta qualità in uno stile disegnato a mano
+- Supporta 19 stili preimpostati (elegante, progetto, grassetto-editoriale, ecc.)
+- Supporta molteplici formati (cinematografico 2,35:1, widescreen 16:9, quadrato 1:1)
+- Estrae automaticamente i temi principali e genera il testo del titolo
+
+Quando usarlo:
+- L'utente richiede esplicitamente "genera immagine di copertina", "crea copertina articolo" o "crea copertina"
+- L'utente fornisce il contenuto dell'articolo e necessita di immagini di accompagnamento
+- L'utente ha bisogno di copertine per blog, articoli WeChat o social media
+
+Non applicabile:
+- L'utente chiede semplicemente come realizzare una copertina (basta fornire consigli)
+- L'utente deve modificare le immagini esistenti (utilizzare strumenti di modifica delle immagini)
+- L'utente deve generare immagini non di copertina (utilizzare strumenti generali di generazione di immagini)

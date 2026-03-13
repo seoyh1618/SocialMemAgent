@@ -1,0 +1,1 @@
+Scaffold React + Vite + Tailwind CSS v4 + React Query + Zustand + React Router + Lingui + shadcn + lucide-react. À utiliser pour créer un nouveau projet React, initialiser un front ou monter une app React + Vite. Déclencheurs : « créer un projet React », « initialiser un front », « scaffold React », « create a new React app », « scaffold a frontend project ».

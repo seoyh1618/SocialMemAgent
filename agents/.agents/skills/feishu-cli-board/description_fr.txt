@@ -1,0 +1,1 @@
+Opérations sur le tableau blanc Feishu : téléchargez des images de tableau blanc, importez des diagrammes PlantUML/Mermaid, créez des nœuds de tableau blanc. À utiliser lorsque les utilisateurs doivent utiliser des tableaux blancs Feishu ou importer des diagrammes dans des tableaux blancs.

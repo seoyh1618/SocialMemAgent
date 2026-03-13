@@ -1,0 +1,1 @@
+Genere documentación de procesos de alta fidelidad que capture el camino de resolución de problemas y conocimientos retrospectivos. Siga el "principio de caja negra" para garantizar la reproducibilidad futura. Se utiliza para corrección de errores, decisiones técnicas y registros de prueba y error. Dispare con /process-doc o /process.

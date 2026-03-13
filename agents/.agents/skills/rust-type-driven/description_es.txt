@@ -1,0 +1,1 @@
+Experto en diseño basado en tipos. Maneja nuevo tipo, estado de tipo, PhantomData, rasgo de marcador, patrón de construcción, estado de tipo, patrón de nuevo tipo, verificación en tiempo de compilación, rasgo sellado, ZST

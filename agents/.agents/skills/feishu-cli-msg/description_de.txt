@@ -1,0 +1,1 @@
+Senden Sie Nachrichten an Feishu-Benutzer oder Gruppenchats. Unterstützt Nachrichtentypen wie text/post/image/file/audio/media/sticker/interactive/share_chat/share_user/system. Wird verwendet, wenn Benutzer Feishu-Nachrichten senden, Nachrichten-JSON erstellen oder Kartennachrichten senden müssen.

@@ -1,0 +1,7 @@
+Función de revisión semanal del sistema de memoria personal de IA. Analiza las entradas de la capa de contexto L1 de esta semana, identifica patrones recurrentes y los resume en la capa de comportamiento L2.  
+Casos de uso:  
+(1) Cuando el usuario dice “revisión semanal”;  
+(2) Durante las retrospectivas semanales programadas;  
+(3) Cuando es necesario resumir los registros diarios en patrones de comportamiento.  
+
+Esta habilidad cuenta automáticamente los comportamientos que se repiten más de 3 veces, genera una lista de candidatos y, una vez que el usuario confirma, actualiza la capa de comportamiento L2.

@@ -1,0 +1,7 @@
+Fonction de révision hebdomadaire du système de mémoire personnelle AI. Analyse les entrées de la couche contextuelle L1 de cette semaine, identifie les modèles récurrents et les distille dans la couche comportementale L2.  
+Cas d'utilisation :  
+(1) Lorsque l'utilisateur dit « revue hebdomadaire » ;  
+(2) Lors des rétrospectives hebdomadaires programmées ;  
+(3) Lorsque les enregistrements quotidiens doivent être distillés en modèles de comportement.  
+
+Cette compétence compte automatiquement les comportements qui se répètent plus de 3 fois, génère une liste de candidats et, une fois que l'utilisateur confirme, met à jour la couche de comportement L2.

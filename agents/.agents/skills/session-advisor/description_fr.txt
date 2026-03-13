@@ -1,0 +1,1 @@
+Conseiller en gestion collaborative multimodèle de SESSION. Fournit automatiquement des suggestions de réutilisation ou de création de session avant d'appeler Codex ou Gemini. Utilisé lorsque les utilisateurs discutent de collaboration multimodèle, de gestion de SESSION ou d'isolation de contexte.

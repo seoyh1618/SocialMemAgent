@@ -1,0 +1,1 @@
+Wenn der Benutzer „Nachrichten suchen“, „KI-Nachrichten abfragen“, „Nachrichten organisieren“, „Nachrichten für einen bestimmten Tag abrufen“ anfordert oder erwähnt, dass Nachrichten aus der KI-Branche für ein bestimmtes Datum gesucht, organisiert oder zusammengefasst werden müssen, sollte diese Fähigkeit verwendet werden.

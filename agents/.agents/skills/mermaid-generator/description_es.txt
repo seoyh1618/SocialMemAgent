@@ -1,0 +1,1 @@
+Seleccione de forma inteligente el tipo de gráfico más adecuado según la descripción del usuario y genere el código Mermaid. Admite todo tipo, incluidos diagramas de flujo, diagramas de secuencia, diagramas de clases, diagramas ER, diagramas de Gantt, diagramas de estado, etc., con combinaciones de colores vibrantes y hermosas.

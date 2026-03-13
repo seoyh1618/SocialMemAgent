@@ -1,0 +1,1 @@
+Analyse et informations sur les invites : Affichez les détails de l'invite, comparez les différences, recommandez des invites similaires, statistiques de la bibliothèque d'éléments

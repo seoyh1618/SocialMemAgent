@@ -1,0 +1,1 @@
+Gestión de tareas. Se utiliza cuando el usuario solicita crear, ver, completar o administrar tareas. Admite operaciones como crear/ver/actualizar/eliminar/completar tareas.

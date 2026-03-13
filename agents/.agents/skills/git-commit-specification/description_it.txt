@@ -1,0 +1,1 @@
+Convenzioni di commit Git che coprono il formato del messaggio di commit (feat/fix/refactor), collegamento dei problemi, denominazione dei rami, preparazione delle PR e utilizzo del rebase. Utilizzato durante il commit del codice, la scrittura di messaggi di commit, la creazione di rami o la preparazione di PR.

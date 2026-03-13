@@ -1,0 +1,1 @@
+Document de référence technique de l'API SecondMe, que les développeurs peuvent consulter

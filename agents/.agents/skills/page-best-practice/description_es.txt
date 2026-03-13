@@ -1,0 +1,1 @@
+Generar estructuras de páginas de inicio basadas en especificaciones anatómicas estandarizadas (Anatomía); Solicite proactivamente a los usuarios que elijan un modo de generación (no supervisado/supervisado) y admita la generación automática de módulos Wrapper, Contenido y Tienda opcional.

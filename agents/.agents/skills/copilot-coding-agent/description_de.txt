@@ -1,0 +1,1 @@
+GitHub Copilot Coding Agent-Automatisierung. Fügen Sie dem Problem ein ai-copilot-Label hinzu → GitHub-Aktionen werden über GraphQL automatisch Copilot zugewiesen → Copilot erstellt PR-Entwurf. Problem-zu-PR-Pipeline mit einem Klick.

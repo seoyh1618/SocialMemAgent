@@ -1,0 +1,1 @@
+WinJS HuiPro 템플릿(엔터프라이즈 웹) 개발 가이드. 사용자 정의 Router, Vuex, TabsManagement, 권한 제어 및 기본 하위 시스템 아키텍처가 포함됩니다. 적용 대상: (1) create-win huipro 템플릿으로 생성된 프로젝트 (2) 구성/설정 수정 (3) src/라우터 사용자 정의 라우팅 유지 관리 (4) 탭 제어를 위해 TabsManagement 사용 (5) 권한/메뉴 구성 (6) 기본 하위 시스템 개발 및 빌드 (7) Vue 2 + HUI 엔터프라이즈 관리 프로젝트.

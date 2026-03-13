@@ -1,0 +1,1 @@
+Analysieren Sie die Artikelstruktur, um zu ermitteln, wo Illustrationen benötigt werden, und erstellen Sie Illustrationen mithilfe eines zweidimensionalen Typ-x-Stil-Ansatzes. Verwenden Sie dies, wenn der Benutzer „den Artikel illustrieren“, „Abbildungen hinzufügen“ oder „Artikelbilder generieren“ anfordert.

@@ -1,0 +1,1 @@
+Sistema de automatización de servicio al cliente Enterprise WeChat. Aprobación automática de solicitudes de amistad, preguntas y respuestas inteligentes basadas en la base de conocimientos, alertas de intervención humana para preguntas desconocidas. Un chatbot asistente de IA para escenarios empresariales de servicio al cliente de WeChat.

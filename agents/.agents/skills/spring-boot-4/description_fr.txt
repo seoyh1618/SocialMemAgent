@@ -1,0 +1,1 @@
+Normes de développement backend Spring Boot 4. Appliqué automatiquement lors de la création d'API de contrôleur, de service, d'entité, de référentiel ou de backend.

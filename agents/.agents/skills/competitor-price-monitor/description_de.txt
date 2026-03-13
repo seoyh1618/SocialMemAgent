@@ -1,0 +1,1 @@
+Überwachen Sie Preisänderungen auf Websites von Mitbewerbern und senden Sie Benachrichtigungen, wenn Änderungen festgestellt werden. Unterstützt die Batch-Überwachung mehrerer Konkurrenz-URLs, vergleicht automatisch historische Preise und benachrichtigt Sie sofort, wenn Unterschiede festgestellt werden.

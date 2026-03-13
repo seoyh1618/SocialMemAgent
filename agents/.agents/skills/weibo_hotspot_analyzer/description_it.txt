@@ -1,0 +1,1 @@
+Individua gli argomenti di tendenza di Weibo, cerca automaticamente informazioni di base, utilizza l'intelligenza artificiale per analizzare e generare idee di prodotto e generare un rapporto di analisi HTML. Utilizzato per argomenti di tendenza Weibo, analisi di hotspot, estrazione di idee di prodotto, analisi di elenchi di tendenze e scenari di produzione di argomenti caldi.

@@ -1,0 +1,1 @@
+分析现有项目的 CSS、Tailwind 设置和组件，以了解其设计令牌，然后直观地改进 UI 并通过 Figma MCP 服务器将结果发送到 Figma。它不仅仅是 UI 调整，还保证更改与项目的设计系统保持一致——没有硬编码的颜色或间距，只有现有标记和命名规则中的建议。在以下情况下使用它： – “查看此 UI 并将其发送到 Figma”/“改进此页面的设计并将其同步到 Figma” – “分析 UI 并在 Figma 中创建设计方案” – 每当您需要优化 Web 应用程序的 UI 并将设计同步到 Figma 时 – 当用户说“ui-to-figma”、“将 UI 发送到 Figma”或“改进设计并推送到 Figma”时 先决条件：Playwright （webapp-测试技巧）和 Figma MCP 服务器必须可用。

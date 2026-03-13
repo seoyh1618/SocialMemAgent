@@ -1,0 +1,1 @@
+System-/Codebasis-Architekturanalyse und technische Dokumentenorganisation (Mindmap-gesteuert, kapitelweises Anhängen/Rendern), Erstellung visueller (Mermaid) und XSS-sicherer ausführlicher Berichte.

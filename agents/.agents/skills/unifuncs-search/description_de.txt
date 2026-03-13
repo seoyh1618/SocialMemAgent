@@ -1,0 +1,1 @@
+Verwenden Sie die UniFuncs-API für die Echtzeit-Websuche, die globale und chinesische Regionen unterstützt, um die neuesten Webinhalte und Nachrichten zu erhalten. Verwenden Sie es, wenn Benutzer online nach Informationen suchen, nachschlagen oder darauf zugreifen müssen.

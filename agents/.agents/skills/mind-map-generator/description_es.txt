@@ -1,0 +1,1 @@
+Utilice la herramienta generateTreeMind para crear un mapa mental visual, devolviendo una URL de imagen y un enlace de edición. Adecuado para visualizar estructuras de historias y mostrar diagramas de relaciones entre tramas.

@@ -1,0 +1,1 @@
+Habilidad para generar informes diarios/semanales/mensuales. Adecuado para necesidades como "generar informes diarios/semanales/mensuales", "crear informes a partir de confirmaciones de Git", "presentar informes JSON en Word"; admite escaneo de múltiples repositorios, estadísticas diarias/semanales/mensuales y genera JSON y Word.

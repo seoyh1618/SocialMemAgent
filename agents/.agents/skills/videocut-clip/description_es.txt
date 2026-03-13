@@ -1,0 +1,1 @@
+Ejecutar edición de video. Realice cortes de FFmpeg basados ​​en las tareas de eliminación confirmadas, realice un bucle hasta que no haya ningún desliz, genere subtítulos. Palabras desencadenantes: ejecutar corte, iniciar corte, confirmar corte.

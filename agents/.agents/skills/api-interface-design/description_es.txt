@@ -1,0 +1,1 @@
+Especificación de diseño de interfaz API, que cubre principios de diseño RESTful, denominación de URL, selección de métodos HTTP, formatos de solicitud/respuesta, definiciones de códigos de error y control de versiones. Úselo al diseñar interfaces API, definir clases de recursos, escribir documentación de interfaz o realizar revisiones de interfaz.

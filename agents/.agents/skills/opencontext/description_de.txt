@@ -1,0 +1,1 @@
+Permanenter Speicher und Kontextverwaltung des KI-Agenten mithilfe von OpenContext. Behält den Kontext über Sitzungen/Repos/Daten hinweg bei, speichert Schlussfolgerungen und bietet Workflows für die Dokumentensuche.

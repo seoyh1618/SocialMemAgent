@@ -1,0 +1,1 @@
+Führen Sie den Benutzer durch mehrstufige Gespräche zur Klärung von Anforderungen, verweisen Sie auf bestehende Dify-Fälle und generieren Sie eine Workflow-DSL-YAML-Konfiguration, die direkt in Dify importiert werden kann.

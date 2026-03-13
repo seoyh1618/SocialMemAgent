@@ -1,0 +1,1 @@
+Crea promemoria ed eventi di calendario quando gli utenti menzionano attività, appuntamenti o eventi futuri. Attiva frasi come "ricordami", "imposta un promemoria", "ho una riunione", "non dimenticare" o qualsiasi menzione di future attività basate sul tempo.

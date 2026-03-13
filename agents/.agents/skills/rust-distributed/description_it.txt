@@ -1,0 +1,1 @@
+Esperto di sistemi distribuiti. Funziona con Raft, 2PC, algoritmi di consenso, transazioni distribuite, coerenza distribuita, coordinamento distribuito.

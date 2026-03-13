@@ -1,0 +1,1 @@
+Generieren und validieren Sie strukturierte JSON-LD-Daten und unterstützen Sie Schema.org-Typen wie Artikel, BlogPosting, Organisation, Webseite, Produkt, LocalBusiness usw. Erkennen Sie automatisch den Seitentyp, validieren Sie die Syntax, überprüfen Sie erforderliche Felder, stellen Sie einen Link zum Google Rich Results-Testtool und ein Next.js-Komponentencodebeispiel bereit.

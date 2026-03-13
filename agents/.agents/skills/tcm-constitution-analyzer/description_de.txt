@@ -1,0 +1,1 @@
+Analysieren Sie TCM-Konstitutionsdaten, identifizieren Sie Konstitutionstypen, bewerten Sie Konstitutionsmerkmale und geben Sie personalisierte Gesundheitsempfehlungen. Unterstützt Korrelationsanalysen mit Ernährungs-, Bewegungs-, Schlaf- und anderen Gesundheitsdaten.

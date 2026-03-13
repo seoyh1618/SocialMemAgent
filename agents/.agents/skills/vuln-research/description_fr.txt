@@ -1,0 +1,12 @@
+Méta-méthodologie pour la recherche sur la sécurité – un cadre de recherche de vulnérabilités distillé à partir de plus de 5 600 articles de sécurité sur la communauté Xianzhi.
+
+Utilisez cette compétence lorsque :
+- Effectuer une recherche de bugs et de sécurité, nécessitant un cadre de réflexion systématique
+- Analyser les chemins d'attaque pour des types de vulnérabilités spécifiques (injection Web, désérialisation, binaire, pénétration AD, etc.)
+- Exiger des mentalités pour contourner les défenses (WAF, EDR, sandbox)
+- Réaliser des audits de code nécessitant une méthodologie d'analyse Source-Sink
+- Opérations de l'équipe rouge qui exigent une planification complète de la chaîne de destruction
+- Compétitions CTF qui nécessitent des idées de résolution rapide
+- Inversion des logiciels malveillants nécessitant des conseils méthodologiques
+
+Déclencheurs : recherche de bogues, recherche de sécurité, tests d'intrusion, audit de code, infraction de l'équipe rouge, CTF, ingénierie inverse, contournement WAF, évasion AV, élévation de privilèges, mouvement latéral, pénétration AD, désérialisation, sécurité binaire, fuzzing

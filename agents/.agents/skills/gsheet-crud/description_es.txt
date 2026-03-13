@@ -1,0 +1,1 @@
+Guía del usuario de la API GSheet-CRUD. Utilice Google Sheets como base de datos API RESTful. Utilice esta habilidad cuando los usuarios necesiten manipular datos de Google Sheets a través de API, lo que incluye: consultar datos (GET), insertar datos (POST), actualizar datos (PUT), eliminar datos (DELETE).

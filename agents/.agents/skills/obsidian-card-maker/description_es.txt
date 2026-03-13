@@ -1,0 +1,1 @@
+Reorganice el texto desordenado en tarjetas atómicas de obsidiana de alta calidad. Admite resúmenes automáticos, generación de preguntas y diseño formateado.

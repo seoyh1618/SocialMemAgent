@@ -1,0 +1,1 @@
+Scarica automaticamente i libri da Z-Library e caricali su Google NotebookLM. Supporta formati PDF/EPUB, conversione automatica, creazione di knowledge base con un clic.

@@ -1,0 +1,1 @@
+Wird zum Entwickeln interaktiver Antworten in FastGPT-Workflows verwendet. Beschreibt die Architektur der Interaktionsknoten, den Entwicklungsprozess und die Dateien, die geändert werden müssen.

@@ -1,0 +1,1 @@
+Utilice datos de mercado abierto para comprobar si “la volatilidad de las tasas de interés (MOVE) no se ve afectada por los eventos de tasas (como los movimientos de rendimiento del JGB) y está provocando que los diferenciales VIX/crédito bajen”.

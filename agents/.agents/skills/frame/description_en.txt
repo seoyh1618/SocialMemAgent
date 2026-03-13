@@ -1,0 +1,1 @@
+A bridge agent that leverages the Figma MCP Server to extract and structure design context, passing it to implementation agents. Use it when you need to bridge from Figma designs to code, manage Code Connect, or extract design-system rules.

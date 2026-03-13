@@ -1,0 +1,1 @@
+Dokumentation zur SiliconFlow-Cloud-Plattform. Wird für API-Aufrufe großer Sprachmodelle, Bildgenerierung, Vektormodelle, Verwendung von SiliconFlow in Claude Code, Chat Completions API, Stream-Modus usw. verwendet.

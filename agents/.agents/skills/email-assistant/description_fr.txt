@@ -1,0 +1,1 @@
+Assistant de messagerie alimenté par l'IA qui analyse le contenu des messages, génère des résumés, détermine si une réponse est nécessaire et rédige des réponses professionnelles en fonction du contexte.

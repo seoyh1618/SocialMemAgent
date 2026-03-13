@@ -1,0 +1,1 @@
+Spring Boot 4 Backend-Entwicklungsstandards. Wird beim Erstellen von Controller-, Dienst-, Entitäts-, Repository- oder Backend-APIs automatisch angewendet.

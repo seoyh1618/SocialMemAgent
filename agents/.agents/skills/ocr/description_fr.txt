@@ -1,0 +1,1 @@
+Extrayez le texte des fichiers image et copiez-le dans le presse-papiers. Utilisé pour « transcription », « OCR », etc.

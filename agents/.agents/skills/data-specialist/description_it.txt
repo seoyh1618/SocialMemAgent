@@ -1,0 +1,1 @@
+Fornisce funzionalità di progettazione, ottimizzazione, ingegneria dei dati e analisi dei dati di database. Da utilizzare quando sono necessarie operazioni di database, pipeline di dati o analisi dei dati.

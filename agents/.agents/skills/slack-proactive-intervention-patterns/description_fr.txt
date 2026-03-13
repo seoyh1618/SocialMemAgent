@@ -1,0 +1,1 @@
+Une base de connaissances qui détecte sept modèles d'opportunités d'intervention en mémoire : signaux et méthodes de notation pour les suggestions de recherche, la planification, la documentation, la rédaction, la coordination des connexions, les suggestions prédictives et les modèles d'automatisation de routine.

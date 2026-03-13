@@ -1,0 +1,1 @@
+Guía de calidad de código basada en Toss Frontend Fundamentals. Proporciona comentarios utilizando cuatro criterios (legibilidad, previsibilidad, cohesión y acoplamiento) durante las revisiones de código, la escritura de código nuevo y la refactorización. Activado para solicitudes de calidad del código de interfaz, código limpio y mejora del código.

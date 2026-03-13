@@ -1,0 +1,1 @@
+Experte für Rust-Kodierungsstandards. Behandelt Benennung, Formatierung, Kommentare, Clippy, Rustfmt, Lint, Codestil, Best Practices, Namenskonventionen, Codeüberprüfungen, P.NAM, G.FMT, Benennung, Codestandards

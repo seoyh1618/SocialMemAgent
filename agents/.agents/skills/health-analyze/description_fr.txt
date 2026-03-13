@@ -1,0 +1,1 @@
+Analyser les données de santé, calculer les scores de santé et identifier les indicateurs anormaux

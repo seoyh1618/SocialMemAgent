@@ -1,0 +1,1 @@
+Preparación del entorno. Instalar dependencias, descargar el modelo, verificar el entorno. Palabras desencadenantes: instalación, preparación del entorno, inicialización

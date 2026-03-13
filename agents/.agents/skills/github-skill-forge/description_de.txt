@@ -1,0 +1,1 @@
+Eine „Fähigkeit, die Fähigkeiten schafft“. Dieses Tool automatisiert den gesamten Prozess der Konvertierung eines beliebigen GitHub-Repositorys in einen standardisierten Trae-Skill und ist das Kerntool zur Erweiterung der Fähigkeiten von AI Agents.

@@ -1,0 +1,6 @@
+Ejecute los canales de investigación de Unidades + Puntos de control de este repositorio de principio a fin (encuesta/revisión/tutorial/revisión sistemática/revisión), con espacios de trabajo + puntos de control.  
+**Activador**: ejecutar canalización, iniciar, continuar, ejecutar automáticamente, escribir uno, encuesta/revisión/investigación/tutorial/revisión sistemática/referido.  
+**Usar cuando**: el usuario desea una ejecución de un extremo a otro (crea `espacios de trabajo/<nombre>/`, genera/ejecuta `UNITS.csv`, se detiene en los puntos de control HUMANOS y espera).  
+**Omitir si**: el usuario desea explícitamente la ejecución manual paso a paso (a través de `unit-executor`) o no debe avanzar automáticamente a la etapa de prosa.  
+**Red**: depende de la canalización seleccionada (arXiv/PDF/verificación de citas puede necesitar red; se admite la importación sin conexión cuando esté disponible).  
+**Barandilla**: se deben respetar los puntos de control (no se permite la prosa sin Aprobar); debe hacer una pausa y esperar en las unidades HUMANAS; prohibido crear artefactos del espacio de trabajo en la raíz del repositorio.

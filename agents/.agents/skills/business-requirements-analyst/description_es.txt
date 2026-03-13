@@ -1,0 +1,1 @@
+Metodología para captura de requisitos de software y negocio. Usar al documentar un proyecto nuevo, validar una idea, crear especificaciones técnicas o generar documentación (visión, stakeholders, procesos, requisitos funcionales y no funcionales, modelo de datos, integraciones, riesgos, roadmap). Útil para presupuestos, desarrollo, delegación o presentación a inversores.

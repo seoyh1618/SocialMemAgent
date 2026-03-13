@@ -1,0 +1,1 @@
+Une « compétence qui crée des compétences ». Cet outil automatise l'ensemble du processus de conversion de n'importe quel référentiel GitHub en une compétence Trae standardisée et constitue l'outil de base pour étendre les capacités des agents IA.

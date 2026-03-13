@@ -1,0 +1,1 @@
+Divide el artículo en una serie de imágenes al estilo Xiaohongshu. Genere portadas, contenido e imágenes finales a partir de URL, archivos o texto, cree mensajes automáticamente y llame a la herramienta de generación de imágenes.

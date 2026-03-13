@@ -1,0 +1,1 @@
+Video Generation Master: genera automáticamente indicaciones de escenas de video con soporte para efectos dinámicos, transiciones, movimientos de cámara y más.

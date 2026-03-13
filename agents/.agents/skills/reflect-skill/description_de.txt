@@ -1,0 +1,1 @@
+Fähigkeit zur Reflexion und Zusammenfassung. Wird ausgelöst, wenn eine Aufgabe abgeschlossen ist oder fehlschlägt und eine Überprüfung erforderlich ist. Auslöserwörter: reflektieren, überprüfen, zusammenfassen, reflektieren, Rückblick, gewonnene Erkenntnisse.

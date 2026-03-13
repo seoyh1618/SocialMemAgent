@@ -1,0 +1,1 @@
+これは、Shadcn + Tailwind CSS v4 で構築されたコンポーネント ライブラリです。

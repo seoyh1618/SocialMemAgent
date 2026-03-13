@@ -1,0 +1,6 @@
+紙のノートから BibTeX エントリを生成して検証し、「citations/ref.bib」と「citations/verified.jsonl」を書き込みます。  
+**トリガー**: 引用、BibTeX、ref.bib、verified.jsonl、参照、参照、参考文献。  
+**次の場合に使用します**: `papers/paper_notes.jsonl` がすでに存在しており、散文/LaTeX の追跡可能な引用 (それぞれ URL/日付/タイトル検証レコード付き) が必要です。  
+**次の場合はスキップしてください**: 紙のメモがまだありません (または、現在の出力に引用/参照が必要ありません)。  
+**ネットワーク**: 自動検証には通常、ネットワークが必要です。オフラインの場合は、最初に記録してから、マークを手動で検証する必要があります。  
+**Guardrail**: すべての BibTeX エントリには、一致する `citations/verified.jsonl` レコードが必要です。散文では、すでに「citations/ref.bib」にある引用キーのみを使用できます。

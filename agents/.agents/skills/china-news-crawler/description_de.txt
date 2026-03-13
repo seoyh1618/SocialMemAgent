@@ -1,0 +1,1 @@
+Extraktion von Inhalten chinesischer Nachrichtenseiten. Unterstützt öffentliche WeChat-Konten, Toutiao, NetEase News, Sohu News und Tencent News. Wird aktiviert, wenn Benutzer chinesische Nachrichteninhalte extrahieren, öffentliche Kontoartikel durchsuchen, Nachrichten crawlen oder Nachrichten im JSON-/Markdown-Format erhalten müssen.

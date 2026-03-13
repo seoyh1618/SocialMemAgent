@@ -1,0 +1,1 @@
+Habilidad de generación de imágenes, utilizada cuando el usuario necesita generar imágenes, crear elementos visuales o editar/modificar/ajustar imágenes existentes. Admite 10 relaciones de aspecto (1:1, 16:9, 9:16, etc.) y 3 resoluciones (1K, 2K, 4K), con capacidades de edición de texto a imagen e imagen a imagen.

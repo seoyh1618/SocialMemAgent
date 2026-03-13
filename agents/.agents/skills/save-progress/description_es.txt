@@ -1,0 +1,1 @@
+Guardar: guarda el progreso de desarrollo actual en CLAUDE.md

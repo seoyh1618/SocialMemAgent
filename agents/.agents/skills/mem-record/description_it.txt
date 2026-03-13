@@ -1,0 +1,7 @@
+Funzione di registrazione della memoria del sistema AI Personal Memory. Estrae automaticamente le informazioni chiave dalle conversazioni e le registra nel livello appropriato.  
+Casi d'uso:  
+(1) Quando l'utente dice "registra nel sistema di memoria", "ricorda questo" o "salva questa conversazione";  
+(2) Quando vengono rilevati eventi, decisioni o espressioni di preferenze importanti;  
+(3) Quando l'utente completa un'attività importante o prende una decisione.  
+
+Questa abilità determina automaticamente se registrare su L1 Context Layer, L2 Behavior Layer, L3 Cognitive Layer o suggerisce di aggiornare il L4 Core Layer.

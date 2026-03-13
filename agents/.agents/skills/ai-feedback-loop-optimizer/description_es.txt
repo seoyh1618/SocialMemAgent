@@ -1,0 +1,1 @@
+Habilidad de optimización del bucle de retroalimentación de IA. Automatiza el ciclo iterativo de indicación→resultado→evaluación→mejora. Genera resultados de la más alta calidad mediante refinamiento gradual, pruebas A/B, determinación de convergencia y selección del mejor resultado.

@@ -1,0 +1,1 @@
+Use the Node.js CLI to manage tasks, projects, tags, etc. in Dida365, supporting completed tasks query by date, full synchronization, tag management, batch operations, suitable for daily task management and automation scenarios.

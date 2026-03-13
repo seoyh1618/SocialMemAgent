@@ -1,0 +1,1 @@
+Monitora le variazioni di prezzo del sito web della concorrenza e invia notifiche quando vengono rilevate modifiche. Supporta il monitoraggio batch di più URL della concorrenza, confronta automaticamente i prezzi storici e avvisa immediatamente quando vengono rilevate differenze.

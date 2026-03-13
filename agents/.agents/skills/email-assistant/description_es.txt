@@ -1,0 +1,1 @@
+Asistente de correo electrónico con tecnología de inteligencia artificial que analiza el contenido del mensaje, genera resúmenes, determina si se necesita una respuesta y redacta respuestas profesionales basadas en el contexto.

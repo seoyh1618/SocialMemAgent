@@ -1,0 +1,1 @@
+Fournit : données de portefeuille personnalisé (LongPort), données de marché (LongPort + AkShare), calcul d’indicateurs techniques (ta-lib). Analyse avec l’utilisateur et propose points d’achat/vente ; supporte backtest, optimisation et génération de rapports.

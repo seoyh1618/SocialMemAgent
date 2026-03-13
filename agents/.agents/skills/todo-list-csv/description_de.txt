@@ -1,0 +1,1 @@
+Verwenden Sie diese Option, wenn Sie eine „persistente TODO-Checkliste/Fortschrittstabelle (CSV)“ benötigen, die streng mit „update_plan“ synchronisiert ist (z. B. Benutzeranfragen-Checkliste/Fortschrittsverfolgung/CSV).

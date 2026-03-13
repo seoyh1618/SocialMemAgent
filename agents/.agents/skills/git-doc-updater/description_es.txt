@@ -1,0 +1,1 @@
+Sincronización de documentos de confirmación previa de Git. Activadores: documentos, documentación, sincronización de documentos, lanzamiento.

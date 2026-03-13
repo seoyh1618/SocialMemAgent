@@ -1,0 +1,1 @@
+Direkte Automatisierung des persönlichen WeChat-Kontos für Unternehmen. Basierend auf dem Wechaty-Framework, um WeCom-Nachrichten zu empfangen, Freundschaftsanfragen automatisch anzunehmen, Wissensdatenbank-Fragen und Antworten bereitzustellen und Benachrichtigungen über menschliche Übergaben zu senden. Ideal für persönliche WeCom-Bots und Automatisierungsassistenten.

@@ -1,0 +1,1 @@
+Douyin-Fähigkeit zum automatischen Posten von Videos. Verwenden Sie diese Fähigkeit, wenn Benutzer Videos auf Douyin veröffentlichen müssen. Die Fähigkeit umfasst: Abrufen von Anmeldecookies, Hochladen von Videos, Festlegen von Titeln und Themen, geplante Veröffentlichung und andere Funktionen.

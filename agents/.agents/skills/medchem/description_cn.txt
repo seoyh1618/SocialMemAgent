@@ -1,0 +1,1 @@
+药物化学过滤器。 Apply drug-likeness rules (Lipinski, Veber), PAINS filters, structural alerts, complexity metrics, for compound prioritization and library filtering.

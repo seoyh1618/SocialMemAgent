@@ -1,0 +1,1 @@
+Inicializar un nuevo proyecto. Activadores: inicio, nuevo proyecto, inicializar, crear proyecto.

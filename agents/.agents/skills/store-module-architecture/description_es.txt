@@ -1,0 +1,1 @@
+Guía de arquitectura del módulo de tienda de I+D, que cubre la gestión de complementos/plantillas/imágenes, el lanzamiento de versiones, el proceso de revisión, el mercado y el mecanismo de punto de extensión. Se utiliza cuando los usuarios desarrollan funciones de la Tienda de I+D, lanzan complementos, administran plantillas o implementan puntos de extensión.

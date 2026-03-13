@@ -1,0 +1,1 @@
+Riferimento rapido alla libreria degli strumenti OpenHarmony ArkTS: funzionalità di concorrenza, TaskPool, Worker, Sendable, XML, Buffer, JSON, contenitori e runtime

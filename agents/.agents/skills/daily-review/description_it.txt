@@ -1,0 +1,4 @@
+Nisso Assistant: uno strumento decisionale assistito dall'intelligenza artificiale per riordinare la casella di posta delle conoscenze.
+L'Agente propone “mantieni/elimina” con motivazione; confermi e agisci per mano.
+Segui la regola "raccogli senza giudicare, decidi durante la pulizia quotidiana": termina l'ordinamento quotidiano della conoscenza in 5-10 minuti.
+Trigger: /daily-review, /日清, /review

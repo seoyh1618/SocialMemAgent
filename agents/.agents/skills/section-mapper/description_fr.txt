@@ -1,0 +1,6 @@
+Mappez les articles de l'ensemble de base sur chaque sous-section du plan et écrivez « outline/mapping.tsv » pour suivre la couverture.  
+**Déclencheur** : section-mapper, mapping.tsv, couverture, mappage papier à section, mappage papier, couverture.  
+**Quand l'utiliser** : étape de structure (C2), lorsque `papers/core_set.csv` + `outline/outline.yml` existent déjà, pour garantir que chaque sous-section dispose de suffisamment de documents justificatifs avant de passer aux preuves/à la rédaction.  
+**Ignorer si** : pas encore de plan (exécutez d'abord `outline-builder`) ou ensemble de base pas encore convergé.  
+**Réseau** : aucun.  
+**Garde-corps** : la couverture doit être vérifiable (éviter de réutiliser le même lot de papiers pour toutes les sous-sections) ; laisser des instructions de correction claires pour les sous-sections faiblement couvertes (développer la sous-section de requête/fusion).

@@ -1,0 +1,1 @@
+SDK Azure Cosmos DB لـ JavaScript/TypeScript (@azure/cosmos) لعمليات مستوى البيانات. يُستخدم لعمليات CRUD على المستندات والاستعلامات والعمليات المجمعة وإدارة الحاويات. محفزات: "Cosmos DB"، "@azure/cosmos"، "CosmosClient"، "document CRUD"، "NoSQL queries"، "bulk operations"، "partition key"، "container.items".

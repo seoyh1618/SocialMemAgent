@@ -1,0 +1,1 @@
+Inizializza la configurazione del progetto SecondMe e la selezione dei moduli delle funzionalità, crea state.json e CLAUDE.md

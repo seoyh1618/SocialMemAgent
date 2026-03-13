@@ -1,0 +1,1 @@
+Eine vollständige Nachbildung der Claude Code Plan Mode-Architektur. Verbessert: obligatorische Codeausführung + expliziter Pause-and-Ask-Mechanismus.

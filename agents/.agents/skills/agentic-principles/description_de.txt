@@ -1,0 +1,1 @@
+Grundprinzipien der kollaborativen Entwicklung von KI-Agenten. Definieren Sie Divide-and-Conquer, Kontextmanagement, Auswahl der Abstraktionsebene, Automatisierungsphilosophie und Überprüfungsrückblick. Wenden Sie optimale Kooperationsmuster an, wann immer Sie einen KI-Agenten verwenden.

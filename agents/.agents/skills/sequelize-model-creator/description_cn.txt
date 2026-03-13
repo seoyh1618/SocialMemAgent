@@ -1,0 +1,3 @@
+创建续集模型创建器操作。自动激活后端开发技能。
+Triggers on: sequelize model creator, sequelize model creator
+后端开发技能类别的一部分。 Use when working with sequelize model creator functionality. Trigger with phrases like "sequelize model creator", "sequelize creator", "sequelize".

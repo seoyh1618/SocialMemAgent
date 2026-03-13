@@ -1,0 +1,1 @@
+Einheitliche Abfrage für Finanzdaten wie Aktien und Kryptowährungen. Unterstützt mehrere Datenquellen, darunter Yahoo Finance, Alpha Vantage, Tushare und Binance. Verwenden Sie es, wenn Benutzer Marktdaten, Kurse oder Finanzinformationen benötigen.

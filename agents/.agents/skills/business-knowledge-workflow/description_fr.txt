@@ -1,0 +1,1 @@
+Flux de travail d’acquisition de connaissances commerciales et de documentation des compétences. Utilisé lorsque les utilisateurs ont besoin de se familiariser avec de nouveaux modules métier, de récupérer des documents depuis iWiki, de générer des documents d'architecture en combinant l'analyse de code ou de consolider leurs connaissances métier dans des compétences.

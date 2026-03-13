@@ -1,0 +1,1 @@
+Publiez Markdown en un clic dans les brouillons d’articles officiels de WeChat. Basé sur wenyan-cli, prend en charge plusieurs thèmes, la mise en évidence du code et le téléchargement automatique d'images.

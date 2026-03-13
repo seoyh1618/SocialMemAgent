@@ -1,0 +1,1 @@
+Un'abilità per tenere traccia di drammi/anime, fornendo all'intelligenza artificiale la possibilità di cercare collegamenti di streaming e riprodurli direttamente sui televisori Xiaomi. Utilizza questa abilità quando gli utenti desiderano cercare informazioni o aggiornamenti su spettacoli, anime, brevi drammi, programmi di varietà, ecc.

@@ -1,0 +1,1 @@
+自動偵測React/Vue檔案中的範本字串className屬性並將其轉換為cn函數呼叫；支援遞歸資料夾掃描和每個 className 位置的詳細報告

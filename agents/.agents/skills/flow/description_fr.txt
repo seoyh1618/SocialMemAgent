@@ -1,0 +1,1 @@
+Implémentez des animations CSS/JS telles que des effets de survol, des états de chargement et des transitions modales. À utiliser lorsque vous souhaitez ajouter du mouvement à l’interface utilisateur ou rendre les interactions plus fluides.

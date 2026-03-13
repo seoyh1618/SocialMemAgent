@@ -1,0 +1,1 @@
+Processus de questions et réponses sur les documents : répond aux questions basées sur des documents de la base de connaissances, en fournissant des citations et des scores de confiance

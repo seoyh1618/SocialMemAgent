@@ -1,0 +1,1 @@
+Analyze code review feedback or issues found during development, extract general rules, and update CLAUDE.md and detailed rule documents. Use when the user says "update rules," "add coding rules," "update claude md," or when a coding pattern that needs to be recorded is identified.

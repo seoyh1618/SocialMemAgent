@@ -1,0 +1,1 @@
+Habilidades para cumplir con las reglas para la creación de componentes jp-ui y páginas de Storybook. Políticas para contenedores de interfaz de usuario base, mantenimiento de render/useRender y aplicación de reglas de diseño/espaciado/ancho.

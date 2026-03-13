@@ -1,0 +1,1 @@
+Leitfaden zur Architektur des Dispatch Builds Scheduling-Moduls, der Richtlinien zur Build-Maschinenplanung, Ressourcenzuweisung, Warteschlangenverwaltung, Docker/K8s-Planung und Agentenauswahl behandelt. Wird verwendet, wenn Benutzer Planungsfunktionen entwickeln, Planungsrichtlinien konfigurieren, die Ressourcenzuweisung verwalten oder neue Planungstypen implementieren.

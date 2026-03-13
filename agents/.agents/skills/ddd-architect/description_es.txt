@@ -1,0 +1,1 @@
+Asistencia e inspección de arquitectura DDD. Desencadenante: arquitectura, nueva característica, nuevo módulo, dominio, estructura.

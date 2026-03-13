@@ -1,0 +1,1 @@
+Wird zur Standardisierung von DAO-Dateien verwendet und stellt die Einhaltung der Best Practices von Drizzle ORM sicher, einschließlich Dateistruktur, Methodenbenennung, Typsicherheit und Leistungsoptimierung. Wird beim Refactoring oder Erstellen von DAO-Dateien verwendet, um Projektstandards zu erfüllen.

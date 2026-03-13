@@ -1,0 +1,1 @@
+Fragen Sie Weibo-Hot-Search-Informationen ab. Verwenden Sie diese Fähigkeit, wenn Benutzer die Weibo-Hot-Search-Liste, Unterhaltungs-Hot-Suchen oder Beliebtheitsrankings überprüfen möchten.

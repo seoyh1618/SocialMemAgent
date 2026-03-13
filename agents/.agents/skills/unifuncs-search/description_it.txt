@@ -1,0 +1,1 @@
+Utilizza l'API UniFuncs per la ricerca web in tempo reale, supportando le regioni globali e cinesi, per ottenere i contenuti web e le notizie più recenti. Usalo quando gli utenti hanno bisogno di cercare, cercare o accedere alle informazioni online.

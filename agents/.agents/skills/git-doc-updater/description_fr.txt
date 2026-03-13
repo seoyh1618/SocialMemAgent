@@ -1,0 +1,1 @@
+Synchronisation des documents de pré-validation Git. Déclencheurs : documents, documentation, documents de synchronisation, version.

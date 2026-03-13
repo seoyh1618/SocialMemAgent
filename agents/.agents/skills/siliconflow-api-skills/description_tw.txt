@@ -1,0 +1,1 @@
+SiliconFlow 雲端平台文件。用於大型語言模型API呼叫、映像生成、向量模型、在Claude Code中使用SiliconFlow、Chat Completions API、Stream模式等。

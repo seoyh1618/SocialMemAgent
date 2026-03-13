@@ -1,0 +1,1 @@
+Un gateway unificato per le competenze Godot, che seleziona e invoca in modo intelligente le sottocompetenze Godot più adatte in base alle esigenze dell'utente, offrendo un'esperienza di sviluppo unica per 15 competenze professionali.

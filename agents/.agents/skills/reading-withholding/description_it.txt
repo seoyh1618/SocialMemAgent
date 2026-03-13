@@ -1,0 +1,1 @@
+Leggi l'immagine di una ricevuta della ritenuta d'acconto e restituisci i dati strutturati. Può essere chiamato da altre competenze o invocato direttamente dall'utente.

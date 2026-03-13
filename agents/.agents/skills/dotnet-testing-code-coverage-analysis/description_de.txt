@@ -1,0 +1,3 @@
+Vollständiger Leitfaden zur Code-Coverage-Analyse.
+Behandelt Coverlet-Einrichtung, Berichtserstellung, Metrikinterpretation und Integration zyklomatischer Komplexität.
+Beinhaltet Fine Code Coverage, integrierte VS Code-Tools, CI/CD-Integration und Best Practices.

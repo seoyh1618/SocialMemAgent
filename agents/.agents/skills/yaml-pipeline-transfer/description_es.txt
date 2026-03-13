@@ -1,0 +1,1 @@
+Guía de conversión de canalización YAML, que cubre la conversión bidireccional entre YAML y el modelo, implementación de PAC (canalización como código), referencias de plantillas y configuración de activador. Úselo cuando los usuarios necesiten analizar canalizaciones YAML, implementar el modo PAC, manejar plantillas de canalizaciones o realizar validación de sintaxis YAML.

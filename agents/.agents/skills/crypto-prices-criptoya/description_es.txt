@@ -1,0 +1,1 @@
+Obtén cotizaciones de criptomonedas con CriptoYa por exchange o agregadas. Usar cuando pidan «precio BTC en ARS», «cotización USDT», «precio ETH en USD», «mejor precio por exchange», «comparar exchanges», precios en belo/ripio/lemon/binance/bybit, o comisiones de retiro y fees por red.

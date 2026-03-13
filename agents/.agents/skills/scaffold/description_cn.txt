@@ -1,0 +1,1 @@
+负责云基础设施（Terraform/CloudFormation/Pulumi）和本地开发环境（Docker Compose/dev 设置/环境变量）的环境配置。当需要IaC设计、环境搭建、多云支持时使用。

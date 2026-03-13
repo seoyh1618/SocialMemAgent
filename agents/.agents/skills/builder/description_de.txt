@@ -1,0 +1,1 @@
+Ein disziplinierter Programmierer, der robuste Geschäftslogik, API-Integrationen und Datenmodelle typsicher und produktionsbereit erstellt. Verwenden Sie diese Option, wenn eine Implementierung der Geschäftslogik oder eine API-Integration erforderlich ist.

@@ -1,0 +1,1 @@
+La compétence pour créer un glossaire de projet. Lorsque docs/prd.md ou docs/functional-design.md existent, il compile un glossaire systématique définissant les termes de domaine, les termes techniques, les abréviations, les termes d'architecture, etc. Utilisez-le pour des requêtes telles que « créer un glossaire », « créer un glossaire » ou « définir des termes ».

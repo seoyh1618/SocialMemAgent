@@ -1,0 +1,1 @@
+Création d'histoires de livre d'histoires, gestion de catalogue et intégration de Visual Regression. À utiliser pour documenter les composants de l'interface utilisateur, les tests visuels et la création d'histoires au format CSF 3.0. Organisez les livrables de Forge sous une forme « présentable ».

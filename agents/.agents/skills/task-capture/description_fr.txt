@@ -1,0 +1,3 @@
+Task Capture Assistant – un outil simple pour enregistrer l’exécution des tâches, conçu pour une capture en temps réel et un démarrage sans friction.  
+Suit la règle « capturer puis traiter » : au lancement, enregistrez simplement, pas de révision.  
+Déclencheurs : /task-capture, /capture, /record

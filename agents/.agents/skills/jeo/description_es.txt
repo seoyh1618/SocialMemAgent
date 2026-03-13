@@ -1,0 +1,1 @@
+JEO: habilidad integrada de orquestación de agentes de IA. Planifique con ralph+plannotator, ejecútelo con team/bmad, verifique las acciones del navegador con el agente-navegador y limpie automáticamente el árbol de trabajo después de completar la tarea. Admite Claude, Codex, Gemini CLI y OpenCode. Instalar: ralph, omc, omx, ohmg, bmad, plannotator, agent-browser.

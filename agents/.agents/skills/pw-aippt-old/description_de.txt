@@ -1,0 +1,1 @@
+Generieren Sie neue Inhalte basierend auf einer PPT-Vorlage. PDF automatisch in Bilder konvertieren → Vorlagenstil analysieren → Artikelinhalt aufteilen → Eingabeaufforderungen generieren → KI-Bildgenerierung → in PPTX verpacken.

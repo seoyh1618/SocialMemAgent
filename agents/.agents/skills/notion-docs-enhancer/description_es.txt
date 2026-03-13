@@ -1,0 +1,3 @@
+Utilice la automatización del navegador Playwright para crear y perfeccionar rápidamente documentos de Notion.
+Escenarios de activación: el usuario menciona "Notion", "refinar documento", "crear página", "completar contenido", "documento de Notion".
+Aplicable para: crear nuevas páginas, modificar títulos, pegar contenido de Markdown, formatear documentos.

@@ -1,0 +1,1 @@
+Leggi l'immagine della fattura e restituisci i dati strutturati. Può essere chiamato da altre competenze o invocato direttamente dall'utente.

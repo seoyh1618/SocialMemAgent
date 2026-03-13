@@ -1,0 +1,1 @@
+Proposer de nouvelles fonctionnalités qui exploitent les données/logiques existantes dans une spécification Markdown. À utiliser lors du brainstorming de nouvelles idées de fonctionnalités, de la planification de produits ou de la formulation de propositions de fonctionnalités. Aucun code n'est écrit.

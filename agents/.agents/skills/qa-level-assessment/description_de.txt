@@ -1,0 +1,5 @@
+Fähigkeit zur Bestimmung des QA-Testniveaus. Es bewertet das Risiko umfassend, indem es Story-Beschreibungen, Code-Unterschiede und Dialoge kombiniert, und schlägt dann eine geeignete Qualitätssicherungsstufe vor. In folgenden Situationen verwenden:
+- Wenn Sie das QA-Niveau einer PR bestimmen möchten
+- Wenn Sie entscheiden müssen, ob ein Tester oder eine Doppelprüfung erforderlich ist
+- Beim Festlegen des Niveaus für eine Teststandpunktüberprüfung
+Kann auch mit „QA-Beurteilung“, „Teststufe“, „Risikobewertung“ usw. aufgerufen werden.

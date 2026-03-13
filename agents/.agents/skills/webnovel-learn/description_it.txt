@@ -1,0 +1,1 @@
+Estrai i pattern riusciti dalla sessione corrente e scrivili in project_memory.json

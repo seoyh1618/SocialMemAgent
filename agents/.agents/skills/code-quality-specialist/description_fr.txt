@@ -1,0 +1,1 @@
+Fournit une révision du code, une analyse des performances, des suggestions de refactorisation, un diagnostic des erreurs et des capacités de débogage. À utiliser lorsqu'une évaluation de la qualité du code, une optimisation des performances ou un dépannage est nécessaire.

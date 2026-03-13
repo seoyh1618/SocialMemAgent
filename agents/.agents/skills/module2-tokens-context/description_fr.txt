@@ -1,0 +1,1 @@
+Un module qui enseigne les limites du traitement des entrées longues et des solutions de contournement pratiques (fractionnement, résumé, priorisation) centrées sur la tokenisation et les fenêtres contextuelles.

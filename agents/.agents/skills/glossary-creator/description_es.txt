@@ -1,0 +1,1 @@
+La habilidad de crear un glosario de proyectos. Cuando existen docs/prd.md o docs/functional-design.md, compila un glosario sistemático que define términos de dominio, términos técnicos, abreviaturas, términos de arquitectura, etc. Úselo para solicitudes como "crear un glosario", "hacer un glosario" o "definir términos".

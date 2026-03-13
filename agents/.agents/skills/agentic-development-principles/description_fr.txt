@@ -1,0 +1,1 @@
+Principes universels du développement agent collaborant avec des agents d'IA : définition de diviser pour mieux régner, de gestion du contexte, de sélection du niveau d'abstraction et de philosophie d'automatisation. Applicable à tous les outils de codage AI.

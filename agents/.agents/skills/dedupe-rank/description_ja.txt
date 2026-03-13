@@ -1,0 +1,1 @@
+最初のドキュメント集 (`papers/papers_raw.jsonl`) を逆順に並べ替え、`papers/papers_dedup.jsonl` と `papers/core_set.csv` を生成します。

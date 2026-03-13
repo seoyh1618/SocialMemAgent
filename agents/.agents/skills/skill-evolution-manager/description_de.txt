@@ -1,0 +1,1 @@
+Ein zentrales Tool zum Zusammenfassen, Optimieren und Iterieren vorhandener Fähigkeiten basierend auf Benutzerfeedback und Gesprächsinhalten am Ende eines Dialogs. Es entwickelt die Kompetenzbibliothek kontinuierlich weiter, indem es die „Essenz“ aus Gesprächen extrahiert (z. B. erfolgreiche Lösungen, gewonnene Erkenntnisse und spezifische Codierungsstandards).

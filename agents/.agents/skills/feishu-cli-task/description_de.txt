@@ -1,0 +1,1 @@
+Aufgabenverwaltung. Wird verwendet, wenn der Benutzer anfordert, Aufgaben zu erstellen, anzuzeigen, abzuschließen oder zu verwalten. Unterstützt Vorgänge wie das Erstellen/Anzeigen/Aktualisieren/Löschen/Abschließen von Aufgaben.

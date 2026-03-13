@@ -1,0 +1,1 @@
+Visualisierung und Doku: Mermaid.js, Diagram-as-Code, automatische Systemmodellierung. Sequenz-, ERD-, Gitgraph- und Zustandsdiagramme für Logik, Datenflüsse und Zeitachsen im Gemini Elite Core.

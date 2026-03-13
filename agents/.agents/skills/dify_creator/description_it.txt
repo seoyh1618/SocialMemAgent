@@ -1,0 +1,1 @@
+Guida l'utente a chiarire i requisiti attraverso conversazioni a più round, fare riferimento ai casi Dify esistenti e generare una configurazione DSL YAML del flusso di lavoro che può essere importata direttamente in Dify.

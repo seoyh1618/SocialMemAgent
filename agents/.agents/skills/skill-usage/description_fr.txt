@@ -1,0 +1,1 @@
+Comptez les temps d'utilisation des compétences installées au cours d'une période spécifiée et affichez les résultats dans un magnifique format TUI.

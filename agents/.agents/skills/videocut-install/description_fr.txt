@@ -1,0 +1,1 @@
+Préparation de l'environnement. Installez les dépendances, téléchargez le modèle, vérifiez l'environnement. Mots déclencheurs : installer, préparation de l'environnement, initialiser

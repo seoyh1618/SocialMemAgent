@@ -1,0 +1,1 @@
+Verwenden Sie yt-dlp, um YouTube-Videos, Audio oder Untertitel herunterzuladen.

@@ -1,0 +1,2 @@
+SuperClaude Enhancement Layer Skill, der SuperClaude-Fähigkeitserweiterungen für andere Skills bietet.  
+Unterstützt Voranalyse, Nachprüfung, intelligente Vorschläge und andere Verbesserungsmodi.

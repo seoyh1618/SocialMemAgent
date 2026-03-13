@@ -1,0 +1,1 @@
+Inizializzare un nuovo progetto. Trigger: init, nuovo progetto, inizializza, crea progetto.

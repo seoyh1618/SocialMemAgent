@@ -1,0 +1,3 @@
+Ottieni l'ora corrente, formatta la data, calcola la differenza di data, converti il ​​fuso orario.  
+Utilizza questa abilità quando gli utenti chiedono informazioni su ora, data o fuso orario.  
+Parole chiave: ora, data, fuso orario, oggi, adesso, giorno della settimana, a che ora

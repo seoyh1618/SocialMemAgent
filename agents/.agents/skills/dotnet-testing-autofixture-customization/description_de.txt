@@ -1,0 +1,3 @@
+Vollständiger Leitfaden zu den erweiterten Anpassungstechniken von AutoFixture.  
+Deckt die automatische Integration von DataAnnotations, die Implementierung von ISpecimenBuilder und die Prioritätsverwaltung ab.  
+Enthält Builder für DateTime/numerische Bereiche, generisches Design und fließende Erweiterungsmethoden.

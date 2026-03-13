@@ -1,0 +1,1 @@
+Escriba contenido en Feishu Docs, con diagramas automáticos Mermaid/PlantUML representados como pizarras. Admite acciones avanzadas como agregar pizarras, llamadas y bloques de actualización por lotes. Úselo cuando los usuarios soliciten crear, escribir o actualizar Feishu Docs. Se recomiendan diagramas de sirena.

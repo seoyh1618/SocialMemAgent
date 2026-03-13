@@ -1,0 +1,1 @@
+Competenze da esperto di programmazione Rust. Gestisci tutti i problemi relativi a Rust: errori di compilazione, proprietà, durata, concorrenza, async/await, ottimizzazione delle prestazioni, ecc. Parole chiave: Rust, cargo, errore di compilazione, proprietà, prestito, durata, asincrono, tokio, invio, sincronizzazione, risultato, errore

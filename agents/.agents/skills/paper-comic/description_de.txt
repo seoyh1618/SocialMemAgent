@@ -1,0 +1,3 @@
+Erstellen Sie pädagogische Comics aus wissenschaftlichen Arbeiten und nutzen Sie visuelles Storytelling, um Kernideen und Innovationen zu erklären.
+Unterstützt 4 Stile: klassisch (klare Linien), technisch (technisch), warm (warm), Kreide (Kreide).
+Verwenden Sie baoyu-gemini-web, um Bilder zu generieren.

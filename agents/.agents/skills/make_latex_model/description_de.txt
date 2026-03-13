@@ -1,0 +1,1 @@
+High-Fidelity-Optimierer für LaTeX-Vorlagen, der die Ausrichtung von Stilparametern für jede LaTeX-Vorlage, die Ausrichtung von Titeltexten, den Vergleich des Titelformats (fett), einen visuellen HTML-Bericht, automatische LaTeX-Reparaturvorschläge und eine PDF-Vergleichsvalidierung auf Pixelebene unterstützt

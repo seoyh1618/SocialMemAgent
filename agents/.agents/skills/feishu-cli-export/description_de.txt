@@ -1,0 +1,1 @@
+Exportieren Sie Feishu-Dokumente oder Wissensdatenbankdokumente als Markdown-Dateien. Wird verwendet, wenn der Benutzer „Dokument exportieren“, „In Markdown konvertieren“ oder „Als MD speichern“ anfordert. Markdown wird als Zwischenformat im Verzeichnis /tmp gespeichert.

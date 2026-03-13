@@ -1,0 +1,1 @@
+Estándares de mensajes de confirmación de Git. Concéntrese en el formato y la coherencia estilística de los mensajes de confirmación. Priorizar el aprendizaje y seguir el estilo de historial de compromisos existente del proyecto; Si no existe un estilo claro o es un proyecto nuevo, siga la especificación de confirmaciones convencionales.

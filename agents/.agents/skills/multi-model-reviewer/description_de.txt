@@ -1,0 +1,1 @@
+Koordinieren Sie mehrere KI-Modelle (ChatGPT, Gemini, Codex, QWEN, Claude) für die Triangulation und stellen Sie die Konsistenz „Spezifikation == Programm == Test“ sicher. Nach dem Filtern von Fehlalarmen können Sie einen Bericht ausgeben, der die Zeit für manuelle Eingriffe erheblich verkürzt.

@@ -1,0 +1,1 @@
+Lisez l’image d’un relevé de retenue à la source et retournez des données structurées. Il peut être appelé par d'autres compétences ou invoqué directement par l'utilisateur.

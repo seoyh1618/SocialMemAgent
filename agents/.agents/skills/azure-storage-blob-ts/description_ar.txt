@@ -1,0 +1,1 @@
+SDK تخزين Azure Blob لـ JavaScript/TypeScript (@azure/storage-blob) لعمليات الـ blob. يُستخدم للرفع والتنزيل وال list وإدارة الـ blobs والحاويات. يدعم block/append/page blobs ورمز SAS والتدفق. محفزات: "blob storage"، "@azure/storage-blob"، "BlobServiceClient"، "ContainerClient"، "upload blob"، "download blob"، "SAS token"، "block blob".

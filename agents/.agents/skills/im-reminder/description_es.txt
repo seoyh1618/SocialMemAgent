@@ -1,0 +1,1 @@
+La habilidad de recordatorio programado de mensajería instantánea admite tareas periódicas y únicas. Activa al agente a la hora especificada mediante una tarea cron, detecta automáticamente el canal de mensajería instantánea actual y garantiza que los mensajes se entreguen con precisión.

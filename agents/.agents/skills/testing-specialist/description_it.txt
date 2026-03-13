@@ -1,0 +1,1 @@
+Fornisce funzionalità di strategia di test, scrittura di test, esecuzione di test e analisi dei risultati dei test. Da utilizzare quando è necessario scrivere, correggere o ottimizzare i processi di test.

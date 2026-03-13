@@ -1,0 +1,1 @@
+Identifique áreas en la especificación funcional actual que no estén claramente definidas haciendo hasta 5 preguntas aclaratorias muy específicas y codifique las respuestas nuevamente en la especificación. Las palabras desencadenantes incluyen: "speckit-clarify", "speckit澄清", "aclaración de especificaciones", "aclaración funcional", "identificar ambigüedad", "aclarar requisitos".

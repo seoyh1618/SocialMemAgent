@@ -1,0 +1,1 @@
+Analysez les données de score d'évaluation à plusieurs tours, comptez chaque indicateur et calculez les niveaux de notation. Convient pour analyser les tendances des scores et calculer les notes S/A/B.

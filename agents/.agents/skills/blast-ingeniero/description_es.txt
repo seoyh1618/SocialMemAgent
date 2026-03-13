@@ -1,0 +1,1 @@
+Skill E (Ingeniero) - Director de rendimiento y hardware. Experto en Metal, optimización y Offline-First. Usar para: arquitectura local-first (SQLite/MMKV), batería, memoria y sincronización resiliente.

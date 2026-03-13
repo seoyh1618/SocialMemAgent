@@ -1,0 +1,1 @@
+Ayude a los usuarios a organizar sus informes semanales, presentando el valor y los límites del trabajo de una manera completa y lógica. Se activa cuando el usuario dice "escribir informe semanal", "informe semanal", "organizar informe semanal" u "organizar trabajo".

@@ -1,0 +1,1 @@
+Avvisa automaticamente quando gli elementi chiave della storia (personaggi, fili della trama, prefigurazioni) non sono apparsi per più di 10 capitoli: previene la "sindrome da scomparsa del personaggio" e le trame trascurate nei romanzi lunghi.

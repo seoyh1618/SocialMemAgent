@@ -1,0 +1,4 @@
+AutoFixture- und NSubstitute-Integrationsleitfaden – Auto-Mocking in der Praxis.  
+Behandelt AutoNSubstituteDataAttribute, den Frozen-Mechanismus und die Greedy-Konstruktionsstrategie.  
+Beinhaltet eine benutzerdefinierte Behandlung für spezielle Abhängigkeiten wie IMapper (AutoMapper/Mapster).  
+Ideal für komplexe Abhängigkeitsinjektionstests, Scheinverifizierung und Verhaltenseinrichtung.

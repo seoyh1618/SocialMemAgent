@@ -1,0 +1,1 @@
+Aggiorna i file del banco di memoria. Trigger: memoria, ricordi, progresso, salvataggio, sincronizzazione, da dove avevo interrotto.

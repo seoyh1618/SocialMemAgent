@@ -1,0 +1,1 @@
+Revisa rápidamente riesgos de calidad en cambios recientes; usa Codacy/Context7/SequentialThinking para proponer correcciones mínimas. Usar al escanear cambios en busca de problemas de calidad, ejecutar análisis estático o planificar remediación con esas herramientas.

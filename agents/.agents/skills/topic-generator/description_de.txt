@@ -1,0 +1,1 @@
+AI-Themengenerator-Tool. Filtert die TOP10-Topthemen aus den gesammelten Daten und generiert einen vollständigen Themenplan. Wird ausgelöst, wenn der Benutzer „Themen generieren“, „Aktuelle Themen filtern“ oder „Was es wert ist, geschrieben zu werden“ sagt. Die Ausgabe umfasst: Veranstaltungsbeschreibung, Kernaspekt, Überschrift, Schreibstil.

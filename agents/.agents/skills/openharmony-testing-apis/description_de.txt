@@ -1,0 +1,1 @@
+Wenn Sie OpenHarmony-Anwendungen entwickeln und die Frameworks JsUnit, UiTest oder PerfTest zum Testen verwenden müssen, oder wenn Sie UI-Interaktionen simulieren, Leistungsmetriken messen oder benutzerdefinierte Testläufer implementieren.

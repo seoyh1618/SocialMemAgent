@@ -1,0 +1,1 @@
+Crea rapidamente prototipi che coprano sia il frontend (componenti/pagine dell'interfaccia utente) che il backend (mock API/server semplici). Usalo per convalidare nuove funzionalità o trasformare le idee in qualcosa di tangibile. Un prodotto funzionante ha la precedenza sulla perfezione.

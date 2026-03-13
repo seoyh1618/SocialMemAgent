@@ -1,0 +1,1 @@
+Create specifications, design documents, implementation checklists, and test specifications. Responsible for technical documents in PRD/SRS/HLD/LLD formats, review checklists, and test case definitions. Do not write code. Use when technical documentation is needed.

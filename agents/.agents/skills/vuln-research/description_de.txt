@@ -1,0 +1,12 @@
+Meta-Methodologie für die Sicherheitsforschung – ein Framework zur Schwachstellensuche, das aus über 5.600 Sicherheitspapieren der Xianzhi-Community zusammengestellt wurde.
+
+Verwenden Sie diese Fähigkeit, wenn:
+- Durchführung von Fehlersuche und Sicherheitsforschung, die einen systematischen Denkrahmen benötigen
+- Analyse von Angriffspfaden für bestimmte Schwachstellentypen (Web-Injection, Deserialisierung, Binär-, AD-Penetration usw.)
+- Erforderliche Denkweisen zur Umgehung von Abwehrmaßnahmen (WAF, EDR, Sandbox)
+- Durchführung von Code-Audits, die eine Source-Sink-Analysemethode erfordern
+- Red-Team-Operationen, die eine vollständige Kill-Chain-Planung erfordern
+- CTF-Wettbewerbe, die schnelle Lösungsideen erfordern
+- Beseitigung von Malware, die methodische Anleitung benötigt
+
+Auslöser: Fehlersuche, Sicherheitsforschung, Penetrationstests, Code-Audit, Red-Team-Angriff, CTF, Reverse Engineering, WAF-Umgehung, AV-Umgehung, Rechteausweitung, laterale Bewegung, AD-Penetration, Deserialisierung, binäre Sicherheit, Fuzzing

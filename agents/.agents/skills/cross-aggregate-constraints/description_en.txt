@@ -1,0 +1,5 @@
+Support design decisions for cross-aggregate constraint checks ("in aggregate A's use-case I want to check aggregate B's state").  
+Includes Saga misuse detection, revisiting business requirements, understanding technical constraints in CQRS/ES, and deciding whether to allow inconsistent data.  
+Use when facing cross-aggregate constraint issues during code review, architecture design, or requirements analysis.  
+Target language: language-agnostic.  
+Trigger: activated by cross-aggregate constraint requests such as "cross-aggregate constraint check", "want to check another aggregate's state", "constraint check in Saga", "verify if brand has linked products", "cross-aggregate validation", "reverse lookup with event sourcing", "business rules spanning aggregates", "CQRS/ES constraints", "may the command side reference the read model?", "referencing other aggregates in a use-case".

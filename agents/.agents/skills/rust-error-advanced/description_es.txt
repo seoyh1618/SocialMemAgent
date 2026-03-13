@@ -1,0 +1,1 @@
+Experto en manejo de errores en profundidad. Manejo de resultados versus opciones, este error, de todos modos, contexto de error, errores de biblioteca versus errores de aplicación, manejo de errores, uso de resultados, cuándo usar el pánico

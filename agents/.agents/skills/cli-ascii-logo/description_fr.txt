@@ -1,0 +1,1 @@
+Générez un logo/bannière CLI ASCII-art (avec bordures de dessin de boîte, caractères de bloc █, dégradés ANSI 24 bits) et fournissez des scripts exécutables ainsi qu'un code d'intégration. Idéal pour « créer un logo de terminal comme Spec Kit CLI / une bannière ASCII colorée / un en-tête de style figlet / un écran de démarrage CLI ».

@@ -1,0 +1,2 @@
+SuperClaude Enhancement Layer スキル。他のスキルに SuperClaude の機能強化を提供します。  
+事前分析、事後レビュー、インテリジェントな提案、その他の拡張モードをサポートします。

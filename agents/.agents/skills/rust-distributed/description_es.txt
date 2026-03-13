@@ -1,0 +1,1 @@
+Experto en sistemas distribuidos. Funciona con Raft, 2PC, algoritmos de consenso, transacciones distribuidas, consistencia distribuida, coordinación distribuida.

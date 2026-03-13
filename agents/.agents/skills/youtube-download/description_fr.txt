@@ -1,0 +1,1 @@
+Utilisez yt-dlp pour télécharger des vidéos, de l'audio ou des sous-titres YouTube.

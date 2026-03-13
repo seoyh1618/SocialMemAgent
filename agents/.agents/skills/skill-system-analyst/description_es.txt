@@ -1,0 +1,1 @@
+Análisis de arquitectura de sistema/base de código y organización de documentos técnicos (basado en mapas mentales, anexo/renderizado capítulo por capítulo), generando informes detallados visuales (Mermaid) y seguros para XSS.

@@ -1,0 +1,1 @@
+Verwenden Sie statische und KI-Prüfungen, um Sicherheitsrisiken und potenzielle Bedrohungen in Skills zu bewerten. Wenn ein Benutzer eine Fähigkeitsüberprüfung oder einen Fähigkeitsscan anfordert, lösen Sie die Fähigkeitsbewertungsfunktion aus.

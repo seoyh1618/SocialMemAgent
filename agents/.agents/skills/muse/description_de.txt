@@ -1,0 +1,1 @@
+Definieren und Verwalten von Design-Tokens, Anwenden von Tokens auf vorhandenen Code und Erstellen eines Design-Systems. Verantwortlich für die Gestaltung des Token-Systems, die Vereinheitlichung von Abständen, Farben und Typografie sowie die Implementierung der Unterstützung für den Dunkelmodus. Wird verwendet, wenn Design-Token-Design und UI-Konsistenz erforderlich sind.

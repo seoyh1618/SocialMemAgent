@@ -1,0 +1,1 @@
+Mettez à jour le statut de ROADMAP.md. Déclencheurs : feuille de route, itinéraire, planification, jalon.

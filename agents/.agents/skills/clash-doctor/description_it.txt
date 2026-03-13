@@ -1,0 +1,1 @@
+Diagnosi dei problemi relativi al proxy Clash e alla connessione di rete. Da utilizzare quando gli utenti riscontrano problemi come l'impossibilità di connettersi alla rete, il proxy non funzionante, timeout di GitHub/Google, anomalie DNS, errori della modalità TUN e altri problemi di rete.

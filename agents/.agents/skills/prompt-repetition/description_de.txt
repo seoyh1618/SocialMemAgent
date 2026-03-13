@@ -1,0 +1,1 @@
+Schnelle Iterationstechnik zur Verbesserung der LLM-Genauigkeit. Erzielte erhebliche Leistungsverbesserungen in 67 % (47/70) der Benchmarks. Wird automatisch auf leichte Modelle (Haiku, Flash, Mini) angewendet.

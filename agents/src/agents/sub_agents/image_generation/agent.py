@@ -47,11 +47,11 @@ def generate_image(img_prompt: str):
         config={"number_of_images": 1},
     )
     if not response.generated_images:
-        return {"status": "failed"}
+        return {"status": "failed", "detail": "No images were generated"}
 
     generated_image = response.generated_images[0].image
     if not generated_image:
-        return {"status": "failed"}
+        return {"status": "failed", "detail": "Generated image data is empty"}
     image_bytes = generated_image.image_bytes
 
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")

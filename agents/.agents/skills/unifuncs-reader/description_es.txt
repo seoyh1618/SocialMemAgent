@@ -1,0 +1,1 @@
+Utilice la API UniFuncs para leer contenido de páginas web, archivos PDF, documentos de Word y más, con extracción de contenido impulsada por IA. Úselo cuando los usuarios necesiten leer, raspar o extraer contenido de páginas web o documentos.

@@ -1,0 +1,3 @@
+Appender intelligente di domande e risposte: aggiunge il contenuto di domande e risposte dalla conversazione a una nota esistente o crea una nuova scheda autonoma.
+Utilizza la struttura C+I (riassunto chiave + contesto originale) per risolvere il dilemma tra "troppo conciso per capire" e "troppo verboso".
+Trigger: /qa, /ask

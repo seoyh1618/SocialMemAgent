@@ -1,0 +1,1 @@
+Pubblica contenuti sugli account ufficiali di WeChat tramite API o Chrome CDP. Supporta la pubblicazione di articoli (HTML, Markdown o input di testo semplice) e la pubblicazione di messaggi grafici e di testo (più immagini). Da utilizzare quando l'utente menziona "pubblica account ufficiale", "account ufficiale WeChat", "immagine post", "grafica e testo" o "articolo".

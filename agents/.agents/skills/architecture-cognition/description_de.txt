@@ -1,0 +1,1 @@
+Das globale Architekturbewusstsein ermöglicht es KI-Agenten, ein systemweites Verständnis aufzubauen, die Gesamtarchitektur, den Datenfluss und die Komponentenbeziehungen zu erfassen und zu verhindern, dass lokale Optimierungen globale Probleme verursachen. Gilt für alle Python- und Markdown-Dateien.

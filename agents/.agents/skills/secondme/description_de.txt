@@ -1,0 +1,1 @@
+Erstellung des SecondMe-Integrationsprojekts aus einer Hand, Durchführung der Initialisierung, Anforderungsdefinition und Projektgenerierung nacheinander.

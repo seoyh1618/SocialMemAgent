@@ -1,0 +1,1 @@
+Habilidades profesionales de conexión de billetera Bitcoin, que admiten la integración completa de los paquetes btc-connect core, reaccionar y vue en proyectos React, Vue, Next.js y Nuxt 3, incluidos adaptadores de billetera UniSat y OKX, conmutación de red, configuración del entorno SSR, API Hook unificada y las últimas funciones v0.5.0.

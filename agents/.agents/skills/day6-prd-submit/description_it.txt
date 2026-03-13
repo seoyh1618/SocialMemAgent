@@ -1,0 +1,1 @@
+Scrivi la bozza del PRD, convalida il formato, quindi guida l'invio del PR a GitHub.

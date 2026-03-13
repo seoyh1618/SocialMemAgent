@@ -1,0 +1,1 @@
+Fähigkeit zur Recherche von Best Practices. Wird ausgelöst, wenn Sie Methoden, Tools oder Best Practices in einem bestimmten Bereich verstehen müssen. Auslöserwörter: recherchieren, untersuchen, untersuchen, welche Methoden, Best Practices.

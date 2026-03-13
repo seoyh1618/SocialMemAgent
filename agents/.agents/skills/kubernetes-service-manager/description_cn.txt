@@ -1,0 +1,1 @@
+管理 Kubernetes 服务相关操作。DevOps 进阶技能，自动激活。触发词：kubernetes service manager、kubernetes manager、kubernetes。属于 DevOps 进阶技能类别，在使用 Kubernetes 服务管理功能时使用。

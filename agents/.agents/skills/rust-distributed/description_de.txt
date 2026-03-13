@@ -1,0 +1,1 @@
+Experte für verteilte Systeme. Funktioniert mit Raft, 2PC, Konsensalgorithmen, verteilten Transaktionen, verteilter Konsistenz und verteilter Koordination.

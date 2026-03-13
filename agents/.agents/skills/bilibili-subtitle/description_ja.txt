@@ -1,0 +1,1 @@
+Bilibiliビデオから字幕を抽出し、字幕なしでビデオを文字に起こし、構造化された要約を生成します。トリガー条件: Bilibili URL (bilibili.com)、BV ID (BV1xxx)、または「Bilibili 字幕の抽出」などのリクエスト。

@@ -1,0 +1,1 @@
+Responsabile del provisioning dell'ambiente sia sull'infrastruttura cloud (Terraform/CloudFormation/Pulumi) che sugli ambienti di sviluppo locale (Docker Compose/dev setup/variabili ambientali). Utilizzato quando sono richiesti la progettazione IaC, la costruzione dell'ambiente e il supporto multi-cloud.

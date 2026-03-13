@@ -1,0 +1,1 @@
+Trunca el texto de forma inteligente y preserva la integridad del contenido. Adecuado para preprocesar texto novedoso y garantizar que no exceda los límites de longitud especificados.

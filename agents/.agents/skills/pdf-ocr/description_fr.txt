@@ -1,0 +1,1 @@
+La capacité de reconnaissance PDF OCR à double moteur peut extraire le contenu textuel des fichiers PDF numérisés et des fichiers image.

@@ -1,0 +1,1 @@
+Funzione di promemoria intelligente QQ Bot. Supporta promemoria una tantum, attività ricorrenti, fallback automatico per garantire la consegna. Può impostare, interrogare e annullare promemoria.

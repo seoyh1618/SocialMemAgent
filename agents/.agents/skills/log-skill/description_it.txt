@@ -1,0 +1,1 @@
+Abilità per la registrazione del processo di esecuzione. Si attiva quando è necessario salvare i record di esecuzione o i registri di lavoro. Parole chiave: registrazione, registro, diario, registro di lavoro, salvataggio del record.

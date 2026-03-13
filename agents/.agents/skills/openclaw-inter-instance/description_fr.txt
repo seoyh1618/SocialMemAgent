@@ -1,0 +1,1 @@
+Communication inter-instance pour OpenClaw. Utilisez cette compétence lorsque des messages, une synchronisation de données ou l'exécution de commandes à distance sont requis entre plusieurs instances OpenClaw. Couvre la messagerie agent à agent, l'exécution à distance nodes.run, la communication au niveau des fichiers et d'autres méthodes.

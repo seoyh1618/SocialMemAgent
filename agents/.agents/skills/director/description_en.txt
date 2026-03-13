@@ -1,0 +1,1 @@
+Automated recording of feature demo videos using Playwright E2E tests. Provides scenario design, recording settings, implementation patterns, and quality checklists. Use when creating product demos, feature introduction videos, or onboarding materials.

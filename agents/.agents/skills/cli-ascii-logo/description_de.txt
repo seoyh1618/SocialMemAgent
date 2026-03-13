@@ -1,0 +1,1 @@
+Generieren Sie ein CLI-ASCII-Logo/Banner (mit Box-Drawing-Rändern, █-Blockzeichen, ANSI-24-Bit-Verläufen) und stellen Sie ausführbare Skripte sowie Integrationscode bereit. Ideal für die Anforderungen „Erstellen eines Terminal-Logos wie Spec Kit CLI / buntes ASCII-Banner / Figlet-Header / CLI-Begrüßungsbildschirm“.

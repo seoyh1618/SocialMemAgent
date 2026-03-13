@@ -1,0 +1,1 @@
+Extrahieren Sie Text aus Bilddateien und kopieren Sie ihn in die Zwischenablage. Wird für „Transkription“, „OCR“ usw. verwendet.

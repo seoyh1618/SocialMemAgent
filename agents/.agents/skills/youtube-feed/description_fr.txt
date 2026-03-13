@@ -1,0 +1,3 @@
+Recevez les dernières mises à jour de vos YouTubers/podcasts préférés. Répertoriez les nouvelles vidéos des deux derniers jours, y compris le titre, l'heure de publication et une brève description.  
+Phrases de déclenchement : "Obtenir des mises à jour de podcast", "Tous les nouveaux podcasts récemment", "Mises à jour YouTube", "Mises à jour de podcasts", "Quoi de neuf dans les podcasts".  
+Utilisé pour vérifier quotidiennement si les podcasts IA/technologie suivis ont du nouveau contenu.

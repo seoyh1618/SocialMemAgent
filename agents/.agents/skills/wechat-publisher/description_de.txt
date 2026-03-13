@@ -1,0 +1,1 @@
+Veröffentlichen Sie Markdown mit einem Klick in offiziellen WeChat-Artikelentwürfen. Basierend auf wenyan-cli, unterstützt mehrere Themen, Code-Hervorhebung und automatisches Hochladen von Bildern.

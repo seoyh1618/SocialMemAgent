@@ -1,0 +1,1 @@
+Herramienta de captura de prototipos MockingBot. Capta automáticamente todas las páginas, capturas de pantalla y anotaciones de los enlaces del prototipo de MockingBot y genera documentos Markdown. Los casos de uso incluyen: (1) Capturar páginas prototipo (2) Generar capturas de pantalla de páginas (3) Extraer contenido de anotaciones (4) Exportar documentos Markdown

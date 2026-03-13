@@ -1,0 +1,1 @@
+Wird verwendet, wenn „Polars“, „Fast Dataframe“, „Lazy Evaluation“, „Arrow Backend“ oder nach „Pandas Alternative“, „Parallel Dataframe“, „große CSV-Verarbeitung“, „ETL Pipeline“, „Expression API“ gefragt werden.

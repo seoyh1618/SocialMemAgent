@@ -1,0 +1,1 @@
+Consulta l'IPC (inflazione) dell'Argentina con la serie mensile dall'API Anduin. Usa quando l'utente chiede "inflazione argentina", "ipc argentina", "inflazione mensile", "ultimo dato inflazione", "serie storica inflazione", "inflazione per data/periodo", "variazione mensile ipc".

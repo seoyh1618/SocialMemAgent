@@ -1,0 +1,1 @@
+Utilizza il servizio bm.md per la composizione, il rendering e la conversione del formato Markdown, supportando più piattaforme tra cui gli account ufficiali WeChat, Zhihu e Juejin.

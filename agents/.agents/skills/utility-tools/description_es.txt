@@ -1,0 +1,1 @@
+Proporciona funciones de utilidad prácticas que incluyen búsqueda de direcciones IP, traducción de texto, generación de códigos QR, cálculo hash, extracción de metadatos de páginas web, consulta de WHOIS de dominio y generación de contraseñas.

@@ -1,0 +1,1 @@
+TDD-basierte C#/.NET-Entwicklung. Schreiben Sie zuerst Tests und implementieren Sie sie dann. Durchsetzung der Rot-Grün-Refaktor-Reihenfolge. An den Csharp-Expert-Agenten delegieren.

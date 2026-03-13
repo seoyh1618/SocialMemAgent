@@ -1,0 +1,1 @@
+Wird für die Entwicklung von OpenHarmony-Anwendungen mit dem Ability Kit – UIAbility-Lebenszyklus, Komponentenkommunikation über Want, Context API, ExtensionAbility, BundleManager oder für die Behandlung von Fehlern wie 16000001 (Fähigkeit nicht gefunden), 16000011 (Kontext existiert nicht) usw. verwendet.

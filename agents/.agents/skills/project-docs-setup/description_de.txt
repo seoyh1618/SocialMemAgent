@@ -1,0 +1,21 @@
+Assistent zur Erstellung der Projektdokumentationsstruktur. Erhalten Sie als erfahrener Produktmanager durch mehrstufige Dialoge tiefe Einblicke in die Projektanforderungen, analysieren Sie die Angemessenheit und geben Sie Best-Practice-Empfehlungen, um letztendlich ein vollständiges technisches Dokumentationssystem zu erstellen.
+
+**Wann zu verwenden:**
+- Start eines neuen Projekts, das die Einrichtung eines Dokumentationssystems erfordert (empfohlener erster Schritt)
+- Bestehendes Projekt, dem Standarddokumente fehlen und das fertiggestellt werden muss
+- Code existiert, aber Dokumentation fehlt; Sie müssen Dokumente aus dem Code auffüllen
+- Benötigen Sie professionelle Beratung zur Produkt- und Architekturanalyse?
+
+**Zwei unterstützte Modi:**
+- Modus A: Erstellung neuer Projektdokumente (von Anforderungen zu Dokumenten)
+- Modus B: Code-to-Docs-Backfill (vom Code zu Dokumenten)
+
+**Beziehung zum Projekt-Workflow:**
+– Dieser Skill erstellt vollständige Dokumente (PRD, SAD, Entwicklerhandbücher usw.)
+- project-workflow führt Entwicklungsaufgaben basierend auf diesen Dokumenten aus
+– Vorgeschlagener Ablauf: project-docs-setup → project-workflow
+
+**Trigger-Phrasen:**
+- „Projektdokumente erstellen“ / „Projektdokumente initialisieren“ / „Projektdokumente einrichten“
+- „Dokumente aus Code generieren“ / „Projektdokumente auffüllen“ / „Projektdokumente ergänzen“
+- Projektanforderungen direkt beschreiben, z.B. „Helfen Sie mir, Dokumente für eine Online-Bildungsplattform zu erstellen“

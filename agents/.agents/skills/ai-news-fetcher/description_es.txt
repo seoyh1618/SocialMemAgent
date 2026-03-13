@@ -1,0 +1,1 @@
+Utilice Tavily MCP para obtener las últimas noticias sobre IA y generar un artículo de rebajas bilingüe japonés-inglés. Se utiliza para comandos como "Obtener noticias de IA" y "Últimas noticias".

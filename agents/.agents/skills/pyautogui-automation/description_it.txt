@@ -1,0 +1,1 @@
+Strumento di automazione desktop basato su PyAutoGUI. Supporta screenshot, controllo del mouse e della tastiera, riconoscimento delle immagini, rilevamento del colore e operazioni simili. Si attiva quando gli utenti devono automatizzare le applicazioni desktop, eseguire test dell'interfaccia utente o gestire attività ripetitive.

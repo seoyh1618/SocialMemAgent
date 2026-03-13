@@ -1,0 +1,1 @@
+Compétences de mise en œuvre basées sur la fondation jp-ui (couleurs/typographie/icônes/formes/ombres). Mettez à jour cette compétence chaque fois que les jetons Foundation ou les fichiers associés sont mis à jour.

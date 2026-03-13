@@ -1,0 +1,3 @@
+将学术论文转换为具有多种写作风格的深度技术文章。  
+使用MinerU Cloud API准确解析PDF并自动提取图形、表格和公式。  
+可选公式解释和GitHub代码分析，输出Markdown和HTML格式。

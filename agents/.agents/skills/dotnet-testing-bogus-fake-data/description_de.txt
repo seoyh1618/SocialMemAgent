@@ -1,0 +1,3 @@
+Spezialisierte Fähigkeiten in der Verwendung von Bogus zur Generierung realistischer gefälschter Daten.
+Wird verwendet, wenn realistische Namen, Adressen, Telefonnummern, E-Mails, Unternehmensinformationen und andere Testdaten benötigt werden.
+Behandelt die Faker-Klasse, mehrsprachige Unterstützung, benutzerdefinierte Regeln und die Massendatengenerierung.

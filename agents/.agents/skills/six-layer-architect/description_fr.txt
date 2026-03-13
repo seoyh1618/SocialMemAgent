@@ -1,0 +1,1 @@
+Générez un plan de mise en œuvre complet basé sur une architecture à six couches (interface utilisateur frontale/services front-end/API front-end/API back-end/services back-end/couche de données), adaptée au développement de fonctionnalités, à la génération de code, à la validation de l'architecture et à l'examen de la sécurité.

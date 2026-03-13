@@ -1,0 +1,1 @@
+Cette technologie doit être utilisée lorsque les utilisateurs demandent une « conversion de code », une « génération React », un « code Tailwind », un « code de composant », une « conception en code », un « code à partir d'un fichier .pen » ou lorsqu'ils souhaitent convertir des conceptions Pencil en code CSS React + Tailwind.

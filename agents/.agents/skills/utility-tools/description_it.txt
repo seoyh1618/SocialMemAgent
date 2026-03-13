@@ -1,0 +1,1 @@
+Fornisce pratiche funzioni di utilità tra cui ricerca di indirizzi IP, traduzione di testo, generazione di codici QR, calcolo hash, estrazione di metadati di pagine Web, query WHOIS di dominio e generazione di password.

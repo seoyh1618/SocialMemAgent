@@ -1,0 +1,1 @@
+Abilità di ottimizzazione del ciclo di feedback dell'intelligenza artificiale. Automatizza il ciclo iterativo di prompt→output→valutazione→miglioramento. Genera risultati della massima qualità attraverso il perfezionamento graduale, il test A/B, la determinazione della convergenza e la selezione dell'output migliore.

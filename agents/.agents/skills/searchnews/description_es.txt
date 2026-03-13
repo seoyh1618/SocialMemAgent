@@ -1,0 +1,1 @@
+Cuando el usuario solicita "buscar noticias", "consultar noticias de IA", "organizar noticias", "obtener noticias para un día determinado" o menciona la necesidad de buscar, organizar o resumir noticias de la industria de IA para una fecha específica, se debe utilizar esta habilidad.

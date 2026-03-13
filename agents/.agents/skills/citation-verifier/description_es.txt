@@ -1,0 +1,6 @@
+Genere y verifique entradas BibTeX a partir de notas en papel, escribiendo `citations/ref.bib` y `citations/verified.jsonl`.  
+**Activador**: cita, BibTeX, ref.bib, verificado.jsonl, referencias, 引用, 参考文献.  
+**Úselo cuando**: `papers/paper_notes.jsonl` ya existe y necesita citas rastreables (cada una con URL/fecha/registro de verificación de título) para prosa/LaTeX.  
+**Omitir si**: aún no hay notas impresas (o el resultado actual no necesita citas/referencias).  
+**Red**: la verificación automática generalmente requiere red; si no está conectado, registre primero y luego marque que necesita verificación manual.  
+**Guardrail**: cada entrada de BibTeX debe tener un registro `citations/verified.jsonl` coincidente; la prosa solo puede usar claves de citas que ya estén en `citations/ref.bib`.

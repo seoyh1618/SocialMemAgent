@@ -1,0 +1,1 @@
+Una “competenza che crea competenze”. Questo strumento automatizza l'intero processo di conversione di qualsiasi repository GitHub in una competenza Trae standardizzata ed è lo strumento principale per espandere le capacità degli agenti AI.

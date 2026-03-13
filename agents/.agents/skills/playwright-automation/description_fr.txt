@@ -1,0 +1,1 @@
+Automatisation du navigateur du dramaturge. Utilisé pour le scraping Web automatisé, la collecte de données, le remplissage de formulaires, les tests d'interface utilisateur et d'autres scénarios d'automatisation du navigateur. Aucune intervention manuelle requise, adaptée aux tâches planifiées cron.

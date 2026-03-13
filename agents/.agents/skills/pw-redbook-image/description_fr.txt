@@ -1,0 +1,1 @@
+Décomposez l'article en une série d'images de style Xiaohongshu. Générez des images de couverture, de contenu et de fin à partir d'URL, de fichiers ou de texte, créez automatiquement des invites et appelez l'outil de génération d'images.

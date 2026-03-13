@@ -1,0 +1,1 @@
+Al desarrollar aplicaciones OpenHarmony y necesitar utilizar los marcos JsUnit, UiTest o PerfTest para realizar pruebas, o al simular interacciones de interfaz de usuario, medir métricas de rendimiento o implementar ejecutores de pruebas personalizados.

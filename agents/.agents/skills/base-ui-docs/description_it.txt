@@ -1,0 +1,1 @@
+Una capacità per fare riferimento alla documentazione ufficiale di Base UI (@base-ui/react) e controllarne l'API. Utilizzalo quando vengono poste domande sui componenti/manuali/panoramiche dell'interfaccia utente di Base.

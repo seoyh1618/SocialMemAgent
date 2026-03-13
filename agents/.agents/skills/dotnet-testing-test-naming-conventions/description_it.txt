@@ -1,0 +1,3 @@
+Abilità specializzata nelle convenzioni di denominazione dei test e nelle migliori pratiche.  
+Utilizzare quando si denominano i metodi di prova, si migliora la leggibilità dei test, si stabiliscono standard di denominazione.  
+Copre lo stile di denominazione in tre parti, i consigli sui nomi cinesi, i nomi delle classi di test, ecc.

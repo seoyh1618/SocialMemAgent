@@ -1,0 +1,1 @@
+Esperto di interoperabilità multilingue FFI. Gestisce interoperabilità C/C++, bindgen, PyO3, Java JNI, layout di memoria, conversione dati, ecc. Parole trigger: FFI, C, C++, bindgen, cbindgen, PyO3, jni, extern, libc, CString, CStr, cross-lingual, interoperabilità, associazione

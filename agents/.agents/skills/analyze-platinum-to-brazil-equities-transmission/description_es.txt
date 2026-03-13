@@ -1,0 +1,1 @@
+Utilizar datos del mercado público para verificar cuantitativamente la relación de transmisión/correlación de ciclo largo entre el platino y el mercado de valores brasileño (EWZ), generando un gráfico de doble eje, análisis de avance-retraso, puntaje de fuerza de correlación y señal de monitoreo.

@@ -1,0 +1,1 @@
+Lors du développement d'applications OpenHarmony et devant utiliser les frameworks JsUnit, UiTest ou PerfTest pour les tests, ou lors de la simulation d'interactions avec l'interface utilisateur, de la mesure des métriques de performances ou de la mise en œuvre d'exécuteurs de tests personnalisés.

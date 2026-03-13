@@ -1,9 +1,12 @@
+import logging
 import os
 import requests
 import json
 from dotenv import load_dotenv
 
 load_dotenv()
+
+logger = logging.getLogger(__name__)
 
 def advanced_search(query: str, queryType: str, cursor: str) -> dict:
     """Search for related tweets.
@@ -18,7 +21,7 @@ def advanced_search(query: str, queryType: str, cursor: str) -> dict:
         has_next_page boolean: Whether there is a next page. (Every page has 20 tweets)
         cursor str: Cursor for fetching the next page of results.
     """
-    print(f"--- Tool: advanced search for query: {query} ---") # Log tool execution
+    logger.info("Tool: advanced_search | query=%s", query)
     
     url = "https://api.twitterapi.io/twitter/tweet/advanced_search"
 
@@ -50,7 +53,7 @@ def get_trends():
     Returns:
         The list of trends (sorted from most popular to less popular).
     """
-    print(f"--- Tool: get trends ---") # Log tool execution
+    logger.info("Tool: get_trends")
     url = "https://api.twitterapi.io/twitter/trends"
 
     # Use the default woeid as US.
@@ -73,7 +76,7 @@ def get_trends():
         if name is not None:
             trend_names.append(name)
 
-    print(trend_names)
+    logger.debug("get_trends result: %s", trend_names)
     return trend_names
 
 def get_user_posts(userId: str, cursor: str):

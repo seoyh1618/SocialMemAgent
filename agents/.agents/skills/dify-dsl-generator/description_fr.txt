@@ -1,0 +1,1 @@
+Un générateur de fichiers DSL/YML de flux de travail Dify professionnel qui produit automatiquement des fichiers de configuration de flux de travail Dify complets en fonction des exigences commerciales des utilisateurs, prenant en charge divers types de nœuds et une logique de flux de travail complexe.

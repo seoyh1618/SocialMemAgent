@@ -1,0 +1,1 @@
+Scarica automaticamente i libri dall'archivio di Anna e caricali su Google NotebookLM. Supporta i formati PDF/EPUB, conversione automatica e creazione di knowledge base con un clic.

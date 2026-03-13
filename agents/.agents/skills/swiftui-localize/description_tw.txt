@@ -1,0 +1,1 @@
+SwiftUI / iOS / macOS 專案在地化專家技能，支援 scan（唯讀掃描）、apply（執行修改）、lint（CI 檢查）三種模式，可切換中英文輸出。

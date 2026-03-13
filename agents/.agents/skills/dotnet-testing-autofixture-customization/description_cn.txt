@@ -1,0 +1,3 @@
+AutoFixture 高级定制技术完整指南。  
+涵盖DataAnnotations自动集成、ISpecimenBuilder实现、优先级管理。  
+包括日期时间/数字范围构建器、通用设计和流畅的扩展方法。

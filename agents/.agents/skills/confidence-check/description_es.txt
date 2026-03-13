@@ -1,0 +1,1 @@
+Implementar controles de confianza previos. Se utiliza antes de iniciar tareas complejas como el desarrollo de nuevas funciones, corrección de errores y refactorización de código. Se activa automáticamente, no se requiere invocación manual.

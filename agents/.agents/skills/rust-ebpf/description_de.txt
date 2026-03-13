@@ -1,0 +1,1 @@
+Experte für eBPF und Kernel-Module. Verarbeitet eBPF-Programme, Kernel-Module, Karten, Tail Calls, Leistungsereignisse, Ablaufverfolgung, Kernel-Prüfungen und Leistungsprofilierung.

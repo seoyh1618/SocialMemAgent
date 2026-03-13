@@ -1,0 +1,1 @@
+Convenciones y patrones para desarrollo backend con Fastify + Prisma.

@@ -1,0 +1,1 @@
+Automatizza le operazioni di GitHub. Utilizza questa competenza quando gli utenti devono gestire repository, creare PR, gestire problemi, automatizzare CI/CD o eseguire revisioni del codice.

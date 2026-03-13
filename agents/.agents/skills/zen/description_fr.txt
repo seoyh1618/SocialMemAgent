@@ -1,0 +1,1 @@
+Améliorez les noms de variables, extrayez les fonctions, transformez les nombres magiques en constantes, supprimez le code mort, révisez le code. À utiliser lorsque le code est difficile à lire, nécessite une refactorisation ou nécessite une révision des relations publiques. Le comportement reste inchangé.

@@ -1,0 +1,1 @@
+Assistenza e verifica dell'architettura DDD. Trigger: architettura, nuova funzionalità, nuovo modulo, dominio, struttura.

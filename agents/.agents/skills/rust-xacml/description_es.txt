@@ -1,0 +1,1 @@
+Motor estratégico, decisión de permisos, RBAC, patrón de políticas, cadena de responsabilidad

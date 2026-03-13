@@ -1,0 +1,7 @@
+Convierta archivos de subtítulos SRT en datos JSON estructurados.
+Escenarios desencadenantes:
+(1) Necesidad de analizar archivos de subtítulos SRT
+(2) Necesidad de convertir subtítulos a formato JSON/estructurado
+(3) Necesidad de extraer códigos de tiempo y texto de subtítulos
+(4) Procesamiento y análisis de datos de subtítulos de vídeo.
+(5) Generar subtítulos en texto plano o estadísticas.

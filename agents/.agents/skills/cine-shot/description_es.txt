@@ -1,0 +1,1 @@
+Generador de mensajes de arte cinematográfico con IA. Según la descripción de la escena del usuario, hace coincidir automáticamente los módulos de la cámara y los ajustes preestablecidos de iluminación para generar indicaciones cinematográficas en formatos Midjourney y Gemini 3 Pro.

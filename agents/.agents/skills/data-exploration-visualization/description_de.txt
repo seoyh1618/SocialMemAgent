@@ -1,0 +1,1 @@
+Automatisiertes Datenexplorations- und Visualisierungstool, das eine vollständige EDA-Lösung vom Laden der Daten bis zur professionellen Berichterstellung bietet. Unterstützt mehrere Diagrammtypen, intelligente Datendiagnose, Modellbewertung und HTML-Berichterstellung. Geeignet für Datenanalyseprojekte in den Bereichen Gesundheitswesen, Finanzen, E-Commerce und anderen Bereichen.

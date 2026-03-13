@@ -1,0 +1,1 @@
+Scrivere/ricostruire il corpo del testo LaTeX per la sezione "Motivazione" di una proposta di ricerca, sulla base di una tabella informativa minima che mostri il valore e la necessità, le carenze attuali, le domande/ipotesi scientifiche e i punti di ingresso del progetto, mantenendo intatta la struttura del modello. Adatto per NSFC e altre richieste di borse di ricerca.

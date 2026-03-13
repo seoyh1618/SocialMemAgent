@@ -1,0 +1,6 @@
+Descargue archivos PDF (cuando estén disponibles) y extraiga texto sin formato para respaldar la evidencia de texto completo, escribiendo `papers/fulltext_index.jsonl` y `papers/fulltext/*.txt`.
+**Activador**: descarga de PDF, texto completo, extracción de texto, artículos/pdf, extracción de texto completo, descarga de PDF.
+**Úselo cuando**: `queries.md` establece `evidence_mode: fulltext` (o necesita explícitamente evidencia de texto completo) y desea proporcionar evidencia más sólida para notas/reclamaciones en papel.
+**Omitir si**: `evidence_mode: abstract` (predeterminado); o no desea realizar la descarga/extracción (costo/permisos/tiempo).
+**Red**: la descarga de texto completo generalmente requiere una red (a menos que proporciones manualmente el caché de PDF en `papers/pdfs/`).
+**Guardrail**: descargas de caché a `papers/pdfs/`; de forma predeterminada, no sobrescriba el texto extraído existente (a menos que se solicite explícitamente volver a extraerlo).

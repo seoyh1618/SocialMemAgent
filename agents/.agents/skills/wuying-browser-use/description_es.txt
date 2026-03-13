@@ -1,0 +1,1 @@
+Automatice las interacciones del navegador para pruebas web, llenado de formularios, capturas de pantalla y extracción de datos. Utilícelo cuando los usuarios necesiten navegar por sitios web, interactuar con páginas web o extraer información.

@@ -1,0 +1,1 @@
+Asistente experto en la biblioteca de gráficos VChart, que respalda el diagnóstico de problemas, la generación de configuraciones, la restauración de archivos de diseño de imágenes/Figma y otros escenarios, y brinda soluciones precisas de desarrollo de gráficos basadas en una base de conocimiento estructurada.

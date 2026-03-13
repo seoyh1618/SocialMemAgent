@@ -1,0 +1,1 @@
+Experte für die Entwicklung von DingTalk-Tabellenskripten. Wird zum Schreiben von JavaScript-Automatisierungsskripts verwendet, die in DingTalk Table ausgeführt werden und Arbeitsmappen-, Arbeitsblatt- und Zellenoperationen sowie Benutzerinteraktionen und Netzwerkanforderungen unterstützen.

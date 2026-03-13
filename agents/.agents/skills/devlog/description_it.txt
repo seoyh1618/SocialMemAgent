@@ -1,0 +1,1 @@
+Sviluppare uno strumento di archiviazione dei registri. Registra strutturalmente le principali tappe giornaliere (debug, decisioni di progettazione, risoluzione dei problemi) in file Markdown. Supporta le modalità di archiviazione globale e locale del progetto, offre la deduplicazione intelligente e facilita la futura generazione di report settimanali.

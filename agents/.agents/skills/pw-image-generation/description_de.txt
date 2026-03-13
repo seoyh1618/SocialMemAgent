@@ -1,0 +1,1 @@
+KI-Bildgenerierungs- und -verarbeitungsworkflow. Generieren Sie Bilder durch Eingabeaufforderungen und unterstützen Sie Text-zu-Bild, Bild-zu-Bild, Stapelgenerierung, Bild-Hosting-Verwaltung, Zusammenführung langer Bilder und PPT-Verpackung. Die Kernfunktion besteht darin, die Generierung einzeln zu bestätigen, um eine Verschwendung von API-Kontingenten zu vermeiden.

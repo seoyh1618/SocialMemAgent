@@ -1,0 +1,1 @@
+Découpez des clips vidéo, avec des options de compression, de contrôle audio, etc.

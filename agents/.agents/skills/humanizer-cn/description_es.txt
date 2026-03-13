@@ -1,0 +1,3 @@
+Identifique y borre rastros generados por IA en texto chino, haciéndolo más natural y humano.  
+Detecte características de escritura de IA arraigadas en el contexto chino, incluidos clichés, ornamentación excesiva y estructuras mecánicas.  
+Consulte la guía "Signos de escritura de IA" de Wikipedia y localícela para chino.

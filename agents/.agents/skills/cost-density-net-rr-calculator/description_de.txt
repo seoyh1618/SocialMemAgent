@@ -1,0 +1,1 @@
+Berechnen Sie den nichtlinearen Abklingeffekt der Transaktionskosten auf das Risiko-Ertrags-Verhältnis. Integrieren Sie feste Provisionen und Spreads in einen „Kostendichte“-Indikator, der eine hyperbolische Beziehung zwischen Stop-Loss-Größe und Strategieeffizienz aufzeigt, und ermitteln Sie den Schwellenwert für den „Gewinnereignishorizont“.

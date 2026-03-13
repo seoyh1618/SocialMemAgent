@@ -1,0 +1,1 @@
+Calcule la desviación del precio del activo de su tendencia de crecimiento exponencial a largo plazo para evaluar si se encuentra en un rango histórico extremo y, opcionalmente, realice un análisis de factores macro para juzgar la salud del mercado.

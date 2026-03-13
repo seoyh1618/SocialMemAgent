@@ -1,0 +1,1 @@
+Analizza la struttura dell'articolo per identificare dove sono necessarie le illustrazioni e genera illustrazioni utilizzando un approccio bidimensionale tipo x stile. Utilizzalo quando l'utente richiede "illustrare l'articolo", "aggiungere illustrazioni" o "generare immagini dell'articolo".

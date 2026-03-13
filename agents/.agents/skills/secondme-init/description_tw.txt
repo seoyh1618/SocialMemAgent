@@ -1,0 +1,1 @@
+初始化SecondMe專案配置和功能模組選擇，建立state.json和CLAUDE.md

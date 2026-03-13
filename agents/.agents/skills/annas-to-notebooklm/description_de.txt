@@ -1,0 +1,1 @@
+Laden Sie Bücher automatisch aus Annas Archiv herunter und laden Sie sie auf Google NotebookLM hoch. Unterstützt PDF/EPUB-Formate, automatische Konvertierung und Erstellung einer Wissensdatenbank mit einem Klick.

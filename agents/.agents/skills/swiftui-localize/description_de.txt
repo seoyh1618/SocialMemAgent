@@ -1,0 +1,1 @@
+SwiftUI / iOS / macOS-Projektlokalisierungsexperte Skill, der drei Modi unterstützt: Scannen (schreibgeschützter Scan), Anwenden (Änderungen ausführen) und Lint (CI-Prüfung) mit umschaltbarer chinesischer und englischer Ausgabe.

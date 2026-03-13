@@ -1,0 +1,1 @@
+Schreiben Sie C#/.NET-Testcode. Generieren Sie Unit-/Integrationstests für vorhandenen Code mit xUnit, Moq und FluentAssertions. Delegieren Sie an den csharp-expert-Agenten.

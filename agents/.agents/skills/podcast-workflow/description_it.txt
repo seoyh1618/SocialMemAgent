@@ -1,0 +1,5 @@
+Flusso di lavoro unico per l'elaborazione dei podcast. Due punti di ingresso:
+1) Elaborazione diretta: fornisci un collegamento YouTube e passa direttamente al flusso di lavoro
+2) Controllo degli aggiornamenti: recupera gli episodi più recenti dai creatori seguiti, consenti agli utenti di scegliere quali elaborare
+Caratteristiche: estrazione dei sottotitoli → elaborazione del digest del contenuto → salvataggio automatico nella knowledge base Feishu.
+Frasi trigger: "ottieni aggiornamenti podcast", "elabora questo podcast", "flusso di lavoro podcast", "qualsiasi nuovo podcast".

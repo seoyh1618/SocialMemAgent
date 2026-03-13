@@ -1,0 +1,1 @@
+Capacità di elaborazione multimodale delle immagini, supporto di testo con immagine, immagine con immagine, immagine con testo e cucitura di immagini lunghe. Si attiva quando l'utente menziona parole chiave come immagine, immagine, genera immagine, infografica, OCR.

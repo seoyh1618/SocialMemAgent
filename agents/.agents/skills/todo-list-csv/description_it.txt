@@ -1,0 +1,1 @@
+Da utilizzare quando è necessaria una "lista di controllo TODO/foglio di avanzamento (CSV) persistente" strettamente sincronizzata con "update_plan" (ad esempio, lista di controllo/monitoraggio dei progressi/CSV delle richieste dell'utente).

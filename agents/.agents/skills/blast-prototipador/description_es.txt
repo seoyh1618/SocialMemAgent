@@ -1,0 +1,1 @@
+Skill P (Prototipador) - Arquitecto de experiencias visuales. Experto en referencias de diseño y sistemas de diseño atómicos. Usar para: definir Look & Feel antes de código, opciones A/B, alinear estética con la visión del usuario.

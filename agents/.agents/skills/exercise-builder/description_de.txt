@@ -1,0 +1,6 @@
+Fügen Sie Übungen zu jedem Tutorial-Modul hinzu (Eingaben, erwartete Ausgaben, Überprüfungsschritte) und aktualisieren Sie „outline/module_plan.yml“.
+**Trigger**: Übungen, Übung, Überprüfungscheckliste, 教程练习, 可验证作业.
+**Verwenden, wenn**: 已有模块计划（`outline/module_plan.yml`）,需要为每个模块补齐至少 1 个可验证练习以形成 teaching loop。
+**Überspringen, wenn**: Modulplan anzeigen (auch „module-planner“).
+**Netzwerk**: keines.
+**Guardrail**: Die erwartete Ausgabe und die Überprüfungsschritte werden überprüft.

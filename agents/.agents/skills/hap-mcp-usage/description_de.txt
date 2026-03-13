@@ -1,0 +1,1 @@
+Mingdao Cloud HAP MCP Automatisierte Konfigurationsfähigkeit. Wird **sofort** ausgelöst, wenn Benutzer „MCP konfigurieren“, „HAP MCP“, „MCP-Konfiguration“, „MCP hinzufügen“, „MCP-Verbindung“ usw. erwähnen. Unterstützt die automatisierte Konfiguration für 9 KI-Tools mit automatischer Konnektivitätsüberprüfung nach Abschluss.

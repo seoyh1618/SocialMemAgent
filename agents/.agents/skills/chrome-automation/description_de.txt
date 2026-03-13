@@ -1,0 +1,1 @@
+Automatisierung des Chrome-Browsers. Nutzen Sie diese Fähigkeit, wenn Benutzer Browservorgänge, Webtests, Daten-Scraping oder UI-Automatisierung automatisieren müssen.

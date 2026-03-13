@@ -1,0 +1,1 @@
+Experto en desarrollo backend de compiladores, especializado en IR, CFG, SSA, análisis de flujo de datos y pases de optimización.

@@ -1,0 +1,1 @@
+Compétence pour la planification des tâches. Déclenché lorsque les tâches doivent être décomposées et les étapes ordonnées. Mots déclencheurs : planifier, planifier, décomposer, décomposer, étapes, comment faire.

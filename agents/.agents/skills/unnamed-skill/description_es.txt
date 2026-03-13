@@ -1,0 +1,1 @@
+Obtiene datos de grupos de favoritos (LongPort), mercado (LongPort + AkShare) e indicadores técnicos (ta-lib). Analiza con el usuario estrategias de trading, sugiere puntos de compra/venta, y permite backtest, optimización e informes.

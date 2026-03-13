@@ -1,0 +1,1 @@
+Seguimiento y resumen diario de actualizaciones de fuentes de contenido de IA. Cubre podcasts de YouTube específicos, blogueros de Twitter/X y boletines informativos. Activado por solicitudes de los usuarios de "resumen RSS", "informe diario" o "verificar actualizaciones".

@@ -1,0 +1,1 @@
+Session replay analysis, persona-based behavior pattern extraction, and storytelling for UX issues. A behavioral archaeologist who deciphers the "why" from real user operation logs. Collaborates with Researcher/Echo for persona validation.

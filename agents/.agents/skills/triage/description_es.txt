@@ -1,0 +1,1 @@
+Respuesta inicial a incidentes, identificación del alcance del impacto, desarrollo de procedimientos de recuperación, creación post mortem. Se utiliza cuando se necesita respuesta a incidentes y recuperación de fallas. No se escribe ningún código (las correcciones se delegan al constructor).

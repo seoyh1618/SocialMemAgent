@@ -1,0 +1,1 @@
+Usa Tongyi Qianwen Wanxiang (wan2.6-t2i) per generare immagini in stile fumetto o anime. Quando gli utenti dicono "genera manga", "usa Wanxiang per disegnare manga", "genera immagini in stile fumetto", "usa Qianwen per disegnare un personaggio 2D" o richieste simili relative alla generazione di immagini in stile fumetto, esegui questa abilità.

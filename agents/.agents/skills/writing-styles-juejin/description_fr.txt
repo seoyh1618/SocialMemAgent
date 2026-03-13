@@ -1,0 +1,1 @@
+Rédaction technique de style Juejin : structure, titres, ouvertures, démontages techniques, listes percutantes, cas + code, voix humaine, afin qu'un agent puisse générer en un clic des articles techniques en chinois simplifié.

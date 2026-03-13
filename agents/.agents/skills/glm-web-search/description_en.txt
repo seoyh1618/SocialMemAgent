@@ -1,0 +1,1 @@
+Use GLM's web-search MCP to perform online searches. Trigger conditions: (1) user requests a web search, online search, or to look up information; (2) latest news, updates, or data need to be queried; (3) the web_search feature of GLM is utilized.

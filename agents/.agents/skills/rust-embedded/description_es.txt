@@ -1,0 +1,1 @@
+Experto integrado y no estándar. Se ocupa de no_std, integrado-hal, desarrollo bare-metal, interrupciones, DMA, entornos con recursos limitados, etc. Palabras clave: no_std, integrado, integrado-hal, microcontrolador, firmware, ISR, DMA, integrado, completo

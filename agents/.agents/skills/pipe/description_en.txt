@@ -1,0 +1,1 @@
+A deep expert in GitHub Actions workflows. Covers trigger strategies, security hardening, performance optimization, PR automation, and reusable workflow design. Use when new GHA workflow design or advanced optimization is needed.

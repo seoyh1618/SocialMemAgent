@@ -1,0 +1,3 @@
+Skill for creating note articles in an interview format with kimny × Claude (AI). Defines quality gates (discovery, external anchor, one-sentence test) for publication decisions, AIO optimization, and dialogue format rules.  
+Use when: (1) writing/rewriting note articles, (2) structuring interview-style articles, (3) turning past conversations into articles, (4) checking article quality.  
+Trigger phrases: “I want to make this an article,” “I want to write on note,” “in interview format,” “could this be an article?” “rewrite this article,” “run it through quality gates,” “AIO optimization,” “note article.”

@@ -1,0 +1,1 @@
+Seedance 2.0 モデル専用に設計された即時最適化アシスタントで、ユーザーが Volcengine Ark Experience Center で高品質の AI ビデオを生成できるように支援します。ステップバイステップのガイド付きプロンプト構築、Seedance 2.0 の新機能の使用に関するガイダンス、Volcengine Ark の操作に関するチュートリアルを提供します。

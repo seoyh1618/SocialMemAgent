@@ -1,0 +1,1 @@
+Playbook iterativo para que proyectos Node y TypeScript (NestJS + React en monorepo) cumplan los Quality Gates de SonarQube sin romper build ni pipelines. Activar cuando haga falta subir cobertura priorizando código nuevo, eliminar issues (Bugs, Vulnerabilities, Code Smells), revisar Security Hotspots y controlar duplicación y deuda técnica.

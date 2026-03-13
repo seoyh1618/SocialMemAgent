@@ -1,0 +1,1 @@
+Generieren Sie mehrere lustige Antworten auf eine ōgiri-Eingabeaufforderung. Verwenden Sie Schlüsselwörter wie „ōgiri“, „prompt“ und „boke“, wenn eine ōgiri-Eingabe gegeben wird.

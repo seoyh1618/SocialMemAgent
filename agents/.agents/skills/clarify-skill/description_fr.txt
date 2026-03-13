@@ -1,0 +1,1 @@
+Compétence pour clarifier l’intention de l’utilisateur. Déclenché lorsque l'utilisateur donne une idée vague, a besoin d'un brainstorming, souhaite discuter d'une conception ou clarifie. Mots déclencheurs : aide-moi à réfléchir, j'ai envie, discuter, clarifier.

@@ -1,0 +1,3 @@
+.NET Aspire Testing Integration Testing Framework الدليل الكامل.
+يغطي إعداد مشروع AppHost وDistributedApplicationTestingBuilder وإدارة دورة حياة الحاوية.
+يتضمن الترحيل من حاويات الاختبار، وتنسيق الخدمات المتعددة، وتكوين Respawn، وتصميم قابلية اختبار الوقت.

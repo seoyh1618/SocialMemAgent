@@ -1,0 +1,1 @@
+Principi fondamentali dello sviluppo collaborativo degli agenti AI. Definisci il divide et impera, la gestione del contesto, la selezione del livello di astrazione, la filosofia di automazione e la retrospezione della verifica. Applica modelli di collaborazione ottimali ogni volta che utilizzi qualsiasi agente AI.

@@ -1,0 +1,1 @@
+Schreiben Sie den PRD-Entwurf, validieren Sie das Format und leiten Sie dann die GitHub-PR-Einreichung.

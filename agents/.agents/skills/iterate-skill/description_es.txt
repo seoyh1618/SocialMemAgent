@@ -1,0 +1,1 @@
+Habilidad para mejorar iterativamente la Habilidad. Se activa cuando la evaluación falla o necesita optimización. Palabras desencadenantes: iterar, mejorar, optimizar, iterar, mejorar.

@@ -1,0 +1,17 @@
+npm-Paketmanager, der zum Installieren von npm-Paketen, zum Generieren von Abhängigkeitsbäumen, zum Ausführen von Frontend-Projektbefehlen usw. verwendet wird.
+
+**Pflichtregeln:**
+Wenn im Projekt eine package.json-Datei vorhanden ist, MÜSSEN Sie diese Fähigkeit für alle npm/pnpm/yarn-bezogenen Vorgänge verwenden.
+
+**Es ist strengstens verboten, die folgenden Befehle direkt zu verwenden:**
+- ❌ Verboten: „pnpm test“ → ✅ Verwendung: Skill(skill: „utoo“, args: „test“)
+- ❌ Verboten: `pnpm install` → ✅ Verwendung: Skill(skill: „utoo“, args: „install“)
+- ❌ Verboten: `pnpm run <script>` → ✅ Verwendung: Skill(skill: „utoo“, args: „run <script>“)
+- ❌ Verboten: `npm install <pkg>` → ✅ Verwendung: Skill(skill: „utoo“, args: „install <pkg>“)
+- ❌ Verboten: `yarn add <pkg>` → ✅ Verwendung: Skill(skill: „utoo“, args: „install <pkg>“)
+
+**Abgedeckte Vorgänge (muss diesen Skill durchlaufen):**
+Abhängigkeiten installieren, Abhängigkeiten aktualisieren, Abhängigkeiten deinstallieren, Skripts ausführen (Test/Build/Dev usw.), Paketinformationen anzeigen, Projekte verwalten, beliebige Skripts in package.json ausführen.
+
+**Aufrufmethode:**
+Rufen Sie immer über das Skill-Tool auf, führen Sie pnpm/npm/yarn-Befehle nicht direkt mit Bash aus.

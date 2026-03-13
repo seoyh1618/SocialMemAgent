@@ -1,0 +1,1 @@
+Proposez des conversations personnalisées basées sur des profils d'utilisateurs et des notes vectorisées. À utiliser lorsque l'utilisateur a besoin d'une communication personnalisée, de réponses contextuelles ou souhaite que l'IA se souvienne et référence ses pensées et notes précédentes.

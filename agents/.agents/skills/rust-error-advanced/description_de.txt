@@ -1,0 +1,1 @@
+Experte für fundierte Fehlerbehandlung. Umgang mit Ergebnis vs. Option, dieser Fehler, jedenfalls, Fehlerkontext, Bibliotheks- vs. Anwendungsfehler, Fehlerbehandlung, Ergebnisverwendung, wann Panik verwendet werden sollte

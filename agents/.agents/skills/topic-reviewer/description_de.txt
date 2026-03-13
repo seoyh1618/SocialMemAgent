@@ -1,0 +1,1 @@
+Themenüberprüfungstool. Überprüft, ob ein Thema den Veröffentlichungsstandards entspricht, gibt eine Bestanden/Nicht bestanden-Bewertung ab und macht Überarbeitungsvorschläge. Wird ausgelöst, wenn der Benutzer „Thema überprüfen“, „Ist dieses Thema in Ordnung“ oder „Hilf mir zu sehen, ob dies geschrieben werden kann“ sagt.

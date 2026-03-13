@@ -1,0 +1,1 @@
+Tecnica di iterazione rapida per migliorare la precisione LLM. Ottenuti miglioramenti significativi delle prestazioni nel 67% (47/70) dei benchmark. Applicato automaticamente ai modelli leggeri (haiku, flash, mini).

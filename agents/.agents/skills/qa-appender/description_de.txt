@@ -1,0 +1,3 @@
+Intelligenter Q&A-Appender: Hängt Q&A-Inhalte aus der Konversation an eine vorhandene Notiz an oder erstellt eine neue eigenständige Karte.
+Verwendet die C+I-Struktur (Schlüsselerkenntnis + Originalkontext), um das Dilemma „zu prägnant zum Verstehen“ vs. „zu ausführlich“ zu lösen.
+Auslöser: /qa, /ask

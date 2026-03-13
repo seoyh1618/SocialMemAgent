@@ -1,0 +1,1 @@
+Uno strumento fondamentale dedicato al riepilogo, all'ottimizzazione e all'iterazione delle competenze esistenti in base al feedback degli utenti e al contenuto della conversazione alla fine di un dialogo. Fa evolvere continuamente la libreria di competenze estraendo l'"essenza" dalle conversazioni (come soluzioni di successo, lezioni apprese e standard di codifica specifici).

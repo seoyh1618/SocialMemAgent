@@ -1,0 +1,1 @@
+Helfen Sie Benutzern, ihre wöchentlichen Berichte zu organisieren und den Arbeitswert und die Grenzen vollständig und logisch darzustellen. Wird ausgelöst, wenn der Benutzer „Wöchentlichen Bericht schreiben“, „Wochenbericht“, „Wochenbericht organisieren“ oder „Arbeit organisieren“ sagt.

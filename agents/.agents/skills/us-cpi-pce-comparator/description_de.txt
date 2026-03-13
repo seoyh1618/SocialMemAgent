@@ -1,0 +1,1 @@
+Vergleichen Sie automatisch den US-VPI (feste Gewichtung) mit PCE-Inflationssignalen (dynamische Gewichtung) und identifizieren Sie Aufwärtsrisiken für PCE in Kategorien mit geringer Volatilität und hoher Gewichtung. Wird verwendet, um zu analysieren, ob sich der von der Fed beobachtete PCE wieder beschleunigt, auch wenn der Verbraucherpreisindex abzukühlen scheint.

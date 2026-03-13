@@ -1,0 +1,3 @@
+Guida completa all'aggiornamento da xUnit 2.9.xa 3.x.  
+Copre modifiche sostanziali, aggiornamenti dei pacchetti, correzioni di async void e aggiustamenti di IAsyncLifetime.  
+Include un'introduzione alle nuove funzionalità: Assert.Skip, test espliciti, teoria della matrice e vincoli di assemblaggio.

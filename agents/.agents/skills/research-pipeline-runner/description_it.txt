@@ -1,0 +1,6 @@
+Esegui le pipeline di ricerca Units+Checkpoints di questo repository end-to-end (sondaggio/revisione/tutorial/revisione sistematica/referente), con aree di lavoro + checkpoint.  
+**Trigger**: esegui pipeline, kickoff, continua, esecuzione automatica, scrivine uno, sondaggio/revisione/ricerca/tutorial/revisione sistematica/referente.  
+**Utilizzare quando**: l'utente desidera un'esecuzione end-to-end (crea `workspaces/<name>/`, genera/esegue `UNITS.csv`, fa una pausa ai checkpoint HUMAN e attende).  
+**Salta se**: l'utente desidera esplicitamente l'esecuzione manuale passo passo (tramite `unit-executor`) oppure non dovresti avanzare automaticamente alla fase di prosa.  
+**Rete**: dipende dalla pipeline selezionata (la verifica di arXiv/PDF/citazione potrebbe richiedere la rete; importazione offline supportata ove disponibile).  
+**Guardrail**: i posti di blocco devono essere rispettati (niente prosa senza Approva); deve fare una pausa e attendere presso le unità UMANA; vietato creare artefatti dello spazio di lavoro nella radice del repository.

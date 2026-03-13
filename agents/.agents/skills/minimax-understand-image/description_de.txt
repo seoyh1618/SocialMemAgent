@@ -1,0 +1,1 @@
+Verwenden Sie MiniMax MCP zum Bildverständnis und zur Bildanalyse. Auslösebedingungen: (1) Der Benutzer fordert eine Bildanalyse, ein Bildverständnis oder eine Beschreibung des Bildinhalts an. (2) Es müssen Objekte, Texte oder Szenen im Bild identifiziert werden. (3) Die Funktion „verstehen_image“ von MiniMax verwenden

@@ -1,0 +1,12 @@
+Meta-metodologia per la ricerca sulla sicurezza: una struttura di ricerca delle vulnerabilità distillata da oltre 5.600 documenti sulla sicurezza sulla comunità di Xianzhi.
+
+Usa questa abilità quando:
+- Eseguire la caccia ai bug e la ricerca sulla sicurezza, necessitando di un quadro di pensiero sistematico
+- Analisi dei percorsi di attacco per specifici tipi di vulnerabilità (Web injection, deserializzazione, binario, penetrazione AD, ecc.)
+- Richiedere mentalità per aggirare le difese (WAF, EDR, sandbox)
+- Esecuzione di audit del codice che richiedono la metodologia di analisi Source-Sink
+- Operazioni della squadra rossa che richiedono una pianificazione completa della catena di uccisione
+- Competizioni CTF che necessitano di idee di rapida risoluzione
+- Inversione del malware che necessita di una guida metodologica
+
+Trigger: caccia ai bug, ricerca sulla sicurezza, test di penetrazione, verifica del codice, attacco del team rosso, CTF, reverse engineering, bypass WAF, evasione AV, escalation dei privilegi, movimento laterale, penetrazione AD, deserializzazione, sicurezza binaria, fuzzing

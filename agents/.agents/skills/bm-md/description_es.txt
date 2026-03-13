@@ -1,0 +1,1 @@
+Utilice el servicio bm.md para composición tipográfica, renderizado y conversión de formato de Markdown, que admite múltiples plataformas, incluidas las cuentas oficiales de WeChat, Zhihu y Juejin.

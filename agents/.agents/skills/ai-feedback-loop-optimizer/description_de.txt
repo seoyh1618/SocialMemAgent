@@ -1,0 +1,1 @@
+Fähigkeit zur Optimierung der KI-Rückkopplungsschleife. Automatisiert den iterativen Zyklus von Eingabeaufforderung→Ausgabe→Bewertung→Verbesserung. Erzeugt Ergebnisse höchster Qualität durch schrittweise Verfeinerung, A/B-Tests, Konvergenzbestimmung und Auswahl der besten Ausgabe.

@@ -1,0 +1,1 @@
+Sincronice automáticamente los archivos Agents.md, claude.md y gemini.md en el proyecto para mantener la coherencia del contenido. Admite monitoreo automático y activación manual.

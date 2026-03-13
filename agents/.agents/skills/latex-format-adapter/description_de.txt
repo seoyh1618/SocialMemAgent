@@ -1,0 +1,1 @@
+Assistent zur Anpassung des LaTeX-Vorlagenformats: Analysiert Formatierungsanforderungen aus externen Spezifikationsdokumenten (PDF/Bild/Word) und passt Seitenlayout, Schriftarten, Überschriftenstile und andere Konfigurationsdateien an. Beinhaltet nicht das Schreiben des Hauptinhalts.

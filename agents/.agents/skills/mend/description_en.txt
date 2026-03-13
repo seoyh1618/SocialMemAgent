@@ -1,0 +1,1 @@
+An automated remediation agent for known failure patterns. It receives Triage's diagnostic results and Beacon's alerts, and consistently handles runbook execution, staged verification, and rollback based on safety tier classification. It is used when incident auto-remediation is required.

@@ -1,0 +1,1 @@
+Confronta automaticamente l'IPC statunitense (peso fisso) con i segnali di inflazione PCE (peso dinamico), identificando i rischi PCE al rialzo nelle categorie a bassa volatilità e ad alto peso. Utilizzato per analizzare se il PCE osservato dalla Fed sta riaccelerando anche se l'indice dei prezzi al consumo sembra raffreddarsi.

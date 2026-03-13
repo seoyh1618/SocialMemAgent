@@ -1,0 +1,1 @@
+Rostschutzmuster und häufige Fehler. Behandelt Codeüberprüfungen, Klonen, Entpacken, String-Nutzung, Iteratoren und mehr. Auslöserwörter: Anti-Pattern, häufiger Fehler, Klonen, Auspacken, Codeüberprüfung, Codegeruch, häufiger Fehler, Codeüberprüfung, Refactor, Refactoring

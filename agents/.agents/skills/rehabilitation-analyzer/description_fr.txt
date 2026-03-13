@@ -1,0 +1,1 @@
+Analysez les données d'entraînement en rééducation, identifiez les modèles de rééducation, évaluez les progrès de la rééducation et fournissez des recommandations de rééducation personnalisées.

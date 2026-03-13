@@ -1,0 +1,1 @@
+Eseguire il montaggio video. Esegui tagli FFmpeg in base alle attività di eliminazione confermate, esegui il loop fino a zero lapsus, genera sottotitoli. Parole trigger: esegui taglio, avvia taglio, conferma taglio.

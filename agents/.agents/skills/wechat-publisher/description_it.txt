@@ -1,0 +1,1 @@
+Pubblica Markdown con un clic nelle bozze degli articoli ufficiali di WeChat. Basato su wenyan-cli, supporta più temi, evidenziazione del codice e caricamento automatico delle immagini.

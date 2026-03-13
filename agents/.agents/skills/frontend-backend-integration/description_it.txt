@@ -1,0 +1,1 @@
+Integrazione front-end e back-end. Utilizza questa competenza quando gli utenti devono verificare l'integrazione delle API front-end e back-end, eseguire il debug delle chiamate all'interfaccia e garantire formati di dati coerenti.

@@ -1,0 +1,1 @@
+Asistente de servicio al cliente de comercio electrónico con IA, que respalda consultas de pedidos, recomendaciones de productos y manejo de tickets. Puede utilizar Playwright MCP para operar automáticamente el backend del comercio electrónico y consultar el estado real del pedido.

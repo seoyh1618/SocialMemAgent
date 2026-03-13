@@ -1,0 +1,1 @@
+Erstellen Sie Erinnerungen und Kalenderereignisse, wenn Benutzer zukünftige Aufgaben, Termine oder Ereignisse erwähnen. Triggern Sie auf Sätze wie „Erinnere mich“, „Setze eine Erinnerung“, „Ich habe eine Besprechung“, „Nicht vergessen“ oder jede Erwähnung zukünftiger zeitbasierter Aufgaben.

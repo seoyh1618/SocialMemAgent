@@ -1,0 +1,6 @@
+Genere una lista de capítulos para videos de Bilibili.
+Escenarios desencadenantes:
+(1) Necesidad de crear capítulos de Bilibili para un vídeo.
+(2) El usuario dice "convertir al formato Bilibili", "generar capítulos", "generar capítulos de Bilibili"
+(3) Necesidad de generar segmentos de video a partir de subtítulos.
+(4) Procesar marcadores de segmento de barra de progreso de video

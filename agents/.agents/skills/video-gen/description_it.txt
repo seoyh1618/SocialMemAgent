@@ -1,0 +1,1 @@
+Utilizza l'intelligenza artificiale per generare video, supportando i modelli Veo/Sora.

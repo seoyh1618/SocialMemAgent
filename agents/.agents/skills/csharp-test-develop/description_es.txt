@@ -1,0 +1,1 @@
+Escriba código de prueba C#/.NET. Genere pruebas unitarias/de integración para código existente utilizando xUnit, Moq y FluentAssertions. Delegue al agente experto en csharp.

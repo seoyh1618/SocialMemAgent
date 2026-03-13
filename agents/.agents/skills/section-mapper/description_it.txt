@@ -1,0 +1,6 @@
+Mappa i documenti nel set principale su ciascuna sottosezione dello schema e scrivi "outline/mapping.tsv" per tenere traccia della copertura.  
+**Trigger**: mappatore di sezioni, mapping.tsv, copertura, mappatura da carta a sezione, mappatura di carta, copertura.  
+**Quando utilizzare**: fase della struttura (C2), quando `papers/core_set.csv` + `outline/outline.yml` esistono già, per garantire che ogni sottosezione disponga di documenti di supporto sufficienti prima di passare alla prova/scrittura.  
+**Salta se**: ancora nessuna struttura (esegui prima `outline-builder`) o set base non ancora convergente.  
+**Rete**: nessuno.  
+**Guardrail**: la copertura deve essere verificabile (evitare di riutilizzare lo stesso lotto di documenti per tutte le sottosezioni); lasciare chiare indicazioni di riparazione per le sottosezioni poco coperte (espandi query/unisci sottosezioni).

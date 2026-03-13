@@ -1,0 +1,1 @@
+Base de données de séries chronologiques DolphinDB : documentation technique complète et meilleures pratiques. Comprend 1 490 documents techniques + 3 livres blancs officiels. Couvre des scénarios complets tels que la conception de bases de données, le flux informatique, les backtests quantitatifs et les requêtes de fonctions.

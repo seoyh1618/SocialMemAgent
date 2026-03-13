@@ -1,0 +1,1 @@
+Asesor de gestión de SESSION colaborativo multimodelo. Proporciona automáticamente sugerencias para la reutilización o creación de sesiones antes de llamar a Codex o Gemini. Se utiliza cuando los usuarios hablan sobre colaboración multimodelo, gestión de SESIONES o aislamiento de contexto.

@@ -1,0 +1,1 @@
+Wird beim Refactoring von Code oder beim Hinzufügen neuer Module ausgelöst. Stellt sicher, dass der Code den Ebenenbeziehungen von Clean Architecture + DDD + CQRS entspricht und verhindert so den Verfall der Architektur.

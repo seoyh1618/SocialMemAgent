@@ -1,0 +1,18 @@
+Una herramienta especializada para generar impresionantes imágenes de portada para el contenido del artículo.
+
+Características principales:
+- Analiza el contenido del artículo y selecciona automáticamente el estilo visual más adecuado.
+- Genera imágenes de portada de alta calidad en un estilo dibujado a mano.
+- Admite 19 estilos preestablecidos (elegante, plano, editorial en negrita, etc.)
+- Admite múltiples relaciones de aspecto (cinemática 2,35:1, pantalla panorámica 16:9, cuadrada 1:1)
+- Extrae automáticamente temas principales y genera texto de título
+
+Cuando usar:
+- El usuario solicita explícitamente "generar imagen de portada", "crear portada de artículo" o "hacer portada".
+- El usuario proporciona el contenido del artículo y necesita imágenes adjuntas.
+- El usuario necesita coberturas para blogs, artículos de WeChat o redes sociales.
+
+No aplicable:
+- El usuario simplemente pregunta cómo hacer una portada (solo brinda consejos)
+- El usuario necesita editar imágenes existentes (usar herramientas de edición de imágenes)
+- El usuario necesita generar imágenes que no sean de portada (use herramientas generales de generación de imágenes)

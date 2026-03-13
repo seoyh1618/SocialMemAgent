@@ -1,0 +1,1 @@
+Amap のリアルタイム交通クエリと最適な自動運転ルート計画スキル。 Amap Traffic Status API と Route Planning API に基づいて、リアルタイムの渋滞情報と最速ルートの提案を提供します。

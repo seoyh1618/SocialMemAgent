@@ -1,0 +1,3 @@
+Obtenga la hora actual, formatee la fecha, calcule la diferencia de fechas, convierta la zona horaria.  
+Utilice esta habilidad cuando los usuarios pregunten sobre la hora, la fecha o la zona horaria.  
+Palabras clave: hora, fecha, zona horaria, hoy, ahora, día laborable, a qué hora

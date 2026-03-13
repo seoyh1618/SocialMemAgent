@@ -1,0 +1,3 @@
+FluentValidation バリデーターの特殊なスキルをテストします。
+Validator クラスのテストを作成し、ビジネス ルールを検証し、エラー メッセージをテストする必要がある場合に使用します。
+FluentValidation.TestHelper、ShouldHaveValidationErrorFor、非同期検証、クロスフィールド ロジックなどの完全な使用法をカバーします。

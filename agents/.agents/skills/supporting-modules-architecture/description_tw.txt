@@ -1,0 +1,1 @@
+BK-CI支援模組架構指南，涵蓋憑證管理（Ticket）、建置環境（Environment）、通知服務（Notify）、建置日誌（Log）、品質閘（Quality）、開放介面（OpenAPI）等支援服務模組。當開發這些模組功能或需要了解支撐服務架構時可以使用它。

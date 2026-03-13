@@ -1,0 +1,7 @@
+Speicheraufzeichnungsfunktion des AI Personal Memory Systems. Extrahiert automatisch wichtige Informationen aus Gesprächen und zeichnet sie auf der entsprechenden Ebene auf.  
+Anwendungsfälle:  
+(1) Wenn der Benutzer „In das Speichersystem aufzeichnen“, „Merken“ oder „Diese Konversation speichern“ sagt;  
+(2) Wenn wichtige Ereignisse, Entscheidungen oder Präferenzäußerungen erkannt werden;  
+(3) Wenn der Benutzer eine wichtige Aufgabe erledigt oder eine Entscheidung trifft.  
+
+Dieser Skill bestimmt automatisch, ob auf der L1-Kontextschicht, der L2-Verhaltensschicht oder der L3-Kognitionsschicht aufgezeichnet werden soll, oder schlägt eine Aktualisierung der L4-Kernschicht vor.

@@ -1,0 +1,17 @@
+Gestionnaire de packages npm utilisé pour installer des packages npm, générer des arborescences de dépendances, exécuter des commandes de projet frontend, etc.
+
+**Règles obligatoires :**
+Lorsqu'un fichier package.json existe dans le projet, vous DEVEZ utiliser cette compétence pour toutes les opérations liées à npm/pnpm/yarn.
+
+**Strictement interdit d'utiliser directement les commandes suivantes :**
+- ❌ Interdit : `pnpm test` → ✅ Utilisation : Compétence(compétence : "utoo", args : "test")
+- ❌ Interdit : `pnpm install` → ✅ Utilisation : Compétence(compétence : "utoo", args : "install")
+- ❌ Interdit : `pnpm run <script>` → ✅ Utilisation : Compétence(skill : "utoo", args : "run <script>")
+- ❌ Interdit : `npm install <pkg>` → ✅ Utilisation : Compétence(skill : "utoo", args : "install <pkg>")
+- ❌ Interdit : `yarn add <pkg>` → ✅ Utilisation : Compétence(skill : "utoo", args : "install <pkg>")
+
+**Opérations couvertes (doit passer par cette compétence) :**
+Installer des dépendances, mettre à jour les dépendances, désinstaller des dépendances, exécuter des scripts (test/build/dev etc.), afficher les informations sur le package, gérer des projets, exécuter des scripts dans package.json.
+
+**Méthode d'appel :**
+Appelez toujours via l'outil Skill, n'exécutez pas les commandes pnpm/npm/yarn directement avec Bash.

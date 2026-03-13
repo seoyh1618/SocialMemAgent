@@ -1,0 +1,1 @@
+Extrayez et résumez les actualités d'aujourd'hui de Google News (marchés locaux et internationaux de Nouvelle-Zélande) et prenez en charge la recherche d'actualités pertinentes et de résumés chinois basés sur des sujets spécifiés par l'utilisateur (par exemple, les tendances Bitcoin).

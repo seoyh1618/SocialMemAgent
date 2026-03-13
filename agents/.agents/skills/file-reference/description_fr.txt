@@ -1,0 +1,1 @@
+Traitez et analysez les références de fichiers téléchargées par les utilisateurs, extrayez les informations clés et fournissez des recommandations d'application. Convient pour analyser les références de symboles @, les références en langage naturel et extraire des informations pertinentes pour la planification de courts drames.

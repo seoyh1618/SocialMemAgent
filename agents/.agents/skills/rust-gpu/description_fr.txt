@@ -1,0 +1,1 @@
+Expert en mémoire GPU et calcul. Spécialisé dans CUDA, OpenCL, mémoire GPU, shaders de calcul, fusion de mémoire, zéro copie, gestion VRAM, informatique hétérogène

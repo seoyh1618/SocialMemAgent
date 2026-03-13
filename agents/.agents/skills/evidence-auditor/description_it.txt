@@ -1,0 +1,1 @@
+Controlla le prove a sostegno di ciascuna affermazione e scrivi lacune/dubbi in "output/MISSING_EVIDENCE.md".

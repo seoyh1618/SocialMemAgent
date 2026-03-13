@@ -1,0 +1,1 @@
+WeChat-Kundendienstautomatisierungssystem für Unternehmen. Automatische Genehmigung von Freundschaftsanfragen, intelligente Fragen und Antworten basierend auf der Wissensdatenbank, Benachrichtigungen über menschliches Eingreifen bei unbekannten Fragen. Ein KI-Assistent-Chatbot für WeChat-Kundenserviceszenarien in Unternehmen.

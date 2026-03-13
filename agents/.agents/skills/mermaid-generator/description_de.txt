@@ -1,0 +1,1 @@
+Wählen Sie anhand der Benutzerbeschreibung intelligent den am besten geeigneten Diagrammtyp aus und generieren Sie Mermaid-Code. Unterstützt alle Arten, einschließlich Flussdiagramme, Sequenzdiagramme, Klassendiagramme, ER-Diagramme, Gantt-Diagramme, Zustandsdiagramme usw., mit lebendigen und schönen Farbschemata.

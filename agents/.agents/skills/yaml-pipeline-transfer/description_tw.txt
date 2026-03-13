@@ -1,0 +1,1 @@
+YAML Pipeline 轉換指南，涵蓋 YAML 和 Model 之間的雙向轉換、PAC（Pipeline as Code）實作、範本引用和觸發器配置。當使用者需要解析 YAML 管道、實現 PAC 模式、處理管道模板或執行 YAML 語法驗證時使用。

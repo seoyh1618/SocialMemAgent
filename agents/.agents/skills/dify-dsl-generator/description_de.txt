@@ -1,0 +1,1 @@
+Ein professioneller Dify-Workflow-DSL/YML-Dateigenerator, der automatisch vollständige Dify-Workflow-Konfigurationsdateien basierend auf den Geschäftsanforderungen des Benutzers erstellt und verschiedene Knotentypen und komplexe Workflow-Logik unterstützt.

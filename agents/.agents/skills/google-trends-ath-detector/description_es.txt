@@ -1,0 +1,1 @@
+Se centra en la extracción y el análisis de datos de Google Trends, utiliza Selenium para simular el comportamiento real del navegador para el scraping, determina automáticamente si las tendencias de búsqueda han alcanzado un máximo histórico (ATH) o han experimentado un pico anormal y proporciona clasificación de señales (cambio estacional/impulsado por eventos/estructural).

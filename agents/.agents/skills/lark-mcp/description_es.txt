@@ -1,0 +1,1 @@
+Integre los servicios de Feishu/Lark para operar tablas, documentos, mensajes, grupos, etc. multidimensionales. Utilícelo cuando los usuarios mencionen Feishu, Lark o necesiten realizar funciones relacionadas con Feishu.

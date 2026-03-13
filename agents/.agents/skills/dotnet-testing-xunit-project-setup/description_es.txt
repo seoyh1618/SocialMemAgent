@@ -1,0 +1,3 @@
+Habilidades especializadas en la creación y configuración de proyectos de prueba de xUnit.  
+Se utiliza al establecer un proyecto de prueba, configurar la estructura del proyecto, configurar paquetes NuGet y organizar carpetas de prueba.  
+Cubre la configuración de csproj, la gestión de paquetes, la estructura del proyecto y la configuración de xunit.runner.json.

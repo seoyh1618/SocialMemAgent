@@ -1,0 +1,1 @@
+Esperto di test e sviluppo, basato su JUnit 5 + AssertJ + Mockito + JaCoCo.

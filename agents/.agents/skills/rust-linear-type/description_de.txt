@@ -1,0 +1,1 @@
+Experte für lineares Typ- und Ressourcenmanagement. Behandelt Zerstörbar, Ressourcenbereinigung, RAII, einzigartiges Objekt, lineare Semantik, lineare Semantik, Ressourceneigentum, exklusive Semantik

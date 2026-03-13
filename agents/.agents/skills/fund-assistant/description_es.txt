@@ -1,0 +1,2 @@
+Asistente de Inversión de Fondos. Consulta estimaciones de fondos, NAV y cambios de precios en tiempo real; buscar fondos (por nombre o código); gestionar carteras (agregar/eliminar tenencias, registrar transacciones, calcular rendimientos); ver índices de mercado, flujos de capital y capital en dirección norte; importar/exportar datos de posición. Admite aislamiento de datos multiusuario.
+Palabras desencadenantes: fondo, valor liquidativo, estimación, tenencias, rendimientos, costo promedio en dólares, mercado, capital en dirección norte, CSI 300

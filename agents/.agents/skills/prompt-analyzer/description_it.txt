@@ -1,0 +1,1 @@
+Analisi e approfondimenti dei prompt: visualizza i dettagli dei prompt, confronta le differenze, consiglia prompt simili, statistiche della libreria di elementi

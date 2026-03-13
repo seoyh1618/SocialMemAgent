@@ -1,0 +1,1 @@
+Entscheidungsmatrix zur Auswahl von Multi-Agenten-Topologien (Supervisor, Schwarm, Hierarchisch, Dirigent) mit Token-Ökonomie, Fehlermodi und Eskalationspfaden

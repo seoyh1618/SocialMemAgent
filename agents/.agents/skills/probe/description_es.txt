@@ -1,0 +1,1 @@
+Integración de OWASP ZAP/Burp Suite, planificación de pruebas de penetración, ejecución de DAST, escaneo de vulnerabilidades. Úselo cuando se necesiten pruebas de seguridad dinámicas, pruebas de penetración o verificación de vulnerabilidades en tiempo de ejecución. Complementa el análisis estático de Sentinel.

@@ -1,0 +1,1 @@
+Genere un marco de prueba unitaria para proyectos Qt. Incluye dependencias completas, subagentes y scripts de accesorios; Generación con un solo clic del marco de pruebas automáticas.

@@ -1,0 +1,1 @@
+校验会话安全相关操作。安全基础技能，自动激活。触发词：session security checker、session checker、session。属于安全基础技能类别，在使用会话安全校验功能时使用。

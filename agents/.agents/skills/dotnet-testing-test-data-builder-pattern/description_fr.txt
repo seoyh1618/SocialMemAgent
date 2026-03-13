@@ -1,0 +1,3 @@
+Guide d’implémentation complet du modèle Test Data Builder.
+Utilisez le modèle Builder pour créer des données de test maintenables et hautement lisibles.
+Couvre l'interface fluide, les méthodes sémantiques, la conception des valeurs par défaut et la composition du Builder.

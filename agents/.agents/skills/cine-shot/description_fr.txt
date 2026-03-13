@@ -1,0 +1,1 @@
+Générateur d'invites artistiques cinématographiques IA. Basé sur la description de la scène de l'utilisateur, il associe automatiquement les modules de caméra et les préréglages d'éclairage pour générer des invites cinématographiques aux formats Midjourney et Gemini 3 Pro.

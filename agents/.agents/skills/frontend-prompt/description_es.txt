@@ -1,0 +1,1 @@
+Habilidad de asistencia al desarrollo frontend. Convierte requisitos vagos en planes de desarrollo estructurados, detecta automáticamente la pila de tecnología del proyecto y genera flujos de aprobación, flujos de trabajo y preguntas aclaratorias. Úselo al iniciar tareas de desarrollo frontend, como agregar páginas, corregir errores u optimizar código.

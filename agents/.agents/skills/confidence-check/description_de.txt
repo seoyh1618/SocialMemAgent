@@ -1,0 +1,1 @@
+Führen Sie Vorab-Konfidenzprüfungen durch. Wird vor Beginn komplexer Aufgaben wie der Entwicklung neuer Funktionen, Fehlerbehebungen und Code-Refactoring verwendet. Wird automatisch ausgelöst, kein manueller Aufruf erforderlich.

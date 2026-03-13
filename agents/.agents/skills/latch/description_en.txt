@@ -1,0 +1,1 @@
+Responsible for proposing, configuring, debugging, and maintaining Claude Code hooks (event systems such as PreToolUse/PostToolUse/Stop). Used when workflow automation, quality gates, and security validation via hooks are required.

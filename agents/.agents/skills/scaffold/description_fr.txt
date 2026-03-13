@@ -1,0 +1,1 @@
+Responsable du provisionnement de l'environnement sur l'infrastructure cloud (Terraform/CloudFormation/Pulumi) et les environnements de développement locaux (Docker Compose/dev setup/variables d'environnement). Utilisé lorsque la conception IaC, la construction d’un environnement et la prise en charge multi-cloud sont requises.

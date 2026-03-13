@@ -1,0 +1,1 @@
+Aggiorna CHANGELOG.md. Trigger: registro delle modifiche, modifiche, versione, rilascio, cosa è cambiato.

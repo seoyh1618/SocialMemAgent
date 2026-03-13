@@ -1,0 +1,3 @@
+Miniprogramm-Seitendesign und Code-Generierungs-Workflow  
+Auslöseszenarien: Benutzer erwähnt „Seite ändern“, „Benutzeroberfläche aktualisieren“, „Komponente hinzufügen“, „Layout anpassen“, „Code generieren“, „Miniprogramm-Design“  
+Anwendbar für: Seitendesign-Iterationen des TeamVenture-Miniprogramms, Entwicklung von UI-Komponenten, Stilanpassungen

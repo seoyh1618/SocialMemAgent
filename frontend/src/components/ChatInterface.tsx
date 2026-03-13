@@ -1,4 +1,4 @@
-import { PaperAirplaneIcon, ChevronRightIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
+import { PaperAirplaneIcon, ChevronRightIcon, ChevronDownIcon, PhotoIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { useState, useRef, useEffect } from 'react';
 import { sendMessageToAgentSSE, extractTextFromResponse } from '../api';
 import type { Base, SocialMediaAgentOutput } from '../base';
@@ -16,7 +16,8 @@ const markdownComponents: Components = {
 interface Message {
   // Role determines how the message is rendered.
   // `base_content` is not rendered as a chat bubble but as a "Restore" button.
-  role: 'user' | 'reasoning' | 'base_content' | 'agent';
+  // `memory_ref` is rendered as an inline chip showing which memory tools were used.
+  role: 'user' | 'reasoning' | 'base_content' | 'agent' | 'memory_ref';
   content: string;
   isComplete?: boolean;
 }
@@ -37,8 +38,10 @@ export default function ChatInterface({ userId, sessionId, base, setBase, should
   const formattedBaseContent = useRef('');
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [attachedImage, setAttachedImage] = useState<{ preview: string; mimeType: string; data: string } | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const hasStartedGeneration = useRef(false);
+  const imageFileInputRef = useRef<HTMLInputElement>(null);
 
   // Scroll to bottom whenever messages change
   const scrollToBottom = () => {
@@ -65,17 +68,41 @@ export default function ChatInterface({ userId, sessionId, base, setBase, should
     }
   }, [shouldStartGeneration]);
 
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const dataUrl = ev.target?.result as string;
+      // dataUrl is like "data:image/jpeg;base64,..."
+      const [header, data] = dataUrl.split(',');
+      const mimeType = header.match(/data:([^;]+)/)?.[1] || 'image/jpeg';
+      setAttachedImage({ preview: dataUrl, mimeType, data });
+    };
+    reader.readAsDataURL(file);
+    // Reset so same file can be re-selected
+    e.target.value = '';
+  };
+
   const sendMessage = async (messageText: string) => {
     if (!messageText.trim() || isLoading) return;
 
-    // Add user message
+    // Capture current image before clearing it
+    const currentImage = attachedImage;
+
+    // Add user message (with image preview if attached)
     const userMessage: Message = { role: 'user' as const, content: messageText, isComplete: true };
     setMessages(prev => [...prev, userMessage]);
-    
+    if (currentImage) {
+      const imageMessage: Message = { role: 'user' as const, content: `![attached](${currentImage.preview})`, isComplete: true };
+      setMessages(prev => [...prev, imageMessage]);
+      setAttachedImage(null);
+    }
+
     // Create placeholder for agent's reasoning
     const reasoningPlaceholder: Message = { role: 'reasoning' as const, content: '', isComplete: false };
     setMessages(prev => [...prev, reasoningPlaceholder]);
-    
+
     setIsLoading(true);
     formattedBaseContent.current = ''; // Reset for new message
 
@@ -86,6 +113,18 @@ export default function ChatInterface({ userId, sessionId, base, setBase, should
       userId,    // Use prop
       sessionId, // Use prop
       {
+        // callbacks below
+        onMemoryToolCall: (toolName) => {
+          setMessages(prev => {
+            const lastMessage = prev[prev.length - 1];
+            if (lastMessage?.role === 'memory_ref') {
+              const updatedMemRef = { ...lastMessage, content: lastMessage.content + ', ' + toolName };
+              return [...prev.slice(0, -1), updatedMemRef];
+            }
+            const newMemRefMessage: Message = { role: 'memory_ref', content: toolName, isComplete: true };
+            return [...prev, newMemRefMessage];
+          });
+        },
         onData: (response) => {
           const text = extractTextFromResponse(response);
           const author = response.author;
@@ -174,7 +213,8 @@ export default function ChatInterface({ userId, sessionId, base, setBase, should
           });
           setIsLoading(false);
         }
-      }
+      },
+      currentImage ? { mimeType: currentImage.mimeType, data: currentImage.data } : undefined
     );
 
     // Cleanup on component unmount
@@ -222,6 +262,15 @@ export default function ChatInterface({ userId, sessionId, base, setBase, should
                     )}
                   </div>
                 )}
+              </div>
+            );
+          }
+          if (message.role === 'memory_ref') {
+            return (
+              <div key={index} className="w-full my-1 flex justify-start">
+                <span className="inline-flex items-center gap-1 px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-medium">
+                  📚 참조된 메모리: {message.content}
+                </span>
               </div>
             );
           }
@@ -278,7 +327,36 @@ export default function ChatInterface({ userId, sessionId, base, setBase, should
 
       {/* Input Area */}
       <div className="border-t border-gray-200 bg-white p-4">
+        {/* Image preview */}
+        {attachedImage && (
+          <div className="mb-2 relative inline-block">
+            <img src={attachedImage.preview} alt="Attached" className="h-16 w-16 object-cover rounded-md border border-gray-200" />
+            <button
+              type="button"
+              onClick={() => setAttachedImage(null)}
+              className="absolute -top-1 -right-1 bg-gray-700 text-white rounded-full p-0.5 hover:bg-gray-900"
+            >
+              <XMarkIcon className="h-3 w-3" />
+            </button>
+          </div>
+        )}
         <form onSubmit={handleSendMessage} className="flex items-center space-x-2">
+          <input
+            ref={imageFileInputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={handleImageSelect}
+          />
+          <button
+            type="button"
+            onClick={() => imageFileInputRef.current?.click()}
+            disabled={isLoading}
+            className="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white p-2 text-gray-500 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50"
+          >
+            <PhotoIcon className="size-5" aria-hidden="true" />
+            <span className="sr-only">Attach image</span>
+          </button>
           <input
             type="text"
             value={inputMessage}

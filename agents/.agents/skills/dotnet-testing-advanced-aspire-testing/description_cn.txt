@@ -1,0 +1,3 @@
+.NET Aspire 测试集成测试框架完整指南。
+涵盖 AppHost 项目设置、DistributedApplicationTestingBuilder、容器生命周期管理。
+包括从测试容器迁移、多服务编排、Respawn 配置和时间可测试性设计。

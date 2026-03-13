@@ -1,0 +1,1 @@
+Aktualisieren Sie CHANGELOG.md. Auslöser: Änderungsprotokoll, Änderungen, Version, Release, was hat sich geändert.

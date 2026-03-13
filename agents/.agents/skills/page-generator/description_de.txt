@@ -1,0 +1,1 @@
+Generieren Sie die Front-End-Seitenstruktur basierend auf standardisierten anatomischen Spezifikationen (Anatomie); Bitten Sie den Benutzer proaktiv, den Generierungsmodus (unüberwacht/überwacht) zu wählen, wobei die automatische Generierung von Wrapper-, Inhalts- und optionalen Store-Modulen unterstützt wird.

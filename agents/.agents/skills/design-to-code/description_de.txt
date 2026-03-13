@@ -1,0 +1,1 @@
+Diese Technologie sollte verwendet werden, wenn Benutzer „Codekonvertierung“, „React-Generierung“, „Tailwind-Code“, „Komponentencode“, „Design-to-Code“, „Code aus einer .pen-Datei“ anfordern oder wenn sie Pencil-Designs in React + Tailwind-CSS-Code konvertieren möchten.

@@ -1,0 +1,1 @@
+Acquisizione delle conoscenze aziendali e flusso di lavoro della documentazione delle competenze. Utilizzato quando gli utenti hanno bisogno di familiarizzare con nuovi moduli aziendali, recuperare documenti da iWiki, generare documenti di architettura combinando l'analisi del codice o consolidare le conoscenze aziendali in competenze.

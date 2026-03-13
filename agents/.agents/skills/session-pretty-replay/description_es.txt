@@ -1,0 +1,1 @@
+Convierta los registros JSON/JSONL sin procesar de una sesión del Agente en texto legible y genere algunas estadísticas básicas. Úselo cuando necesite reproducir una sesión del Agente o convertir la sesión JSON/JSONL a un formato legible por humanos.

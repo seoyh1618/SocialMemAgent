@@ -1,0 +1,1 @@
+Elimine los temas de tendencia de Weibo, busque automáticamente información general, utilice IA para analizar y generar ideas de productos y genere un informe de análisis HTML. Se utiliza para temas de tendencia de Weibo, análisis de puntos críticos, extracción de ideas de productos, análisis de listas de tendencias y escenarios de productización de temas candentes.

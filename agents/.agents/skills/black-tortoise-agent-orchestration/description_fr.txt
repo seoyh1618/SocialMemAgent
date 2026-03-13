@@ -1,0 +1,1 @@
+Orchestration des sous-agents et outils MCP Black-Tortoise, en respectant un flux DDD/Signals-first avec changements minimaux. Utiliser pour coordonner plusieurs agents ou MCP, planifier des workflows multi-étapes ou assurer des modifications ciblées.

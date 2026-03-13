@@ -1,0 +1,1 @@
+Strumento di analisi degli investimenti con valore delle azioni A, che fornisce screening delle azioni, analisi approfondita dei singoli titoli, confronto tra settori e funzioni di calcolo della valutazione. Basato sulla teoria del value investing, utilizza Akshare per ottenere dati finanziari pubblici, adatti agli investitori ordinari con scambi a bassa frequenza.

@@ -1,0 +1,1 @@
+Tronca il testo in modo intelligente preservando l'integrità del contenuto e la coerenza semantica. Adatto per la preelaborazione di testi lunghi per garantire che non superino i limiti di lunghezza specificati.

@@ -1,0 +1,1 @@
+Politique de configuration et guide de sécurité de l'agent AI. Comment rédiger des fichiers de description de projet, la configuration des hooks/compétences/plugins, les politiques de sécurité, la définition du flux de travail de partage en équipe.

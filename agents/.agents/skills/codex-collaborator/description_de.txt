@@ -1,0 +1,1 @@
+Codex MCP-Zusammenarbeitsworkflow. Auslöseszenarien: (1) Entwicklung neuer Funktionen (2) Refactoring (3) komplexe Geschäftslogik (4) Codeüberprüfung. Bietet dreistufige Zusammenarbeit: Anforderungsanalyse → Prototypenbeschaffung → Überprüfung, wobei kritisches Denken und schreibgeschützte Sicherheit im Vordergrund stehen.

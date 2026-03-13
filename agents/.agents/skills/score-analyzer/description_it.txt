@@ -1,0 +1,1 @@
+Analizza i dati dei punteggi di valutazione a più round, calcola ciascun indicatore e calcola i livelli di valutazione. Adatto per analizzare le tendenze dei punteggi e calcolare le valutazioni S/A/B.

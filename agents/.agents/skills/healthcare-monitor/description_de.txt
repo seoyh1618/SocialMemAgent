@@ -1,0 +1,1 @@
+System zur Überwachung der Unternehmensfinanzierung in der medizinischen Industrie. Echtzeitüberwachung von Geschäftsveränderungen in Gesundheitsunternehmen, Identifizierung von Finanzierungssignalen und automatische Übermittlung von Warnmeldungen. Unterstützt Tianyancha/Qichacha-Datenerfassung, KI-Finanzbeurteilung und Mehrkanalbenachrichtigungen.

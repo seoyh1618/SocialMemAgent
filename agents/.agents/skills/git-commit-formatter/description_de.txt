@@ -1,0 +1,1 @@
+Generieren Sie Git-Commit-Nachrichten, die der Spezifikation „Conventional Commits“ entsprechen. Verwenden Sie dies, wenn der Benutzer einen Commit generieren, einen Commit erstellen oder eine Commit-Nachricht schreiben möchte.

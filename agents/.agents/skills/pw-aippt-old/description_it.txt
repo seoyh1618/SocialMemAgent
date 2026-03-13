@@ -1,0 +1,1 @@
+Genera nuovi contenuti basati su un modello PPT. Converti automaticamente PDF in immagini → analizza lo stile del modello → dividi il contenuto dell'articolo → genera richieste → Generazione di immagini AI → impacchetta in PPTX.

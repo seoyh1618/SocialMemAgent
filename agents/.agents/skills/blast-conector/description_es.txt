@@ -1,0 +1,1 @@
+Skill L (Conector) - Ingeniero de integraciones del Escuadrón BLAST. Enfocado en credenciales, MCPs y conexiones externas. Usar para: verificar APIs, configurar bases de datos, validar tokens, conectar con Supabase, Notion, etc.

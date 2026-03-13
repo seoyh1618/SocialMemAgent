@@ -1,0 +1,1 @@
+Publicar contenidos y artículos en X (Twitter). Admite tweets regulares con imágenes/videos y artículos X (Markdown de formato largo). Utiliza Chrome real con CDP para evitar la detección antiautomatización. Úselo cuando el usuario solicite "publicar un tweet", "publicar en X" o "publicar en Twitter".

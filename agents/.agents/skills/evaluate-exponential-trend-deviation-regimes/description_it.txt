@@ -1,0 +1,1 @@
+Calcola la deviazione del prezzo dell'asset dal suo trend di crescita esponenziale a lungo termine per valutare se si trova in un intervallo storico estremo e, facoltativamente, conduci un'analisi dei macrofattori per giudicare la salute del mercato.

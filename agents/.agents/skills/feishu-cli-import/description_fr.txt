@@ -1,0 +1,1 @@
+Importez et créez un document Feishu à partir d'un fichier Markdown, prenant en charge les listes imbriquées, la conversion automatique des diagrammes Mermaid/PlantUML en tableaux blancs et le fractionnement automatique des grands tableaux. Utilisé lorsque l'utilisateur demande « importer Markdown », « créer un document à partir de md » ou « télécharger Markdown ».

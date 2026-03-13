@@ -1,0 +1,1 @@
+Competenze specializzate per lo sviluppo di strumenti e toolkit di sistema FastGPT, inclusa la convalida sicura dei tipi Zod, la gestione della configurazione condivisa e un flusso di lavoro di test completo. Adatto per creare nuovi strumenti FastGPT, sviluppare kit di strumenti contenenti sottostrumenti o implementare integrazioni API con configurazione e test adeguati.

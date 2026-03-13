@@ -1,0 +1,1 @@
+Wird verwendet, wenn das aktuelle Spezifikationspaket aufgrund eines schwerwiegenden Anforderungsproblems aufgegeben/widerrufen werden muss und das entsprechende Verzeichnis „.aisdlc/specs/{branch}“ und die lokalen/Remote-Zweige gelöscht werden müssen. Geben Sie vor dem Löschen eine Löschliste aus und fordern Sie eine Bestätigung des Benutzers an.

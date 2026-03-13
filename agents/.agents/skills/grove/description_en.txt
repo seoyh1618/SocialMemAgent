@@ -1,0 +1,1 @@
+Design, optimize, and audit repository structure. Responsible for directory design, docs/ configuration (requirements documents, design documents, checklist alignment), test structure, script management, anti-pattern detection, and migrating existing repository configurations. Use when repository structure design or improvement is needed.

@@ -1,0 +1,2 @@
+Una habilidad para recuperar el historial del navegador Arc y generarlo en formato Markdown.
+Cuándo usarlo: (1) Cuando desee comprobar los sitios vistos recientemente (2) Cuando desee buscar una URL específica en el historial

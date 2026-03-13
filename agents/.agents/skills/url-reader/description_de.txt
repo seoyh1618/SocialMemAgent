@@ -1,0 +1,1 @@
+Liest Inhalte intelligent von jeder URL, unterstützt wichtige chinesische Plattformen wie WeChat Official Accounts, Xiaohongshu, Toutiao, Douyin, Taobao, Tmall, JD, Baidu usw., identifiziert automatisch den Plattformtyp und extrahiert Kerninhalte. Speichert Inhalte automatisch als Markdown und lädt Bilder lokal herunter.

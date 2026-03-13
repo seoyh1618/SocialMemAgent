@@ -1,0 +1,1 @@
+Generator für filmische KI-Kunstaufforderungen. Basierend auf der Szenenbeschreibung des Benutzers werden Kameramodule und Beleuchtungsvoreinstellungen automatisch abgeglichen, um filmische Aufforderungen sowohl im Midjourney- als auch im Gemini 3 Pro-Format zu generieren.

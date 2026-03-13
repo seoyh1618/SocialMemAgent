@@ -1,0 +1,1 @@
+Abilità di generazione di immagini, utilizzata quando l'utente ha bisogno di generare immagini, creare elementi visivi o modificare/modificare/aggiustare immagini esistenti. Supporta 10 proporzioni (1:1, 16:9, 9:16, ecc.) e 3 risoluzioni (1K, 2K, 4K), con funzionalità di modifica sia da testo a immagine che da immagine a immagine.

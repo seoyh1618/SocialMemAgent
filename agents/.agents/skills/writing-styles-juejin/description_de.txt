@@ -1,0 +1,1 @@
+Tech-Schreiben im Juejin-Stil: Struktur, Schlagzeilen, Eröffnungen, technische Teardowns, aussagekräftige Listen, Fälle + Code, menschliche Stimme – damit ein Agent mit einem Klick vereinfachte chinesische Tech-Artikel erstellen kann.

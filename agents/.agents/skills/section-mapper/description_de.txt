@@ -1,0 +1,6 @@
+Ordnen Sie die Papiere im Kernsatz jedem Unterabschnitt der Gliederung zu und schreiben Sie „outline/mapping.tsv“, um die Abdeckung zu verfolgen.  
+**Auslöser**: Abschnittsmapper, Mapping.tsv, Abdeckung, Papier-zu-Abschnitt-Zuordnung, Papierzuordnung, Abdeckung.  
+**Wann zu verwenden**: Strukturierungsphase (C2), wenn „papers/core_set.csv“ + „outline/outline.yml“ bereits vorhanden sind, um sicherzustellen, dass jeder Unterabschnitt über ausreichende unterstützende Dokumente verfügt, bevor mit Beweisen/Schreiben fortgefahren wird.  
+**Überspringen, wenn**: noch keine Gliederung (führen Sie zuerst „outline-builder“ aus) oder Kernsatz noch nicht konvergiert.  
+**Netzwerk**: keines.  
+**Leitlinien**: Die Berichterstattung muss überprüfbar sein (vermeiden Sie die Wiederverwendung desselben Papierstapels für alle Unterabschnitte); Hinterlassen Sie klare Korrekturanweisungen für schwach abgedeckte Unterabschnitte (Abfrage erweitern/Unterabschnitt zusammenführen).

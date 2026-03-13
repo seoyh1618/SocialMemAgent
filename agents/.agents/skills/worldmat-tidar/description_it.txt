@@ -1,0 +1,1 @@
+Componente worldmat-tidar per il contesto ASI.

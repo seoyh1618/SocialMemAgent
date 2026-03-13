@@ -1,0 +1,1 @@
+모든 URL의 콘텐츠를 지능적으로 읽고 WeChat 공식 계정, Xiaohongshu, Toutiao, Douyin, Taobao, Tmall, JD, Baidu 등과 같은 주요 중국 플랫폼을 지원하며 자동으로 플랫폼 유형을 식별하고 핵심 콘텐츠를 추출합니다. 콘텐츠를 Markdown으로 자동 저장하고 이미지를 로컬로 다운로드합니다.

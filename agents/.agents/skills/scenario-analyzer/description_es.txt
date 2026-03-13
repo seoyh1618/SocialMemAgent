@@ -1,0 +1,6 @@
+La habilidad de analizar un escenario de 18 meses utilizando un titular de noticia como entrada.  
+El análisis primario lo realiza el agente analista de escenarios,  
+con una segunda opinión del agente revisor de estrategias.  
+Genera un informe completo en japonés que cubre los impactos primarios, secundarios y terciarios, las acciones recomendadas y las revisiones.  
+Ejemplo de uso: /scenario-analyzer "La Reserva Federal aumenta las tasas en 50 pb"  
+Desencadenantes: análisis de noticias, análisis de escenarios, perspectivas a 18 meses, estrategia de inversión a medio y largo plazo

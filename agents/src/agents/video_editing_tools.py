@@ -1,4 +1,5 @@
 import datetime
+import logging
 import os
 import tempfile
 from agents.utils.gcs_url_converters import public_url_to_gcs_uri, get_blob_name_from_gcs_uri
@@ -9,6 +10,8 @@ from google.cloud import storage
 
 
 load_dotenv()
+
+logger = logging.getLogger(__name__)
 
 client = Client(
     vertexai=True,
@@ -33,8 +36,7 @@ def download_file_from_gcs(source_blob_name: str, destination_file_name: str):
     bucket = storage_client.bucket(GCS_BUCKET_NAME)
     blob = bucket.blob(source_blob_name)
     blob.download_to_filename(destination_file_name)
-    print(
-        f"DEBUG: Downloaded gs://{GCS_BUCKET_NAME}/{source_blob_name} to {destination_file_name}.")
+    logger.debug("Downloaded gs://%s/%s to %s", GCS_BUCKET_NAME, source_blob_name, destination_file_name)
 
 
 # TODO: this function causes warning "UserWarning: resource_tracker: There appear to be 1 leaked semaphore objects to clean up at shutdown".
@@ -54,22 +56,26 @@ def merge_audio_to_video(
     video_clip: mp.VideoFileClip = mp.VideoFileClip(video_path)
     audio_clip = mp.AudioFileClip(audio_path)
 
-    # Get durations of video and audio
-    video_duration = video_clip.duration
-    audio_duration = audio_clip.duration
+    try:
+        # Get durations of video and audio
+        video_duration = video_clip.duration
+        audio_duration = audio_clip.duration
 
-    # If their length doesn't match, scale the video speed.
-    if abs(video_duration - audio_duration) > 0.1:
-        video_speed_factor = video_duration / audio_duration
-        scaled_video_clip = video_clip.with_speed_scaled(video_speed_factor)
-        assert isinstance(scaled_video_clip, mp.VideoFileClip)
-        video_clip = scaled_video_clip
+        # If their length doesn't match, scale the video speed.
+        if abs(video_duration - audio_duration) > 0.1:
+            video_speed_factor = video_duration / audio_duration
+            scaled_video_clip = video_clip.with_speed_scaled(video_speed_factor)
+            assert isinstance(scaled_video_clip, mp.VideoFileClip)
+            video_clip = scaled_video_clip
 
-    # Attach the audio to the video
-    video_clip = video_clip.with_audio(audio_clip)
+        # Attach the audio to the video
+        final_clip = video_clip.with_audio(audio_clip)
 
-    # Export the final video with sound
-    video_clip.write_videofile(output_path, codec="libx264", audio_codec="aac")
+        # Export the final video with sound
+        final_clip.write_videofile(output_path, codec="libx264", audio_codec="aac")
+    finally:
+        video_clip.close()
+        audio_clip.close()
 
 
 def assemble_video_with_audio(video_gcs_public_url: str, audio_gcs_public_url: str):
@@ -83,12 +89,13 @@ def assemble_video_with_audio(video_gcs_public_url: str, audio_gcs_public_url: s
     Returns:
         dict: A dictionary containing the status, detail, and the GCS public URL of the generated video with sound if successful.
     """
-    print("DEBUG: Start assembling video with audio...")
+    logger.info("Start assembling video with audio...")
     # Download files from GCS
     tmp_dir = tempfile.gettempdir()
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     video_path = os.path.join(tmp_dir, f"temp_video_{timestamp}.mp4")
     audio_path = os.path.join(tmp_dir, f"temp_audio_{timestamp}.wav")
+    output_path = os.path.join(tmp_dir, f"video_with_audio_{timestamp}.mp4")
 
     # Convert public URL to GCS URI and extract blob name for video
     # Video
@@ -105,35 +112,40 @@ def assemble_video_with_audio(video_gcs_public_url: str, audio_gcs_public_url: s
             "detail": f"Invalid audio URL: {audio_gcs_public_url}"
         }
     try:
-        # Download video and audio files from GCS
-        download_file_from_gcs(video_blob, video_path)
-        download_file_from_gcs(audio_blob, audio_path)
-    except Exception as e:
-        print(f"Failed to download files from GCS: {e}")
-        return {"status": "failed", "detail": f"Download failed: {e}"}
+        try:
+            # Download video and audio files from GCS
+            download_file_from_gcs(video_blob, video_path)
+            download_file_from_gcs(audio_blob, audio_path)
+        except Exception as e:
+            logger.error("Failed to download files from GCS: %s", e)
+            return {"status": "failed", "detail": f"Download failed: {e}"}
 
-    # Merge audio to video
-    output_path = os.path.join(tmp_dir, f"video_with_audio_{timestamp}.mp4")
-    merge_audio_to_video(video_path, audio_path, output_path)
+        # Merge audio to video
+        try:
+            merge_audio_to_video(video_path, audio_path, output_path)
+        except Exception as e:
+            logger.error("Failed to merge audio to video: %s", e)
+            return {"status": "failed", "detail": f"Merge failed: {e}"}
 
-    # Upload the final video back to GCS
-    try:
-        bucket = storage_client.bucket(GCS_BUCKET_NAME)
-        blob = bucket.blob(f"videos/{os.path.basename(output_path)}")
-        blob.upload_from_filename(output_path, content_type="video/mp4")
+        # Upload the final video back to GCS
+        try:
+            bucket = storage_client.bucket(GCS_BUCKET_NAME)
+            blob = bucket.blob(f"videos/{os.path.basename(output_path)}")
+            blob.upload_from_filename(output_path, content_type="video/mp4")
 
-        print(f"DEBUG: assemble_video_with_audio returnning successful")
-        return {
-            "status": "success",
-            "detail": "Video with audio generated and uploaded to GCS",
-            "video_url": blob.public_url,
-        }
-    except IOError as e:
-        print(f"Failed to upload video with audio to GCS: {e}")
+            logger.info("assemble_video_with_audio completed successfully")
+            return {
+                "status": "success",
+                "detail": "Video with audio generated and uploaded to GCS",
+                "video_url": blob.public_url,
+            }
+        except IOError as e:
+            logger.error("Failed to upload video with audio to GCS: %s", e)
+            return {"status": "failed", "detail": f"Upload failed: {e}"}
     finally:
-        os.remove(video_path)
-        os.remove(audio_path)
-        os.remove(output_path)
+        for path in (video_path, audio_path, output_path):
+            if os.path.exists(path):
+                os.remove(path)
 
 
 if __name__ == "__main__":

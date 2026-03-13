@@ -1,0 +1,1 @@
+Fähigkeit zur Erstellung täglicher/wöchentlicher/monatlicher Berichte. Geeignet für Anforderungen wie „Tages-/Wochen-/Monatsberichte erstellen“, „Berichte aus Git-Commits erstellen“, „Bericht JSON in Word rendern“; Unterstützt das Scannen mehrerer Repositorys, tägliche/wöchentliche/monatliche Statistiken und gibt sowohl JSON als auch Word aus.

@@ -1,0 +1,1 @@
+Competenze nell'ottimizzazione e nel test dei suggerimenti LLM. Valutare le prestazioni tempestive, suggerire miglioramenti, condurre test A/B, applicare le migliori pratiche e verificare la riproducibilità.

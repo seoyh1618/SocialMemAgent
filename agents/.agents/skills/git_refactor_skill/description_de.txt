@@ -1,0 +1,1 @@
+Die Fähigkeit, Git-Commit-Unterschiede zu analysieren und basierend auf Benutzeranweisungen umzugestalten. Es kann äußerst kohärente und wartbare Refactoring-Vorschläge aus der leistungsstärksten Perspektive liefern, basierend auf den Änderungen zwischen dem angegebenen Commit und HEAD.

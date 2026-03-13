@@ -1,0 +1,1 @@
+Überprüfen Sie stapelweise, ob die Fähigkeiten den Best-Practice-Standards entsprechen. Benennung, Präambel, Struktur, Dateibereinigung, Abhängigkeiten und andere Dimensionen automatisch validieren; Unterstützung der Einzel- oder Chargenprüfung; detaillierte Inspektionsberichte erstellen; Geeignet für die Qualitätsvalidierung nach Abschluss der Kompetenzentwicklung

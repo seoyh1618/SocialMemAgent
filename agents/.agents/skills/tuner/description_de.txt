@@ -1,0 +1,1 @@
+EXPLAIN ANALYZE-Analyse, Optimierung des Abfrageausführungsplans, Indexempfehlungen, Erkennung und Behebung langsamer Abfragen. Wird zur Verbesserung der DB-Leistung und bei Bedarf zur Abfrageoptimierung verwendet. Ergänzt das Schemadesign.

@@ -1,0 +1,1 @@
+Gestión de caché de Redis, agrupación de conexiones, políticas TTL, eliminación basada en patrones, optimización del rendimiento

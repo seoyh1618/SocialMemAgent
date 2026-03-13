@@ -1,0 +1,1 @@
+Integrieren Sie Feishu/Lark-Dienste, um mehrdimensionale Tabellen, Dokumente, Nachrichten, Gruppen usw. zu betreiben. Verwenden Sie dies, wenn Benutzer Feishu, Lark erwähnen oder Feishu-bezogene Funktionen ausführen müssen.

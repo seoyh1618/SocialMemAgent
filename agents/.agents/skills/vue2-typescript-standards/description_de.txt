@@ -1,0 +1,1 @@
+TypeScript-Codierungsstandards und Typdefinitionsstandards für Vue 2-Projekte. Anwendbar auf Szenarien wie das Schreiben von TypeScript-Code, das Definieren von Typschnittstellen, die Verwendung des Dekoratormusters und die Entwicklung von Dienstprogrammfunktionen.

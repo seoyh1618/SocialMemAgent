@@ -1,0 +1,1 @@
+Intelligentes Tool zur Generierung von Software-Copyright-Anwendungsmaterial. Analysiert automatisch den Projektquellcode und generiert Softwarespezifikationen und Quellcodedokumentation, die den Anforderungen der Software-Copyright-Anwendung entsprechen. Unterstützt Stichwortsuche, intelligente Quellcode-Analyse, formatierte Ausgabe und PDF-Export.

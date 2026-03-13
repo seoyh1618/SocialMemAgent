@@ -1,0 +1,1 @@
+Un flux de travail structuré pour rédiger des articles techniques sur les comptes officiels WeChat. Cas d'utilisation : lorsqu'un utilisateur doit rédiger une publication WeChat, créer le plan de l'article, organiser les documents et itérer les brouillons. Suivez strictement les conventions de dénomination et la structure des répertoires spécifiées dans blogs/wechat/README.md.

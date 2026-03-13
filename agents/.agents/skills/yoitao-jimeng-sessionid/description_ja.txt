@@ -1,0 +1,1 @@
+Jimeng (jimeng.jianying.com) のログイン状態でセッション ID Cookie を取得または更新する必要がある場合に使用されます。 Jimeng Web サイトを自動的に開いてログイン ステータスを確認し、すでにログインしている場合は呼び出し元に sessionid 値を返します。

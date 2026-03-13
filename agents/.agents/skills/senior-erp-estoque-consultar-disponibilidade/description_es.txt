@@ -1,0 +1,1 @@
+Consulta disponibilidad y saldo de stock en el ERP Senior mediante Senior X Platform. Usar para «consultar stock», «disponibilidad», «saldo», «stock por depósito», «stock reservado», «validar antes de vender» e integraciones de catálogo/checkout.

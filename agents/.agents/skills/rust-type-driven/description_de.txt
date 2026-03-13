@@ -1,0 +1,1 @@
+Experte für typgesteuertes Design. Behandelt Newtype, Typstatus, PhantomData, Markierungsmerkmal, Builder-Muster, Typstatus, Newtype-Muster, Überprüfung zur Kompilierungszeit, versiegeltes Merkmal, ZST

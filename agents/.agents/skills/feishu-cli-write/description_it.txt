@@ -1,0 +1,1 @@
+Scrivi contenuti in Feishu Docs, con i diagrammi automatici Sirena/PlantUML renderizzati come lavagne. Supporta azioni avanzate come l'aggiunta di lavagne, callout e blocchi di aggiornamento batch. Usalo quando gli utenti richiedono di creare, scrivere o aggiornare Feishu Docs. Si consigliano i diagrammi delle sirene.

@@ -1,0 +1,1 @@
+Implemente la rama actual en el entorno de prueba. Úselo cuando el usuario solicite implementación, lanzamiento para prueba o prueba en el entorno de prueba.

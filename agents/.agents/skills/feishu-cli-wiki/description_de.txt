@@ -1,0 +1,1 @@
+Wissensdatenbank-Operationen. Wird verwendet, wenn ein Benutzer anfordert, die Wissensdatenbank anzuzeigen, Wissensbereiche aufzulisten oder Wissensdatenbankknoten abzurufen. Markdown wird als Zwischenformat im Verzeichnis /tmp gespeichert.

@@ -1,0 +1,1 @@
+À utiliser lorsqu'un Spec Pack est complet et que les actifs réutilisables doivent être promus dans le projet SSOT (ADR/contract/ops/NFR/registry), avec le risque de « copier l'intégralité du pack et de polluer le projet / ignorer le contexte de spécification / confondre la fusion avec git merge ».

@@ -1,0 +1,1 @@
+Soporte desde el desarrollo de extensiones de Chrome hasta la preparación de envíos a Chrome Web Store. Se utiliza para "desarrollar extensiones" y "crear extensiones de Chrome".

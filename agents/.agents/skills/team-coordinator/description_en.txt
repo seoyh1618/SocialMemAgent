@@ -1,0 +1,1 @@
+Team coordination and intelligent task allocation. As an executive, break down user tasks and assign them to the most suitable employee agents for execution, coordinate multi-agent parallel collaboration, and summarize and review the outputs.

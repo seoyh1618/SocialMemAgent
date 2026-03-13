@@ -1,0 +1,1 @@
+Capacità di pubblicazione di contenuti Xiaohongshu, che fornisce funzioni per verificare lo stato di accesso e pubblicare contenuti di testo-immagine. Nessuna dipendenza da MCP, utilizzo di script JavaScript integrati per eseguire operazioni relative a Xiaohongshu.

@@ -1,0 +1,3 @@
+Guía completa para el análisis de cobertura de código.
+Cubre la configuración de Coverlet, la generación de informes, la interpretación de métricas y la integración de la complejidad ciclomática.
+Incluye cobertura de Fine Code, herramientas integradas de VS Code, integración de CI/CD y mejores prácticas.

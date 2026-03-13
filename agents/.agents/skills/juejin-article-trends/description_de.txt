@@ -1,0 +1,1 @@
+Rufen Sie die Rankings der Trendartikel von der Juejin-Website ab und unterstützen Sie Abfragen nach Artikelkategorielisten und Trendartikeltrends in jeder Kategorie. Nutzen Sie diese Fähigkeit, wenn Benutzer die Rankings der technischen Artikel von Juejin verstehen oder beliebte Artikel in Bereichen wie Frontend, Backend und KI erhalten möchten.

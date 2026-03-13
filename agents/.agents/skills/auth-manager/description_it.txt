@@ -1,0 +1,1 @@
+Gestione dello stato di accesso al web. Controlla regolarmente lo stato di accesso di Playwright su tutte le piattaforme, con avvisi automatici alla scadenza. Supporta l'aggiunta/rimozione dinamica di piattaforme.

@@ -1,0 +1,1 @@
+ETL/ELT pipeline design, data-flow visualization, batch/streaming selection, Kafka/Airflow/dbt design. Use when building data pipelines and data quality management are needed.

@@ -1,0 +1,1 @@
+Principios básicos del desarrollo colaborativo de agentes de IA. Defina divide y vencerás, gestión de contexto, selección de nivel de abstracción, filosofía de automatización y retrospección de verificación. Aplique patrones de colaboración óptimos siempre que utilice cualquier agente de IA.

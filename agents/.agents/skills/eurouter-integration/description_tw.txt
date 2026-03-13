@@ -1,0 +1,1 @@
+指導開發人員將 EUrouter 整合到他們的應用程式中。 EUrouter 是一個相容於 OpenAI 的 AI 網關，符合 EU/GDPR 要求。在整合 EUrouter、從 OpenRouter 或 OpenAI 切換、配置 EU 資料駐留、將 AI 請求路由到 EU 提供者、管理 API 金鑰或詢問 EUrouter 用於聊天完成、嵌入、串流、工具呼叫、視覺、模型路由或 GDPR 合規性功能的 API 時使用。

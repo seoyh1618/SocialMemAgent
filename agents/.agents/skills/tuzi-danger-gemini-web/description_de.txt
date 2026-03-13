@@ -1,0 +1,1 @@
+Generieren Sie Bilder und Text über die rückentwickelte Gemini-Web-API. Unterstützt Textgenerierung, Prompt-to-Image, Referenzbild-Vision-Eingabe und Multi-Turn-Dialog. Verwenden Sie es, wenn andere Fähigkeiten ein Backend zur Bildgenerierung benötigen oder wenn der Benutzer „Bilder mit Gemini generieren“ oder „Gemini-Textgenerierung“ wünscht.

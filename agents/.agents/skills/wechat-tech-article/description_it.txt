@@ -1,0 +1,1 @@
+Un flusso di lavoro strutturato per scrivere articoli tecnici sugli account ufficiali di WeChat. Caso d'uso: quando un utente deve redigere un post WeChat, creare la struttura dell'articolo, organizzare i materiali e ripetere le bozze. Seguire rigorosamente le convenzioni di denominazione e la struttura delle directory specificate in blogs/wechat/README.md.

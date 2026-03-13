@@ -1,0 +1,6 @@
+Genera e verifica voci BibTeX da note cartacee, scrivendo `citations/ref.bib` e `citations/verified.jsonl`.  
+**Trigger**: citazione, BibTeX, ref.bib, verificato.jsonl, riferimenti, 引用, 参考文献.  
+**Utilizzare quando**: `papers/paper_notes.jsonl` esiste già e sono necessarie citazioni tracciabili (ciascuna con record di verifica di url/data/titolo) per prosa/LaTeX.  
+**Salta se**: ancora nessuna nota cartacea (o l'output corrente non necessita di citazioni/riferimenti).  
+**Rete**: la verifica automatica solitamente richiede la rete; se offline, registra prima, poi contrassegna la necessità di verifica manuale.  
+**Guardrail**: ogni voce BibTeX deve avere un record `citations/verified.jsonl` corrispondente; la prosa può utilizzare solo le chiavi di citazione già presenti in `citations/ref.bib`.

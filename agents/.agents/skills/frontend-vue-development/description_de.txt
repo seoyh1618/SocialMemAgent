@@ -1,0 +1,1 @@
+Frontend-Vue-Entwicklungsstandards, die die Entwicklung von Vue 2/3-Komponenten, Vuex-Statusverwaltung, Routing-Konfiguration, Komponentenkommunikation, Stilstandards und Internationalisierung abdecken. Wird verwendet, wenn Benutzer sich mit der Frontend-Entwicklung befassen, Vue-Komponenten schreiben, die Statusverwaltung übernehmen oder Seiteninteraktionen implementieren.

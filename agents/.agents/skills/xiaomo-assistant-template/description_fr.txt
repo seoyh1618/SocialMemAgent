@@ -1,0 +1,1 @@
+Modèle de configuration de l'assistant XiaoA. Adapté de xiaomo-starter-kit, fournissant des fichiers de framework d'assistant OpenClaw préconfigurés. Utilisez cette compétence lorsque les utilisateurs doivent configurer rapidement un nouvel assistant, définir l'identité de l'assistant ou créer des fichiers de configuration de l'assistant.

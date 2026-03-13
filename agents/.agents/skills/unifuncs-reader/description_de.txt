@@ -1,0 +1,1 @@
+Verwenden Sie die UniFuncs-API, um Inhalte aus Webseiten, PDFs, Word-Dokumenten und mehr mit KI-gestützter Inhaltsextraktion zu lesen. Verwenden Sie es, wenn Benutzer Inhalte aus Webseiten oder Dokumenten lesen, durchsuchen oder extrahieren müssen.

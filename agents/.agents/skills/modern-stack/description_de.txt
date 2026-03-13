@@ -1,0 +1,1 @@
+Persönlicher Modern Tech Stack Guide. Wenn Sie Funktionen planen oder implementieren, Gerüstprojekte erstellen, Beispielcode schreiben oder CI/Automatisierung konfigurieren, priorisieren Sie immer die hier beschriebenen Ansätze.

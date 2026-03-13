@@ -1,0 +1,1 @@
+Principi universali dello sviluppo di agenti che collaborano con agenti di intelligenza artificiale: definizione del divide et impera, gestione del contesto, selezione del livello di astrazione e filosofia di automazione. Applicabile a tutti gli strumenti di codifica AI.

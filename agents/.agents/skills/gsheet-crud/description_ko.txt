@@ -1,0 +1,1 @@
+GSheet-CRUD API 사용자 가이드. Google 스프레드시트를 RESTful API 데이터베이스로 사용하세요. 사용자가 데이터 쿼리(GET), 데이터 삽입(POST), 데이터 업데이트(PUT), 데이터 삭제(DELETE) 등 API를 통해 Google Sheets 데이터를 조작해야 하는 경우 이 기술을 사용하세요.

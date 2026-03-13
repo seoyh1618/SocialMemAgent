@@ -1,0 +1,1 @@
+Konvertieren Sie jede Seite einer PDF-Datei in Bilddateien; unterstützt benutzerdefinierte Bildformate (PNG/JPG) und Auflösung; geeignet für Dokumentenverarbeitung, Bildarchivierung und ähnliche Szenarien.

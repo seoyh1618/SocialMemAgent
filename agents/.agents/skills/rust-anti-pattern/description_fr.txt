@@ -1,0 +1,1 @@
+Modèles antirouille et erreurs courantes. Traitant les révisions de code, le clonage, le déballage, l'utilisation des chaînes, les itérateurs, etc. Mots déclencheurs : anti-modèle, erreur courante, clone, déballage, révision de code, odeur de code, erreur courante, révision de code, refactor, refactoring

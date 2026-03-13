@@ -1,0 +1,1 @@
+Automatisieren Sie Browserinteraktionen für Webtests, das Ausfüllen von Formularen, Screenshots und die Datenextraktion. Wird verwendet, wenn Benutzer Websites durchsuchen, mit Webseiten interagieren oder Informationen extrahieren müssen.

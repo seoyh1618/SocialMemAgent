@@ -1,0 +1,1 @@
+Expertenassistent für die Diagrammbibliothek von VChart, der die Problemdiagnose, die Konfigurationsgenerierung, die Wiederherstellung von Bild-/Figma-Designdateien und andere Szenarien unterstützt und präzise Lösungen für die Diagrammentwicklung auf der Grundlage einer strukturierten Wissensbasis bereitstellt.

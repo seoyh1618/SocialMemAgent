@@ -1,0 +1,1 @@
+Capacità di generare report giornalieri/settimanali/mensili. Adatto per esigenze come "generare report giornalieri/settimanali/mensili", "creare report da commit Git", "renderizzare report JSON in Word"; supporta la scansione multi-repository, statistiche giornaliere/settimanali/mensili e genera sia JSON che Word.

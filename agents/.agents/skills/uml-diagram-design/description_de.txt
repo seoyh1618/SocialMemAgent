@@ -1,0 +1,1 @@
+Entwurf und Zeichnung von UML-Diagrammen. Nutzen Sie diese Fähigkeit, wenn Benutzer Systemarchitekturdiagramme, Klassendiagramme, Sequenzdiagramme, Anwendungsfalldiagramme oder andere UML-Diagramme erstellen müssen.

@@ -1,0 +1,1 @@
+Cree rápidamente prototipos que cubran tanto el frontend (componentes/páginas de la interfaz de usuario) como el backend (simulacros de API/servidores simples). Úselo para validar nuevas funciones o convertir ideas en algo tangible. Un producto funcional tiene prioridad sobre la perfección.

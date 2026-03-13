@@ -1,0 +1,1 @@
+Initialisieren Sie die SecondMe-Projektkonfiguration und die Auswahl des Funktionsmoduls, erstellen Sie state.json und CLAUDE.md

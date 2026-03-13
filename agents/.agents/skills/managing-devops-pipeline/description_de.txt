@@ -1,0 +1,1 @@
+Verwalten Sie Build-Vorgänge für die Blue Shield-Pipeline, einschließlich Abfragen des Build-Verlaufs, Abrufen von Startparametern, Überprüfen des Build-Status und Initiieren von Builds. Verwenden Sie dies, wenn Benutzer Pipeline, Build, Bereitstellung, CI/CD, Blue Shield erwähnen oder eine Build-Aufgabe auslösen müssen.

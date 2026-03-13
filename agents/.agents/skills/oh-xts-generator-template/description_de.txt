@@ -1,0 +1,1 @@
+Vorlage für die universelle Generierung von OpenHarmony XTS-Testfällen. Unterstützt die Testfallgenerierung für jedes Subsystem, das Parsen von API-Definitionen, die Testabdeckungsanalyse und Codespezifikationsprüfungen. Auslöseschlüsselwörter: XTS, Testgenerierung, Fallgenerierung, Testfall.

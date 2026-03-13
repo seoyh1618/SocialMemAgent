@@ -1,0 +1,1 @@
+Úselo al crear o refactorizar controladores de estímulo. Applies Hotwire conventions, controller design patterns, targets/values usage, action handling, and JavaScript best practices.

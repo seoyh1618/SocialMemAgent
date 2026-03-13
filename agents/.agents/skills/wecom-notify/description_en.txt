@@ -1,0 +1,1 @@
+Send messages to WeCom via the WeCom API. Use when the user asks to "send wecom message", "notify via wecom", "send enterprise wechat", "send me a wecom message", "wecom notification", "send file to wecom", "send image to wecom", or when a task completes and the user wants notification on WeCom.

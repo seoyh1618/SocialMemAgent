@@ -1,0 +1,1 @@
+Standard di codifica TypeScript e standard di definizione del tipo per progetti Vue 2. Applicabile a scenari come la scrittura di codice TypeScript, la definizione di interfacce di tipo, l'uso del pattern decoratore e lo sviluppo di funzioni di utilità.

@@ -1,0 +1,1 @@
+Überblick über die Architektur des Prozesspipeline-Kernmoduls, einschließlich Pipeline-CRUD, Build-Ausführungs-Engine, ereignisgesteuertem Mechanismus und mehrschichtigem Architekturdesign. Wird verwendet, wenn Benutzer Pipeline-Kernfunktionen entwickeln, das Prozessmodul verstehen, Build-Logik ändern oder Pipeline-bezogene Entwicklung durchführen.

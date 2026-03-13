@@ -1,0 +1,1 @@
+Seguimiento de solicitudes, configuración CORS, limitación de velocidad, patrón de middleware

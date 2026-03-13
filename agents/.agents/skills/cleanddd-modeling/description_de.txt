@@ -1,0 +1,1 @@
+Basierend auf den Ergebnissen der CleanDDD-Anforderungsanalyse werden Ausgabemodelle für Aggregate, Befehle, Ereignisse, Abfragen, API-Endpunkte und geplante Aufgaben erstellt, die CleanDDD entsprechen. Wird verwendet, um aus zerlegten Anforderungen schnell einen Modellierungsentwurf abzuleiten.

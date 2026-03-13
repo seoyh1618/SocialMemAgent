@@ -1,0 +1,1 @@
+Pubblica contenuti e articoli su X (Twitter). Supporta tweet regolari con immagini e X Articles (post di lunga durata). Utilizza Chrome e CDP reali per aggirare il rilevamento dell'automazione.

@@ -1,0 +1,1 @@
+Importe y cree un documento Feishu a partir de un archivo Markdown, que admita listas anidadas, conversión automática de diagramas Mermaid/PlantUML a pizarras y división automática de tablas grandes. Se utiliza cuando el usuario solicita "importar Markdown", "crear documento desde md" o "cargar Markdown".

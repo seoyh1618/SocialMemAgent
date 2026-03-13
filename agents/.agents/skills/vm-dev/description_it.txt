@@ -1,0 +1,1 @@
+Esperto di sviluppo di macchine virtuali specializzato in bytecode, istruzioni, stack frame, gestione della memoria e garbage collection.

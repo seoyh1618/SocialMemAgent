@@ -1,0 +1,1 @@
+Linee guida per la creazione di documenti Feishu. Specifiche complete sul supporto della sintassi Markdown, sulle limitazioni della sintassi Feishu Sirena/PlantUML, sulla gestione delle tabelle, sui meccanismi di tolleranza agli errori dei grafici, ecc. Per riferimento da parte di altre competenze Feishu.

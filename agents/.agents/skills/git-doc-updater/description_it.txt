@@ -1,0 +1,1 @@
+Sincronizzazione dei documenti con pre-commit Git. Trigger: documenti, documentazione, sincronizzazione dei documenti, rilascio.

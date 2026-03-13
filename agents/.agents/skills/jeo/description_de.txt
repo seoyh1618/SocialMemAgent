@@ -1,0 +1,1 @@
+JEO – Integrierte Fähigkeit zur Orchestrierung von KI-Agenten. Planung mit ralph+plannotator, Ausführung über Team/bmad, Browser-Aktionsüberprüfung mit Agent-Browser, automatische Arbeitsbaumbereinigung nach Aufgabenerledigung. Unterstützt Claude, Codex, Gemini CLI, OpenCode. Installation: ralph, omc, omx, ohmg, bmad, plannotator, agent-browser.

@@ -1,0 +1,1 @@
+Universelle Prinzipien der Agentenentwicklung in Zusammenarbeit mit KI-Agenten: Definieren Sie Divide-and-Conquer, Kontextmanagement, Auswahl der Abstraktionsebene und Automatisierungsphilosophie. Anwendbar auf alle KI-Codierungstools.

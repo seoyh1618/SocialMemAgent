@@ -1,0 +1,1 @@
+Esperto di eBPF e moduli kernel. Gestisce programmi eBPF, moduli kernel, mappe, chiamate tail, eventi perf, traccia, sondaggi kernel e profilazione delle prestazioni.

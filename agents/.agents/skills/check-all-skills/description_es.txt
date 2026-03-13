@@ -1,0 +1,1 @@
+Verificar por lotes si las habilidades cumplen con los estándares de mejores prácticas; validar automáticamente nombres, preámbulos, estructuras, limpieza de archivos, dependencias y otras dimensiones; admitir inspección única o por lotes; generar informes de inspección detallados; adecuado para la validación de la calidad una vez completado el desarrollo de habilidades

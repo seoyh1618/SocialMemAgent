@@ -1,0 +1,3 @@
+Task Capture Assistant: uno strumento semplice per registrare l'esecuzione delle attività, creato per l'acquisizione in tempo reale e un avvio senza problemi.  
+Segue la regola "acquisisci e poi elabora": al momento del lancio, basta registrare, senza revisione.  
+Trigger: /task-capture, /capture, /record

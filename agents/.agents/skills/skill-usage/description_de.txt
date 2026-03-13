@@ -1,0 +1,1 @@
+Zählen Sie die Nutzungszeiten installierter Fähigkeiten innerhalb eines bestimmten Zeitraums und zeigen Sie die Ergebnisse in einem schönen TUI-Format an.

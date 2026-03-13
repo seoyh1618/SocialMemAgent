@@ -1,0 +1,1 @@
+Directives de codage C# 12 / .NET 8. Compétence de base de connaissances référencée avant et pendant le codage. Fonctionnalités C# modernes et meilleures pratiques injectées automatiquement.

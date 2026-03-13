@@ -1,0 +1,1 @@
+Se activa automáticamente con encargos vagos. Mejor preguntar de más que implementar mal. Señales: encargo muy corto, sin rutas concretas, verbos vagos (optimizar, mejorar, refactorizar), lenguaje incierto (quizá, un poco, podría), sin criterios de éxito. Salida: JSON estructurado para el skill prompt-architect. Para omitir: «hazlo sin preguntar», «decide tú».

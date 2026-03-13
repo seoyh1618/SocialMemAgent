@@ -1,0 +1,1 @@
+Según los resultados del análisis de requisitos de cleanddd, modelos de salida para agregados, comandos, eventos, consultas, puntos finales de API y tareas programadas que cumplen con CleanDDD; Se utiliza para derivar rápidamente un modelo de modelado a partir de requisitos descompuestos.

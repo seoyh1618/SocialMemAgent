@@ -1,0 +1,1 @@
+Fähigkeit zur Aufgabenplanung. Wird ausgelöst, wenn Aufgaben aufgeschlüsselt und Schritte geordnet werden müssen. Auslöserwörter: planen, planen, aufschlüsseln, zerlegen, Schritte, wie es geht.

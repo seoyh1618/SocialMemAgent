@@ -1,0 +1,1 @@
+Consulta el riesgo país de Argentina y su serie histórica con la API de Anduin. Usar cuando pidan «riesgo país argentina», «último riesgo país», «serie histórica de riesgo país», «riesgo país por fecha o periodo» o «evolución del riesgo país».

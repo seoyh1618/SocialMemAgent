@@ -1,0 +1,1 @@
+Contenu multi-source vers le processeur NotebookLM. Déclenché lorsque l'utilisateur fournit un lien vers un article WeChat (mp.weixin.qq.com), un lien YouTube, une URL Web, un chemin de fichier local (PDF/EPUB/DOCX/PPTX/MD, etc.) ou des mots-clés de recherche, et souhaite les télécharger sur NotebookLM ou générer un podcast/PPT/carte mentale, etc.

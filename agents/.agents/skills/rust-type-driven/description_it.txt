@@ -1,0 +1,1 @@
+Esperto di design basato sul tipo. Gestisce newtype, stato del tipo, PhantomData, tratto marcatore, modello di build, stato del tipo, modello newtype, verifica in fase di compilazione, tratto sigillato, ZST

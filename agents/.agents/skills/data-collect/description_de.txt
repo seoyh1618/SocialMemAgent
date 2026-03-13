@@ -1,0 +1,1 @@
+Sammeln Sie historische Candlestick-Daten, Echtzeitkurse und Chipverteilung für A-Aktien, Hongkong-Aktien, US-Aktien und ETFs. Verwenden Sie diese Option, wenn Benutzer Aktiencodes erwähnen, Marktdaten, Candlesticks, Echtzeitkurse, Chipverteilung anfordern oder nach Aktien wie Moutai/AAPL fragen.

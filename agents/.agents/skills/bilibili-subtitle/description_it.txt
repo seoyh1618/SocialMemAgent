@@ -1,0 +1,1 @@
+Estrai i sottotitoli dai video Bilibili, trascrivi video senza sottotitoli, genera riassunti strutturati. Condizioni di attivazione: URL Bilibili (bilibili.com), ID BV (BV1xxx) o richieste come "estrai sottotitoli Bilibili".

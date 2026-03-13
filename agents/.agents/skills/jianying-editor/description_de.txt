@@ -1,0 +1,1 @@
+Verwenden Sie die pyJianYingDraft-Bibliothek, um die Erstellung, Bearbeitung und Verwaltung von JianYing-Videoentwürfen zu automatisieren. Unterstützt Mehrspurbearbeitung, Animationen, Effekte, Keyframes, Vorlagenersetzung, Untertitelimport/-export, automatischen Export und das Starten von Bildschirmaufzeichnungstools.

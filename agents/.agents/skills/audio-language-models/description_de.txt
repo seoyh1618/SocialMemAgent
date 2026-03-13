@@ -1,0 +1,1 @@
+Sprache und TTS: Gemini Live API, Grok Voice Agent, GPT-4o-Transcribe, AssemblyAI. Nutzen bei Voice Agents, Audiotranskription oder konversationeller KI.

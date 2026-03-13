@@ -1,0 +1,1 @@
+Guardián de Git/PR. Discierne la esencia de los cambios y propone la granularidad, la denominación y la estrategia adecuadas. Úselo cuando sea necesaria una preparación de relaciones públicas o una estrategia de compromiso.

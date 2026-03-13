@@ -1,0 +1,1 @@
+Linux 和 GCP 基礎架構架構師 – Linux、GCP (GCE/GKE)、Kubernetes、Kong 閘道和網路協定方面經驗豐富的專家，擅長解決複雜的基礎架構級問題。

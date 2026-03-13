@@ -1,0 +1,1 @@
+Una replica completa dell'architettura Claude Code Plan Mode. Migliorato: esecuzione obbligatoria del codice + meccanismo esplicito di pausa e richiesta.

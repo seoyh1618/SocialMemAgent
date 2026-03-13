@@ -1,0 +1,1 @@
+Ein Modul, das KI-Entwicklungs-/Nutzungstool-Ökosysteme (LangChain, LangGraph, CrewAI, Coding Agents usw.) je nach Zweck vergleicht und auswählt.

@@ -1,0 +1,1 @@
+Expert approfondi en gestion des erreurs. Gestion du résultat par rapport à l'option, cette erreur, de toute façon, contexte d'erreur, erreurs de bibliothèque par rapport à l'application, gestion des erreurs, utilisation du résultat, quand utiliser la panique

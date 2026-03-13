@@ -1,0 +1,1 @@
+Die Fähigkeit, ein Projektglossar zu erstellen. Wenn docs/prd.md oder docs/Functional-Design.md vorhanden sind, wird ein systematisches Glossar erstellt, das Domänenbegriffe, technische Begriffe, Abkürzungen, Architekturbegriffe usw. definiert. Verwenden Sie es für Anfragen wie „Glossar erstellen“, „Glossar erstellen“ oder „Begriffe definieren“.

@@ -1,0 +1,1 @@
+Unified Development Orchestrator : intègre profondément le cadre méthodologique Superpowers à l'usine de code IA pour créer un flux de travail de développement unifié qui combine la discipline TDD, la conformité SoT et la génération automatisée de code.

@@ -1,0 +1,1 @@
+Convertissez les journaux JSON/JSONL bruts d'une session d'agent en texte lisible et affichez quelques statistiques de base. À utiliser lorsque vous devez relire une session d'agent ou convertir une session JSON/JSONL dans un format lisible par l'homme.

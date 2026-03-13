@@ -1,0 +1,1 @@
+Comparez automatiquement les signaux d'inflation de l'IPC (pondération fixe) aux États-Unis avec les signaux d'inflation du PCE (pondération dynamique), en identifiant les risques de hausse du PCE dans les catégories à faible volatilité et à pondération élevée. Utilisé pour analyser si le PCE surveillé par la Fed réaccélère même si l'IPC semble se refroidir.

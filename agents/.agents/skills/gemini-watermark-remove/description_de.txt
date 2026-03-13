@@ -1,0 +1,1 @@
+Entfernen Sie Wasserzeichen aus von Google Gemini (Nano Banana) generierten Bildern, indem Sie einen umgekehrten Alpha-Blending-Algorithmus verwenden, um die überlagerten Pixel präzise wiederherzustellen.

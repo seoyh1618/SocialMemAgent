@@ -1,0 +1,1 @@
+Skill H (Haptic) - Ingeniero de sensaciones y audio. Experto en Taptic Engine, sensores y feedback auditivo. Usar para: patrones de vibración, UI con giroscopio/magnetómetro, efectos de sonido (UI Foley) en clics y gestos.

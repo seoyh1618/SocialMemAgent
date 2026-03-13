@@ -1,1 +1,46 @@
 @import "tailwindcss";
+
+/* Reasoning block collapse/expand animation */
+.reasoning-content {
+  overflow: hidden;
+  transition: max-height 0.3s ease-in-out, opacity 0.2s ease-in-out;
+}
+
+.reasoning-collapsed {
+  max-height: 0;
+  opacity: 0;
+}
+
+.reasoning-expanded {
+  max-height: 2000px;
+  opacity: 1;
+}
+
+/* Smooth cursor blink */
+@keyframes cursor-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Custom scrollbar for chat */
+.overflow-y-auto::-webkit-scrollbar {
+  width: 6px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+/* Textarea auto-height */
+textarea {
+  field-sizing: content;
+}

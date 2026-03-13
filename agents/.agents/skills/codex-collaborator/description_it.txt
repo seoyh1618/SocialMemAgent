@@ -1,0 +1,1 @@
+Flusso di lavoro di collaborazione del Codex MCP. Scenari di attivazione: (1) sviluppo di nuove funzionalità (2) refactoring (3) logica aziendale complessa (4) revisione del codice. Fornisce una collaborazione in tre fasi: analisi dei requisiti → acquisizione del prototipo → revisione, enfatizzando il pensiero critico e la sicurezza di sola lettura.

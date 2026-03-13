@@ -1,0 +1,1 @@
+Compétence d'expert en localisation de projets SwiftUI / iOS / macOS, prenant en charge trois modes : scan (analyse en lecture seule), appliquer (exécuter les modifications) et lint (vérification CI), avec sortie commutable en chinois et en anglais.

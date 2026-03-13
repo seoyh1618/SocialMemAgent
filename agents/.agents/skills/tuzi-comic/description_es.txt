@@ -1,0 +1,1 @@
+Herramienta de creación de cómics de conocimiento que admite varios estilos y tonos artísticos. Cree cómics educativos originales con diseños de guiones gráficos detallados y generación secuencial de imágenes. Se utiliza cuando los usuarios solicitan la creación de "cómics de conocimiento", "cómics educativos", "cómics biográficos" o "cómics tutoriales".

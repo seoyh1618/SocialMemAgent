@@ -1,0 +1,1 @@
+Un módulo que enseña las limitaciones del procesamiento de entradas largas y soluciones prácticas (división, resumen, priorización) centradas en la tokenización y las ventanas de contexto.

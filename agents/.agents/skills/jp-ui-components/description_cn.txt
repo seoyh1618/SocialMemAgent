@@ -1,0 +1,1 @@
+遵守创建 jp-ui 组件和 Storybook 页面的规则的技能。基本 UI 包装器的策略，维护 render/useRender 以及应用布局/间距/宽度规则。

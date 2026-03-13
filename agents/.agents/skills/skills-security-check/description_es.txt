@@ -1,0 +1,1 @@
+Utilice comprobaciones estáticas y de IA para evaluar los riesgos de seguridad y las amenazas potenciales en Habilidades. Cuando un usuario solicita una verificación o escaneo de habilidades, activa la función de evaluación de habilidades.

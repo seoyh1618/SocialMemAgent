@@ -1,0 +1,1 @@
+Material complementario del día 2: inmersión profunda en MCP. Aprenda sistemáticamente cómo conectar herramientas externas a Claude Code a través de MCP. Úselo para solicitudes como "Aprenda MCP", "Suplemento de MCP", "Conferencia de MCP", "Estudio de MCP".

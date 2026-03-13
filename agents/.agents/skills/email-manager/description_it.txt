@@ -1,0 +1,1 @@
+Gestione unificata di più email con un assistente intelligente. Supporta Gmail, QQ Mail e altri account IMAP; controlla la posta elettronica secondo un programma; utilizza l'intelligenza artificiale per generare sintesi e bozze di risposta; richiede la conferma dell'utente prima dell'invio.

@@ -1,0 +1,1 @@
+Video Generation Master – Génère automatiquement des invites de scène vidéo avec prise en charge des effets dynamiques, des transitions, des mouvements de caméra, etc.

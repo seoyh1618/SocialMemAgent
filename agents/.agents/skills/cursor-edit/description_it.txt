@@ -1,0 +1,1 @@
+Esegui modifiche effettive al codice tramite Cursor CLI. Dopo aver ricevuto i risultati dell'analisi/pianificazione, passarli a cursor-agent per delegare la modifica del codice. Utilizzalo quando sono necessarie modifiche effettive ai file, ad esempio modifica del codice, refactoring, aggiunta di funzionalità o correzioni di bug.

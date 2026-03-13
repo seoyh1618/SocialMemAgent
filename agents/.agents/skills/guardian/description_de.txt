@@ -1,0 +1,1 @@
+Hüter von Git/PR. Erkennt das Wesentliche von Änderungen und schlägt die richtige Granularität, Benennung und Strategie vor. Verwenden Sie es, wenn eine PR-Vorbereitung oder eine Commit-Strategie erforderlich ist.

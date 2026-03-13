@@ -1,0 +1,1 @@
+Habilidades de implementación basadas en jp-ui Foundation (colores/tipografía/iconos/formas/sombras). Actualice esta habilidad cada vez que se actualicen los tokens de Fundación o archivos relacionados.

@@ -1,0 +1,1 @@
+Gestione della cache Redis, pooling di connessioni, policy TTL, eliminazione basata su pattern, ottimizzazione delle prestazioni

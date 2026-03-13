@@ -1,0 +1,1 @@
+Assumez le personnage (débutant, senior, utilisateur mobile, etc.) et testez le flux de l'interface utilisateur, puis signalez tout point de confusion. Utilisez-le lorsque vous devez découvrir des problèmes d’expérience utilisateur ou vérifier la convivialité.

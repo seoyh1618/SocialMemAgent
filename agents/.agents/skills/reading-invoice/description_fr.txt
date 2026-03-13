@@ -1,0 +1,1 @@
+Lisez l'image de la facture et renvoyez les données structurées. Il peut être appelé par d'autres compétences ou invoqué directement par l'utilisateur.

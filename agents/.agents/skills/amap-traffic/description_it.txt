@@ -1,0 +1,1 @@
+Amap query sul traffico in tempo reale e capacità di pianificazione del percorso di guida autonoma ottimale. Basato sull'API Amap Traffic Status e sull'API Route Planning, fornisce informazioni sulla congestione in tempo reale e suggerimenti sul percorso più veloce.

@@ -1,0 +1,1 @@
+Moteur de développement d'applications multiplateformes uni-app x. Convient aux capacités et à l'utilisation lors du développement d'applications Android/iOS/HarmonyOS/Web/Mini-Program utilisant la syntaxe UTS, uvue et Vue.

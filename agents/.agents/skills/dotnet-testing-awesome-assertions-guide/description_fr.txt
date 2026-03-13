@@ -1,0 +1,3 @@
+Maîtrisez des assertions de test fluides et lisibles avec AwesomeAssertions.
+Utilisez-le lorsque vous devez rédiger des assertions claires, comparer des objets, valider des collections ou gérer des correspondances complexes.
+Couvre l'API complète, notamment Should(), BeEquivalentTo(), Contain(), ThrowAsync(), et bien plus encore.

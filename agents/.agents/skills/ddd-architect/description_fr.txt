@@ -1,0 +1,1 @@
+Assistance et inspection d’architecture DDD. Déclencheur : architecture, nouvelle fonctionnalité, nouveau module, domaine, structure.

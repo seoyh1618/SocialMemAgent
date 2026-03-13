@@ -1,0 +1,1 @@
+Verantwortlich für die Handhabung der IDF-Anforderungen (Information Display Frame). Liest Spezifikationsverzeichnisstrukturen, generiert/überprüft abfrageseitiges Design und Implementierung. Unterstützt Java, TypeScript und Go mehrsprachig.

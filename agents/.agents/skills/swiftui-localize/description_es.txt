@@ -1,0 +1,1 @@
+Habilidad experta en localización de proyectos SwiftUI / iOS / macOS, que admite tres modos: escaneo (escaneo de solo lectura), aplicar (ejecutar modificaciones) y pelusa (verificación de CI), con salida conmutable en chino e inglés.

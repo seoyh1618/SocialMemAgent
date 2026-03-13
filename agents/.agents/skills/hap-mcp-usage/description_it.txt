@@ -1,0 +1,1 @@
+Abilità di configurazione automatizzata Mingdao Cloud HAP MCP. Si attiva **immediatamente** quando gli utenti menzionano "configura MCP", "HAP MCP", "configurazione MCP", "aggiungi MCP", "connessione MCP" ecc. Supporta la configurazione automatizzata per 9 strumenti AI, con verifica automatica della connettività al completamento.

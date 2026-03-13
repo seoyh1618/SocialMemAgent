@@ -1,0 +1,1 @@
+Analice datos de salud, calcule puntuaciones de salud e identifique indicadores anormales

@@ -1,0 +1,1 @@
+Uni-App x plattformübergreifende Anwendungsentwicklungs-Engine. Geeignet für Funktionen und Verwendung bei der Entwicklung von Android-/iOS-/HarmonyOS-/Web-/Miniprogrammanwendungen mit UTS-, Uvue- und Vue-Syntax.

@@ -1,0 +1,1 @@
+用於清除 macOS 上的 Flutter 環境變數（FLUTTER_STORAGE_BASE_URL 和 PUB_HOSTED_URL）。適合需要重置環境或解決Flutter代理問題的場景。

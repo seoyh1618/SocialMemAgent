@@ -1,0 +1,1 @@
+Envíe una solicitud de asistencia al asistente, aplicable para tareas como comprensión de lectura de formato largo, búsqueda web, lectura de páginas web, traducción de artículos y creación de páginas web e interfaces de usuario.

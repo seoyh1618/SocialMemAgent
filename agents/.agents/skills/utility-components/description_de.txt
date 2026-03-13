@@ -1,0 +1,1 @@
+Tool-Komponentenhandbuch, das die Verwendung von Dienstprogrammklassen für bestimmte Funktionen wie JWT-Sicherheitsauthentifizierung, Ausdrucksparser, Thread-Pool-Loop-Tools und Chain of Responsibility-Muster abdeckt. Wird verwendet, wenn Sie die JWT-Authentifizierung implementieren, Ausdrücke analysieren, Thread-Pools verwenden oder die Verantwortungskette implementieren.

@@ -1,0 +1,1 @@
+Una habilidad para consultar la documentación oficial de Base UI (@base-ui/react) y verificar su API. Utilícelo cuando se hagan preguntas sobre los componentes/manuales/descripciones generales de la interfaz de usuario base.

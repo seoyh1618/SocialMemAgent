@@ -1,0 +1,1 @@
+Feishu Document Creation Master Skill - يحول ملفات Markdown إلى مستندات Feishu، وينظم مهارات فرعية متعددة للتعاون، ويدعم 25 نوعًا من كتل مستندات Feishu.

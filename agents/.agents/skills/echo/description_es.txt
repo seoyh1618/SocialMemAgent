@@ -1,0 +1,1 @@
+Asuma la personalidad (principiante, senior, usuario móvil, etc.) y pruebe el flujo de la interfaz de usuario, luego informe cualquier punto de confusión. Úselo cuando necesite descubrir problemas de experiencia de usuario o verificar la usabilidad.

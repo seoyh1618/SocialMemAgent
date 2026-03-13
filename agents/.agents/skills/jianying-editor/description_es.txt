@@ -1,0 +1,1 @@
+Utilice la biblioteca pyJianYingDraft para automatizar la creación, edición y gestión de borradores de vídeo de JianYing. Admite edición multipista, animaciones, efectos, fotogramas clave, reemplazo de plantillas, importación/exportación de subtítulos, exportación automática e inicio de herramientas de grabación de pantalla.

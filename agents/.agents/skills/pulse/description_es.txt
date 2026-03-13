@@ -1,0 +1,1 @@
+Definición de KPI, diseño de seguimiento de eventos, creación de especificaciones de tablero. Métricas de estrella del norte, análisis de embudo, diseño de análisis de cohortes. Integración GA4/Amplitud/Mixpanel. Se utiliza cuando se necesita una base métrica.

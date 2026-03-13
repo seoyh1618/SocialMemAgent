@@ -1,0 +1,1 @@
+Experte für intelligente Zeiger und Ressourcenmanagement. Behandelt Box, Rc, Arc, Weak, RefCell, Cell, innere Veränderlichkeit, RAII, Drop, Heap-Zuweisung, Referenzzählung, intelligente Zeiger

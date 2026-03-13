@@ -1,0 +1,1 @@
+Router angolare per navigazione, configurazione del routing, protezioni del percorso, caricamento lento e gestione dei parametri. Da utilizzare durante l'impostazione di percorsi, l'implementazione di protezioni di navigazione, moduli di caricamento lento, la gestione dei parametri di percorso o l'implementazione di breadcrumb e percorsi nidificati nelle applicazioni Angular.

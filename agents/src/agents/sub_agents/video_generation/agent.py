@@ -1,6 +1,7 @@
 import os
 import datetime
 import time
+import logging
 
 from dotenv import load_dotenv
 from google.adk import Agent
@@ -14,6 +15,8 @@ from agents.video_editing_tools import assemble_video_with_audio
 
 from . import prompt
 load_dotenv()
+
+logger = logging.getLogger(__name__)
 
 client = Client(
     vertexai=True,
@@ -49,6 +52,11 @@ def generate_video(video_prompt: str, image_gcs_uri: str):
 
     output_gcs_uri = f"gs://{GCS_BUCKET_NAME}/videos"
 
+    # Polling config: exponential backoff, 10-minute hard timeout
+    _MAX_WAIT_SECONDS = 600  # 10 minutes
+    _BACKOFF_INITIAL = 2
+    _BACKOFF_MAX = 30
+
     try:
         operation = client.models.generate_videos(
             # model="veo-3.0-generate-preview",  # hope we can use this asap
@@ -64,17 +72,26 @@ def generate_video(video_prompt: str, image_gcs_uri: str):
             ),
         )
 
-        # Poll the operation status until done
-        print("DEBUG: Video generation started. Polling for completion...")
-        wait_seconds = 0
+        # Poll with exponential backoff + timeout
+        logger.info("Video generation started. Polling for completion...")
+        total_waited = 0
+        backoff = _BACKOFF_INITIAL
         while not operation.done:
-            time.sleep(1)
-            wait_seconds += 1
+            if total_waited >= _MAX_WAIT_SECONDS:
+                logger.error("Video generation timed out after %d seconds", total_waited)
+                return {
+                    "status": "failed",
+                    "detail": f"Video generation timed out after {total_waited} seconds",
+                }
+            sleep_time = min(backoff, _BACKOFF_MAX)
+            time.sleep(sleep_time)
+            total_waited += sleep_time
+            backoff = min(backoff * 2, _BACKOFF_MAX)
             operation = client.operations.get(operation)
-            print(f"DEBUG: waited {wait_seconds} seconds for operation: {operation}")
+            logger.debug("Polling video operation: waited %ds so far", total_waited)
 
         if operation.response and operation.result:
-            print(f"DEBUG: operation.result: {operation.result}")
+            logger.debug("Video operation result: %s", operation.result)
 
             generated_videos = operation.result.generated_videos
             if not generated_videos or not generated_videos[0].video or not generated_videos[0].video.uri:
@@ -83,7 +100,7 @@ def generate_video(video_prompt: str, image_gcs_uri: str):
                     "detail": f"Generated video is empty: {operation}",
                 }
             generated_video_uri: str = generated_videos[0].video.uri
-            print(f"DEBUG: Generated video URI: {generated_video_uri}")
+            logger.info("Video generated successfully: %s", generated_video_uri)
             return {
                 "status": "success",
                 "detail": "Video generated and uploaded to GCS",
@@ -95,7 +112,7 @@ def generate_video(video_prompt: str, image_gcs_uri: str):
                 "detail": f"Video generation failed: {operation}",
             }
     except Exception as e:
-        print(f"DEBUG: Video generation failed: {e}")
+        logger.exception("Video generation failed")
         return {"status": "failed", "detail": f"Video generation failed: {e}"}
 
 

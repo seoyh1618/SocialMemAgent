@@ -1,0 +1,3 @@
+.NET-Unit-Testing-Grundlagen und FIRST-Prinzipien-Expertise.
+Verwenden Sie es, wenn Sie Unit-Tests erstellen, Testgrundlagen verstehen, das 3A-Muster erlernen und Best Practices für Tests beherrschen müssen.
+Behandelt FIRST-Prinzipien, AAA-Muster, Fakten/Theorie und die Testpyramide.

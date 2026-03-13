@@ -1,0 +1,5 @@
+Flujo de trabajo de procesamiento de podcasts integral. Dos puntos de entrada:
+1) Procesamiento directo: proporcione un enlace de YouTube y acceda directamente al flujo de trabajo.
+2) Verificación de actualizaciones: obtenga los últimos episodios de los creadores seguidos y permita a los usuarios elegir cuáles procesar
+Funciones: extracción de subtítulos → procesamiento de resumen de contenido → guardado automático en la base de conocimientos de Feishu.
+Frases desencadenantes: "obtener actualizaciones de podcast", "procesar este podcast", "flujo de trabajo de podcast", "cualquier podcast nuevo".

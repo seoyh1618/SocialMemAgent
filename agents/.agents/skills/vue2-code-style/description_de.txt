@@ -1,0 +1,1 @@
+Vue 2-Projektcodestil und Entwicklungsrichtlinien, die Namenskonventionen, Codeorganisation, Kommentarstandards und Fehlerbehandlung abdecken. Anwendbar auf alle Code-Schreibszenarien, um Konsistenz, Lesbarkeit und Wartbarkeit sicherzustellen.

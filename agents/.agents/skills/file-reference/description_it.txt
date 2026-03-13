@@ -1,0 +1,1 @@
+Elabora e analizza i riferimenti ai file caricati dagli utenti, estrai informazioni chiave e fornisci consigli sulle applicazioni. Adatto per l'analisi di riferimenti al simbolo @, riferimenti in linguaggio naturale ed estrazione di informazioni rilevanti per la pianificazione di brevi drammi.

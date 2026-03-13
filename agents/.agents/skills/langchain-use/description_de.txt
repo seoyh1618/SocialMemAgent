@@ -1,0 +1,1 @@
+LangChain 1.0-Benutzerhandbuch. Eine Kurzreferenz für Kernkonzepte wie Agent, Tool, Speicher, Middleware. Wird aktiviert, wenn Benutzer einen KI-Agenten erstellen, LangChain integrieren oder LangChain-bezogene Probleme lösen müssen.

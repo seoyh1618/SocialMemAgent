@@ -1,0 +1,4 @@
+AutoFixture 和 NSubstitute 集成指南 – 自动模拟实践。  
+涵盖 AutoNSubstituteDataAttribute、Frozen 机制和贪婪构造策略。  
+包括对特殊依赖项的自定义处理，例如 IMapper (AutoMapper/Mapster)。  
+非常适合复杂的依赖注入测试、模拟验证和行为设置。

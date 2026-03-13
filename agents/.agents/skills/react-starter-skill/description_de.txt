@@ -1,0 +1,1 @@
+Projekt-Setup: React + Vite + Tailwind CSS v4 + React Query + Zustand + React Router + Lingui + shadcn + lucide-react. Nutzen beim Anlegen neuer React-Projekte, Frontend-Initialisierung oder React+Vite-Setup. Trigger: „React-Projekt erstellen“, „Frontend initialisieren“, „create a new React app“, „scaffold a frontend project“.

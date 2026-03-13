@@ -1,0 +1,1 @@
+Lit l'image d'un relevé de paiement et renvoie des données structurées. Il peut être appelé par d'autres compétences ou directement invoqué par l'utilisateur.

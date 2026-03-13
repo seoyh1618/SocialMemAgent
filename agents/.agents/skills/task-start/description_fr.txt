@@ -1,0 +1,3 @@
+Assistant de lancement de tâches – Générez automatiquement un document pratique d'exécution de tâches avant de commencer des tâches de travail/corrections de bugs/développement de fonctionnalités/création de contenu.
+Résout le problème des « regrets après coup » en établissant dès le départ un cadre d'enregistrement, vous permettant d'enregistrer au fur et à mesure et de former automatiquement une rétrospective.
+Déclencheurs : /task-start, /kickoff, /start

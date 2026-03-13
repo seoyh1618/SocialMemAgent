@@ -1,0 +1,1 @@
+Compétences pour examiner les soumissions de code de projet natif du programme WeChat Mini, vérifier les contraintes architecturales, les meilleures pratiques et les problèmes courants.

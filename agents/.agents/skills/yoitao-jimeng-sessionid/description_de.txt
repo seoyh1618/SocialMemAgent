@@ -1,0 +1,1 @@
+Wird verwendet, wenn Sie das Sitzungs-ID-Cookie im Anmeldestatus von Jimeng (jimeng.jianying.com) abrufen oder aktualisieren müssen. Es öffnet automatisch die Jimeng-Website, um den Anmeldestatus zu überprüfen, und gibt den Sitzungs-ID-Wert an den Anrufer zurück, wenn er bereits angemeldet ist.

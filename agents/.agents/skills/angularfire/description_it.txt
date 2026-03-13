@@ -1,0 +1,1 @@
+Libreria AngularFire per l'integrazione dei servizi Firebase (Autenticazione, Firestore, Storage, Funzioni, Analytics) con applicazioni Angular. Da utilizzare durante la creazione di app Angular con backend Firebase, l'implementazione di autenticazione, database in tempo reale, archiviazione nel cloud, funzioni serverless o analisi Firebase. Copre v20+ con componenti autonomi.

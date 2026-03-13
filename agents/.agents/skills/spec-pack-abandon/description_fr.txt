@@ -1,0 +1,1 @@
+À utiliser lorsque le Spec Pack actuel doit être abandonné/révoqué en raison d'un problème d'exigence majeur et que le répertoire `.aisdlc/specs/{branch}` correspondant et les branches locales/distantes doivent être supprimés. Avant la suppression, générez une liste de suppression et demandez la confirmation de l'utilisateur.

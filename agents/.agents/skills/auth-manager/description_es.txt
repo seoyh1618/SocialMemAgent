@@ -1,0 +1,1 @@
+Gestión del estado de inicio de sesión web. Verifique periódicamente el estado de inicio de sesión de Playwright en todas las plataformas, con alertas automáticas al vencimiento. Admite la adición/eliminación dinámica de plataformas.

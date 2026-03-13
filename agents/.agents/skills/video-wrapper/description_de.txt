@@ -1,0 +1,1 @@
+Fügen Sie Varieté-Effekte (Popup-Text, Karten, Namensschilder, Kapiteltitel usw.) zu Interviewvideos hinzu. Unterstützt 4 visuelle Themen, analysiert zunächst den Untertitelinhalt, um Vorschläge zur Benutzerfreigabe zu generieren, und rendert dann das Video.

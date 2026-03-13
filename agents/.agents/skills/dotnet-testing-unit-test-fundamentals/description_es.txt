@@ -1,0 +1,3 @@
+Experiencia en fundamentos de pruebas unitarias de .NET y principios FIRST.
+Úselo cuando necesite crear pruebas unitarias, comprender los conceptos básicos de las pruebas, aprender el patrón 3A y dominar las mejores prácticas de pruebas.
+Cubre los PRIMEROS principios, el patrón AAA, los hechos/teoría y la pirámide de pruebas.

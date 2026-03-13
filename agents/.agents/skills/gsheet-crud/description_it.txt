@@ -1,0 +1,1 @@
+Guida per l'utente dell'API GSheet-CRUD. Utilizza Fogli Google come database API RESTful. Utilizza questa competenza quando gli utenti devono manipolare i dati di Fogli Google tramite API, tra cui: query di dati (GET), inserimento di dati (POST), aggiornamento di dati (PUT), eliminazione di dati (DELETE).

@@ -1,0 +1,1 @@
+IMAP for receiving emails and SMTP for sending emails for QQ Mail; the account and authorization code are read from the environment variables QQ_EMAIL_ACCOUNT and QQ_EMAIL_AUTH_CODE. Used when the user wants to send QQ emails, receive emails, check emails, send emails on behalf of others, or configure QQ Mail.

@@ -1,0 +1,3 @@
+Effectuez une recherche d'images Web sur le sujet donné afin de trouver des images appropriées.  
+Utilisez DuckDuckGo Image Search, avec filtrage par taille, couleur, type et licence.  
+Renvoie des informations structurées, notamment l'URL de l'image, la vignette et la source.

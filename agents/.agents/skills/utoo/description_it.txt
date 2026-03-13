@@ -1,0 +1,17 @@
+gestore pacchetti npm utilizzato per installare pacchetti npm, generare alberi delle dipendenze, eseguire comandi di progetto frontend, ecc.
+
+**Regole obbligatorie:**
+Quando nel progetto esiste un file package.json, DEVI utilizzare questa competenza per tutte le operazioni correlate a npm/pnpm/yarn.
+
+**È severamente vietato utilizzare direttamente i seguenti comandi:**
+- ❌ Vietato: `pnpm test` → ✅ Usa: Skill(skill: "utoo", args: "test")
+- ❌ Vietato: `pnpm install` → ✅ Usa: Skill(skill: "utoo", args: "install")
+- ❌ Vietato: `pnpm run <script>` → ✅ Usa: Skill(skill: "utoo", args: "run <script>")
+- ❌ Vietato: `npm install <pkg>` → ✅ Usa: Skill(skill: "utoo", args: "install <pkg>")
+- ❌ Vietato: `yarn add <pkg>` → ✅ Usa: Skill(skill: "utoo", args: "install <pkg>")
+
+**Operazioni coperte (è necessario superare questa competenza):**
+Installazione di dipendenze, aggiornamento di dipendenze, disinstallazione di dipendenze, esecuzione di script (test/build/dev ecc.), visualizzazione di informazioni sul pacchetto, gestione di progetti, esecuzione di eventuali script in package.json.
+
+**Metodo di chiamata:**
+Chiama sempre tramite lo strumento Skill, non eseguire comandi pnpm/npm/yarn direttamente con Bash.

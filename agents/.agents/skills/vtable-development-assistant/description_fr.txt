@@ -1,0 +1,1 @@
+Aidez les utilisateurs à développer des composants de tableau hautes performances avec @visactor/vtable, couvrant les types ListTable, PivotTable et PivotChart, 13 types de cellules, des thèmes de style, un rendu personnalisé, un système d'événements et une API complète.

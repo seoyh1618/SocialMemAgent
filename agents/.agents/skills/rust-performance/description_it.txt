@@ -1,0 +1,1 @@
+Esperto di ottimizzazione delle prestazioni. Gestisce benchmark, profilazione, allocazione, SIMD, cache, ottimizzazione e benchmarking. Parole chiave: prestazioni, ottimizzazione, benchmark, profilazione, allocazione, SIMD, cache, velocizzazione, ottimizzazione delle prestazioni, benchmarking, allocazione della memoria

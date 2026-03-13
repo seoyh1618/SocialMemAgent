@@ -1,0 +1,1 @@
+Actualizar el estado de ROADMAP.md. Desencadenantes: hoja de ruta, ruta, planificación, hito.

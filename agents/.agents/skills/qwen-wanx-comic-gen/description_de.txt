@@ -1,0 +1,1 @@
+Verwenden Sie Tongyi Qianwen Wanxiang (wan2.6-t2i), um Bilder im Comic- oder Anime-Stil zu erstellen. Wenn Benutzer „Manga generieren“, „Manga mit Wanxiang zeichnen“, „Bilder im Comic-Stil generieren“, „Qianwen zum Zeichnen einer 2D-Figur verwenden“ oder ähnliche Anfragen im Zusammenhang mit der Generierung von Bildern im Comic-Stil sagen, führen Sie diese Fähigkeit aus.

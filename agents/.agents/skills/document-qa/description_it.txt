@@ -1,0 +1,1 @@
+Processo di domande e risposte sui documenti: risponde alle domande sulla base dei documenti della knowledge base, fornendo citazioni e punteggi di confidenza

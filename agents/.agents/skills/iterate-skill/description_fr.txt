@@ -1,0 +1,1 @@
+Compétence pour améliorer de manière itérative la compétence. Déclenché lorsque l’évaluation échoue ou nécessite une optimisation. Mots déclencheurs : itérer, améliorer, optimiser, itérer, améliorer.

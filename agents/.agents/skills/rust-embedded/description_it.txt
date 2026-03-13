@@ -1,0 +1,1 @@
+Esperto incorporato e no_std. Si occupa di no_std, embedded-hal, sviluppo bare metal, interruzioni, DMA, ambienti con risorse limitate, ecc. Parole chiave: no_std, embedded, embedded-hal, microcontrollore, firmware, ISR, DMA, embedded, bare-metal

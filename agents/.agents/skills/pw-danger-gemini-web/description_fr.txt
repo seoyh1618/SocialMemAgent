@@ -1,0 +1,24 @@
+Génération de texte et d'images via l'API Web Gemini de rétro-ingénierie.
+
+Capacités de base :
+- Génération de texte : générer des réponses textuelles à l'aide du modèle Gemini
+- Génération d'images : créez des images à partir d'invites de texte et enregistrez-les localement
+- Entrée visuelle : prise en charge des images de référence pour l'image à image ou l'image à texte
+- Dialogue multi-tours : maintenir la continuité du contexte grâce à sessionId
+
+Quand utiliser :
+- Lorsque vous avez besoin de générer des images IA de haute qualité (couvertures, illustrations, etc.)
+- Lorsque vous avez besoin de génération de texte via le modèle Gemini
+- Lorsque vous souhaitez créer des variantes ou des descriptions basées sur une image de référence
+- En tant que backend de génération d'images pour d'autres compétences (pw-cover-image, pw-redbook-image)
+
+Ne convient pas pour :
+- Environnements de production nécessitant un support API officiel et des garanties de stabilité
+- Processus métier critiques sensibles aux changements d'API
+- Appels par lots à haute fréquence (peuvent déclencher des limites de débit)
+
+Rappels importants :
+- La première utilisation nécessite le consentement de l'utilisateur pour la clause de non-responsabilité
+- Authentification du compte Google requise (la connexion du navigateur s'ouvre automatiquement)
+- Configuration proxy nécessaire en Chine continentale
+- Ceci est une API non officielle et peut tomber en panne à tout moment

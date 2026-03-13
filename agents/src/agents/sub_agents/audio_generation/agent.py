@@ -1,4 +1,5 @@
 import datetime
+import logging
 import os
 from dotenv import load_dotenv
 from google.adk.agents import Agent
@@ -10,6 +11,8 @@ from typing import Literal
 
 from . import prompt
 load_dotenv()
+
+logger = logging.getLogger(__name__)
 
 # Only Vertex AI supports image generation for now.
 client = Client(
@@ -132,11 +135,11 @@ audio_generation_agent = Agent(
 )
 
 if __name__ == "__main__":
-    # This is for testing pruposes only.
+    # This is for testing purposes only.
     list_languages()
     list_voices("es-US")
     # text_to_wav("en-US-Chirp3-HD-Erinome",
     #             "Looking for a new strategic challenge?")
     result = generate_audio(
         "Looking for a new strategic challenge?", "female", "en")
-    print(result)
+    logger.info("generate_audio result: %s", result)
