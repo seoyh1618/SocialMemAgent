@@ -232,31 +232,33 @@ const LandingPage = () => {
       onStateDelta: (delta) => {
         const ctxPct = delta['_ctx_usage_pct'];
         if (typeof ctxPct === 'number') setCtxUsagePct(ctxPct);
+
+        // _last_tool_detail has richer info, fallback to _last_tool
+        const toolDetail = delta['_last_tool_detail'];
         const tool = delta['_last_tool'];
+        const stepText = typeof toolDetail === 'string' ? toolDetail
+                       : typeof tool === 'string' ? tool : null;
+
         if (typeof tool === 'string') {
           setLastTool(tool);
           isToolActiveRef.current = true;
         }
 
-        // Read accumulated reasoning log from backend
-        const reasoningLog = delta['_reasoning_log'] as string[] | undefined;
-        if (reasoningLog && Array.isArray(reasoningLog) && reasoningLog.length > 0) {
-          // Build full reasoning content from log
-          const logContent = reasoningLog.map((step, i) => `[Step ${i + 1}]: ${step}`).join('\n');
-
+        if (stepText) {
           setMessages(prev => {
-            // Only show reasoning after user confirmed (at least one complete agent message)
-            const hasCompletedAgent = prev.some(m => m.role === 'agent' && m.isComplete);
-            if (!hasCompletedAgent) return prev;
-
             const last = prev[prev.length - 1];
+            // Append to existing reasoning
             if (last?.role === 'reasoning' && !last.isComplete) {
               const updated = [...prev];
-              updated[updated.length - 1] = { ...updated[updated.length - 1], content: logContent };
+              const msg = { ...updated[updated.length - 1] };
+              const stepNum = (msg.content.match(/\[Step \d+\]/g) || []).length + 1;
+              msg.content += (msg.content ? '\n' : '') + `[Step ${stepNum}]: ${stepText}`;
+              updated[updated.length - 1] = msg;
               return updated;
             }
+            // Create new reasoning (don't block over active agent message)
             if (last?.role === 'agent' && !last.isComplete) return prev;
-            return [...prev, { role: 'reasoning' as const, content: logContent, isComplete: false }];
+            return [...prev, { role: 'reasoning' as const, content: `[Step 1]: ${stepText}`, isComplete: false }];
           });
         }
       },
