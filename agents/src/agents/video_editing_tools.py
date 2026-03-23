@@ -13,15 +13,27 @@ load_dotenv()
 
 logger = logging.getLogger(__name__)
 
-client = Client(
-    vertexai=True,
-    project=os.getenv("GOOGLE_CLOUD_PROJECT"),
-    location=os.getenv("GOOGLE_CLOUD_LOCATION"),
-)
+_client = None
+_storage_client = None
+GCS_BUCKET_NAME = "social-media-agent-assets"
 
-# Initialize Google Cloud Storage client
-storage_client = storage.Client(project=os.getenv("GOOGLE_CLOUD_PROJECT"))
-GCS_BUCKET_NAME = "social-media-agent-assets"  # Public to internet
+
+def _get_client():
+    global _client
+    if _client is None:
+        _client = Client(
+            vertexai=True,
+            project=os.getenv("GOOGLE_CLOUD_PROJECT"),
+            location=os.getenv("GOOGLE_CLOUD_LOCATION"),
+        )
+    return _client
+
+
+def _get_storage_client():
+    global _storage_client
+    if _storage_client is None:
+        _storage_client = storage.Client(project=os.getenv("GOOGLE_CLOUD_PROJECT"))
+    return _storage_client
 
 
 def download_file_from_gcs(source_blob_name: str, destination_file_name: str):
@@ -33,7 +45,7 @@ def download_file_from_gcs(source_blob_name: str, destination_file_name: str):
         source_blob_name (str): The name of the blob in the bucket.
         destination_file_name (str): The local path where the file will be saved.
     """
-    bucket = storage_client.bucket(GCS_BUCKET_NAME)
+    bucket = _get_storage_client().bucket(GCS_BUCKET_NAME)
     blob = bucket.blob(source_blob_name)
     blob.download_to_filename(destination_file_name)
     logger.debug("Downloaded gs://%s/%s to %s", GCS_BUCKET_NAME, source_blob_name, destination_file_name)
@@ -55,6 +67,8 @@ def merge_audio_to_video(
 
     video_clip: mp.VideoFileClip = mp.VideoFileClip(video_path)
     audio_clip = mp.AudioFileClip(audio_path)
+    scaled_video_clip = None
+    final_clip = None
 
     try:
         # Get durations of video and audio
@@ -74,6 +88,10 @@ def merge_audio_to_video(
         # Export the final video with sound
         final_clip.write_videofile(output_path, codec="libx264", audio_codec="aac")
     finally:
+        if final_clip is not None:
+            final_clip.close()
+        if scaled_video_clip is not None and scaled_video_clip is not final_clip:
+            scaled_video_clip.close()
         video_clip.close()
         audio_clip.close()
 
@@ -129,7 +147,7 @@ def assemble_video_with_audio(video_gcs_public_url: str, audio_gcs_public_url: s
 
         # Upload the final video back to GCS
         try:
-            bucket = storage_client.bucket(GCS_BUCKET_NAME)
+            bucket = _get_storage_client().bucket(GCS_BUCKET_NAME)
             blob = bucket.blob(f"videos/{os.path.basename(output_path)}")
             blob.upload_from_filename(output_path, content_type="video/mp4")
 

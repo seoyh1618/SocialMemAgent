@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import type { Base, SocialMediaAgentOutput } from '../base';
+import type { Base, SocialMediaAgentOutput, OrchestratorChannelOutput } from '../base';
+import { channelsToBase } from '../base';
 import { startNewSession, sendMessageToAgentSSE, extractTextFromResponse, loadUserMemory, saveUserMemory, syncSessionMemory, fetchUserAssets } from '../api';
 import {
   PaperAirplaneIcon,
@@ -9,6 +10,8 @@ import {
   Cog6ToothIcon,
   XMarkIcon,
   PhotoIcon,
+  ArrowPathIcon,
+  CheckCircleIcon,
 } from '@heroicons/react/24/outline';
 
 import ReactMarkdown, { type Components } from 'react-markdown';
@@ -16,11 +19,14 @@ import ArtifactBlocks from '../components/artifact_blocks';
 import ContextBlocks from '../components/context_blocks';
 import ToolBar from '../components/tool_bar';
 import ProfileBlock from '../components/blocks/profile_block';
+import CampaignHistoryBlock from '../components/blocks/CampaignHistoryBlock';
+import BehaviorGraphBlock from '../components/blocks/BehaviorGraphBlock';
 import AppSidebar from '../components/AppSidebar';
 import MemoryMindMap from '../components/MemoryMindMap';
 import CreationsTab from '../components/CreationsTab';
-import LoginModal from '../components/LoginModal';
+import ConversationHistoryTab from '../components/ConversationHistoryTab';
 import { useAuth } from '../AuthContext';
+import { useToast } from '../contexts/ToastContext';
 import type { MemoryState, GeneratedAsset } from '../memory';
 import { DEFAULT_MEMORY_STATE } from '../memory';
 
@@ -36,10 +42,12 @@ interface Message {
   role: 'user' | 'reasoning' | 'base_content' | 'agent';
   content: string;
   isComplete?: boolean;
+  timestamp?: string;
 }
 
 const LandingPage = () => {
   const { user, isAuthenticated } = useAuth();
+  const { showToast } = useToast();
   const userId = user?.userId ?? 'u_guest';
 
   const [sessionId, setSessionId] = useState<string | null>(null);
@@ -56,14 +64,16 @@ const LandingPage = () => {
 
   // Artifact panel
   const [showArtifactPanel, setShowArtifactPanel] = useState(false);
-  const [panelView, setPanelView] = useState<'artifacts' | 'context' | 'profile' | 'memory' | 'creations'>('artifacts');
-  const [sideSection, setSideSection] = useState<'chat' | 'profile' | 'history' | 'memory' | 'creations'>('chat');
+  const [panelView, setPanelView] = useState<'artifacts' | 'context' | 'profile' | 'history' | 'conversations' | 'memory' | 'creations' | 'behavior'>('artifacts');
+  const [sideSection, setSideSection] = useState<'chat' | 'profile' | 'history' | 'conversations' | 'memory' | 'creations' | 'behavior'>('chat');
   const [isToolbarOpen, setIsToolbarOpen] = useState(false);
-  const [showLoginModal, setShowLoginModal] = useState(false);
   // Context window usage (0–100), updated from SSE state_delta._ctx_usage_pct
   const [ctxUsagePct, setCtxUsagePct] = useState(0);
   // Heartbeat: current tool being executed, updated from SSE state_delta._last_tool
   const [lastTool, setLastTool] = useState<string | null>(null);
+  // Track whether tools are actively being called (reasoning phase vs response phase)
+  const isToolActiveRef = useRef(false);
+
   // Asset attachment in chat input
   const [attachedAsset, setAttachedAsset] = useState<GeneratedAsset | null>(null);
   const [showAssetPicker, setShowAssetPicker] = useState(false);
@@ -74,9 +84,12 @@ const LandingPage = () => {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const lastChunkId = useRef<string | null>(null);
-  const formattedBaseContent = useRef('');
+  const finalTextRef = useRef<string | null>(null);
+
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const pendingBase = useRef<Base | null>(null);
+  const lastSentMessage = useRef<string>('');
+  const lastSentBase = useRef<Base | null>(null);
 
   useEffect(() => {
     setIsInitializing(true);
@@ -91,16 +104,45 @@ const LandingPage = () => {
         const [sid, mem] = await Promise.all([startNewSession(userId), loadUserMemory(userId)]);
         setSessionId(sid);
         setMemory(mem);
-        // Agent-initiated welcome message
-        const isReturning = mem.total_campaigns > 0;
-        const brandTone = mem.core_profile.brand_voice.tone;
-        let welcome: string;
-        if (isReturning) {
-          welcome = `안녕하세요! 돌아오셨군요 😊\n\n이전에 **${mem.total_campaigns}개의 캠페인**을 함께 만들었네요.${brandTone ? ` 브랜드 톤 "${brandTone}"도 기억하고 있어요.` : ''}\n\n오늘은 어떤 콘텐츠를 만들어 볼까요? 새로운 캠페인을 시작하거나, 기존 브랜드 전략을 이어가도 좋아요.`;
-        } else {
-          welcome = `안녕하세요! 소셜 미디어 브랜딩 에이전트입니다 ✨\n\n저는 여러분의 브랜드에 맞는 콘텐츠를 함께 만들어드려요.\n\n**먼저 몇 가지 여쭤볼게요 —**\n어떤 브랜드나 제품을 홍보하려고 하시나요? 그리고 주로 어떤 소셜 미디어 플랫폼을 사용하시나요? (인스타그램, 유튜브, 틱톡, 트위터 등)\n\n편하게 말씀해 주시면 최적의 콘텐츠 전략을 제안해드릴게요!`;
+        // Agent-initiated welcome message — personalized based on memory state
+        const brandName = mem.human_block.display_name;
+        const brandTone = mem.persona_block.tone;
+        const industry = mem.domain_block.industry;
+        const platforms = mem.audience_block.target_platforms;
+        const dp = mem.domain_block;
+        const hasCampaigns = mem.total_campaigns > 0;
+        const hasProfile = !!(brandName || industry);
+        const pendingCount = (mem.performance_pending || []).filter(p => p.ask_count < 2).length;
+
+        // Build domain insight snippets
+        const domainSnippets: string[] = [];
+        if (dp?.usp) domainSnippets.push(`USP "${dp.usp}"`);
+        if (dp?.business_location) domainSnippets.push(`${dp.business_location} 기반`);
+        if (dp?.knowledge?.length) {
+          const products = dp.knowledge.filter(k => k.key.includes('product') || k.key.includes('service'));
+          if (products.length > 0) domainSnippets.push(`제품 ${products.length}개 등록됨`);
         }
-        setMessages([{ role: 'agent', content: welcome, isComplete: true }]);
+
+        let welcome: string;
+        if (hasCampaigns) {
+          // 재방문 + 캠페인 이력 있음
+          const domainLine = domainSnippets.length > 0 ? `\n${domainSnippets.join(' · ')}` : '';
+          const pendingLine = pendingCount > 0 ? `\n\n📊 참고로, 이전 캠페인 **${pendingCount}개**의 성과를 아직 확인하지 못했어요. 결과가 있으시면 알려주세요!` : '';
+          welcome = `${brandName ? `**${brandName}**님, ` : ''}안녕하세요! 돌아오셨군요 😊\n\n이전에 **${mem.total_campaigns}개의 캠페인**을 함께 만들었네요.${brandTone ? ` 브랜드 톤 "${brandTone}"도 기억하고 있어요.` : ''}${domainLine}${pendingLine}\n\n오늘은 어떤 이야기를 나눠볼까요? 새로운 캠페인, 전략 논의, 아이디어 브레인스토밍 뭐든 좋아요.`;
+        } else if (hasProfile) {
+          // 프로필은 있지만 캠페인은 아직 없음
+          const profileParts: string[] = [];
+          if (industry) profileParts.push(`**${industry}** 업종`);
+          if (platforms && platforms.length > 0) profileParts.push(`**${platforms.join(', ')}** 플랫폼`);
+          if (brandTone) profileParts.push(`"${brandTone}" 톤`);
+          if (dp?.business_location) profileParts.push(`📍 ${dp.business_location}`);
+          const profileSummary = profileParts.length > 0 ? `\n\n기억하고 있는 정보: ${profileParts.join(' · ')}` : '';
+          welcome = `${brandName ? `**${brandName}**님, ` : ''}안녕하세요! 반갑습니다 ✨${profileSummary}\n\n아직 캠페인을 만들어보지 않으셨네요. 어떤 제품이나 서비스를 홍보하고 싶으신지, 또는 마케팅 전략에 대해 이야기 나눠볼까요?`;
+        } else {
+          // 완전 신규 사용자
+          welcome = `안녕하세요! 소셜 미디어 브랜딩 에이전트입니다 ✨\n\n저는 여러분의 브랜드에 맞는 콘텐츠를 함께 만들어드려요.\n브랜드 전략 논의, 콘텐츠 기획, 포스팅 생성까지 함께할 수 있어요.\n\n편하게 어떤 브랜드나 사업을 하고 계신지 알려주세요. 거기서부터 시작해볼게요!`;
+        }
+        setMessages([{ role: 'agent', content: welcome, isComplete: true, timestamp: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }) }]);
       } catch (err) {
         setError(err instanceof Error ? err.message : String(err));
       } finally {
@@ -157,111 +199,190 @@ const LandingPage = () => {
     image_prompt: { value: '', enabled: true },
     video_prompt: { value: '', enabled: true },
     video_narration: { value: '', enabled: true },
-    twitter_post: { value: '', enabled: true },
-    youtube_post: { value: { video_url: '', title: '', description: '' }, enabled: true },
-    tiktok_post: { value: { video_url: '', title: '', description: '' }, enabled: true },
-    instagram_post: { value: { image_url: '', post_text: '' }, enabled: true },
+    twitter_post: { value: '', enabled: false },
+    youtube_post: { value: { video_url: '', title: '', description: '' }, enabled: false },
+    tiktok_post: { value: { video_url: '', title: '', description: '' }, enabled: false },
+    instagram_post: { value: { image_url: '', post_text: '' }, enabled: false },
+    facebook_post: { value: { image_url: '', post_text: '' }, enabled: false },
+    linkedin_post: { value: { image_url: '', post_text: '' }, enabled: false },
+    pinterest_post: { value: { image_url: '', post_text: '' }, enabled: false },
+    threads_post: { value: '', enabled: false },
+    kakao_post: { value: { image_url: '', post_text: '' }, enabled: false },
   });
+
+  const makeTimestamp = () =>
+    new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
 
   const sendMessage = (messageText: string, currentBase: Base, addUserBubble = true) => {
     if (!messageText.trim() || isLoading || !sessionId) return;
 
+    lastSentMessage.current = messageText;
+    lastSentBase.current = currentBase;
+    const ts = makeTimestamp();
+
     setMessages(prev => [
       ...prev,
-      ...(addUserBubble ? [{ role: 'user' as const, content: messageText, isComplete: true }] : []),
-      { role: 'reasoning' as const, content: '', isComplete: false },
+      ...(addUserBubble ? [{ role: 'user' as const, content: messageText, isComplete: true, timestamp: ts }] : []),
     ]);
     setIsLoading(true);
-    formattedBaseContent.current = '';
+
+    finalTextRef.current = null;
 
     sendMessageToAgentSSE(messageText, currentBase, userId, sessionId, {
       onStateDelta: (delta) => {
         const ctxPct = delta['_ctx_usage_pct'];
         if (typeof ctxPct === 'number') setCtxUsagePct(ctxPct);
         const tool = delta['_last_tool'];
-        if (typeof tool === 'string') setLastTool(tool);
+        if (typeof tool === 'string') {
+          setLastTool(tool);
+          isToolActiveRef.current = true;
+        }
+
+        // Read accumulated reasoning log from backend
+        const reasoningLog = delta['_reasoning_log'] as string[] | undefined;
+        if (reasoningLog && Array.isArray(reasoningLog) && reasoningLog.length > 0) {
+          // Build full reasoning content from log
+          const logContent = reasoningLog.map((step, i) => `[Step ${i + 1}]: ${step}`).join('\n');
+
+          setMessages(prev => {
+            // Only show reasoning after user confirmed (at least one complete agent message)
+            const hasCompletedAgent = prev.some(m => m.role === 'agent' && m.isComplete);
+            if (!hasCompletedAgent) return prev;
+
+            const last = prev[prev.length - 1];
+            if (last?.role === 'reasoning' && !last.isComplete) {
+              const updated = [...prev];
+              updated[updated.length - 1] = { ...updated[updated.length - 1], content: logContent };
+              return updated;
+            }
+            if (last?.role === 'agent' && !last.isComplete) return prev;
+            return [...prev, { role: 'reasoning' as const, content: logContent, isComplete: false }];
+          });
+        }
+      },
+      onFinalText: (text, _author) => {
+        finalTextRef.current = text;
       },
       onData: (response) => {
-
         const text = extractTextFromResponse(response);
-        const author = response.author;
         const chunkId = response.id;
         if (!text || lastChunkId.current === chunkId) return;
         lastChunkId.current = chunkId;
 
-        if (author === 'social_media_branding_content_agent') {
-          // Content pipeline started → open artifact panel
-          setShowArtifactPanel(true);
-          setPanelView('artifacts');
-          setMessages(prev => {
-            const last = prev[prev.length - 1];
-            if (last?.role === 'reasoning' && !last.isComplete)
-              return [...prev.slice(0, -1), { ...last, content: last.content + text }];
-            return prev;
-          });
-        } else if (author === 'format_agent') {
-          formattedBaseContent.current += text;
-          setMessages(prev => {
-            const last = prev[prev.length - 1];
-            if (last?.role === 'reasoning' && !last.isComplete)
-              return [...prev.slice(0, -1), { ...last, isComplete: true }, { role: 'base_content', content: text, isComplete: false }];
-            if (last?.role === 'base_content' && !last.isComplete)
-              return [...prev.slice(0, -1), { ...last, content: last.content + text }];
-            return prev;
-          });
-        } else if (author === 'response_agent') {
-          if (formattedBaseContent.current) {
-            try {
-              const json = formattedBaseContent.current.replace(/^```json/, '').replace(/```$/, '');
-              const out: SocialMediaAgentOutput = JSON.parse(json);
-              if (out.is_updated) { setBase(out.updated_base); pendingBase.current = out.updated_base; }
-            } catch (e) { console.error('parse error', e); }
-            formattedBaseContent.current = '';
+        // ADK 1.20+: author is always "agents" (app name).
+        // Use isToolActiveRef to distinguish reasoning (tool phase) vs agent response.
+        // When text arrives, tools are no longer actively being called → close reasoning.
+        setMessages(prev => {
+          const last = prev[prev.length - 1];
+
+          // If reasoning is active and tools were running → close reasoning, start agent message
+          if (last?.role === 'reasoning' && !last.isComplete) {
+            isToolActiveRef.current = false;
+            return [...prev.slice(0, -1), { ...last, isComplete: true },
+                    { role: 'agent' as const, content: text, isComplete: false }];
           }
-          setMessages(prev => {
-            const last = prev[prev.length - 1];
-            if (last?.role === 'base_content' && !last.isComplete)
-              return [...prev.slice(0, -1), { ...last, isComplete: true }, { role: 'agent', content: text, isComplete: false }];
-            if (last?.role === 'agent' && !last.isComplete)
-              return [...prev.slice(0, -1), { ...last, content: last.content + text }];
-            return prev;
-          });
-        } else if (author === 'general_chat_agent') {
-          setMessages(prev => {
-            const last = prev[prev.length - 1];
-            if (last?.role === 'reasoning' && !last.isComplete) {
-              if (!last.content.trim())
-                return [...prev.slice(0, -1), { role: 'agent' as const, content: text, isComplete: false }];
-              return [...prev.slice(0, -1), { ...last, isComplete: true }, { role: 'agent' as const, content: text, isComplete: false }];
-            }
-            if (last?.role === 'agent' && !last.isComplete)
-              return [...prev.slice(0, -1), { ...last, content: last.content + text }];
-            return prev;
-          });
-        }
+
+          // Append to existing agent message
+          if (last?.role === 'agent' && !last.isComplete) {
+            return [...prev.slice(0, -1), { ...last, content: last.content + text }];
+          }
+
+          return [...prev, { role: 'agent' as const, content: text, isComplete: false }];
+        });
       },
       onError: (err) => {
         console.error('Agent error:', err);
-        setMessages(prev => [...prev, { role: 'agent', content: '오류가 발생했습니다. 다시 시도해주세요.', isComplete: true }]);
+        setMessages(prev => [...prev, { role: 'agent', content: '__ERROR__오류가 발생했습니다. 다시 시도해주세요.', isComplete: true, timestamp: makeTimestamp() }]);
         setIsLoading(false);
       },
       onComplete: () => {
+        const completeTs = makeTimestamp();
         setMessages(prev => {
           const msgs = [...prev];
           const last = msgs[msgs.length - 1];
-          if (last?.role === 'agent') last.isComplete = true;
-          else if (last?.role === 'reasoning' && !last.isComplete) {
+
+          // Mark reasoning as complete
+          for (const m of msgs) {
+            if (m.role === 'reasoning' && !m.isComplete) {
+              if (!m.content.trim()) { /* will be cleaned below */ }
+              else m.isComplete = true;
+            }
+          }
+
+          if (last?.role === 'agent') {
+            last.isComplete = true;
+            if (!last.timestamp) last.timestamp = completeTs;
+
+            // ── Parse orchestrator channels JSON → update Base for previews ──
+            // Use finalTextRef (complete non-partial text) if available, fallback to streamed content
+            const candidateTexts = [finalTextRef.current, last.content.trim()].filter(Boolean) as string[];
+            let parsed: OrchestratorChannelOutput | null = null;
+
+            for (const raw of candidateTexts) {
+              if (parsed) break;
+              try {
+                let content = raw;
+                // Strip markdown code fences
+                if (content.startsWith('```json')) {
+                  content = content.replace(/^```json\s*/, '').replace(/\s*```$/, '');
+                } else if (content.startsWith('```')) {
+                  content = content.replace(/^```\s*/, '').replace(/\s*```$/, '');
+                }
+
+                // Try parsing whole content as JSON
+                try {
+                  const obj = JSON.parse(content);
+                  if (obj.channels && typeof obj.channels === 'object') parsed = obj;
+                } catch {
+                  // Try extracting JSON from mixed content
+                  const braceStart = content.indexOf('{');
+                  const braceEnd = content.lastIndexOf('}');
+                  if (braceStart >= 0 && braceEnd > braceStart) {
+                    try {
+                      const obj = JSON.parse(content.substring(braceStart, braceEnd + 1));
+                      if (obj.channels && typeof obj.channels === 'object') parsed = obj;
+                    } catch { /* not valid JSON */ }
+                  }
+                }
+              } catch { /* skip */ }
+            }
+
+            if (parsed) {
+              // Update base state with channel data → triggers ArtifactBlocks re-render
+              setTimeout(() => {
+                setBase(prevBase => {
+                  const fallback: Base = prevBase || ({} as Base);
+                  return channelsToBase(parsed!, fallback);
+                });
+                // Open artifact panel to show previews
+                setShowArtifactPanel(true);
+                setPanelView('artifacts');
+              }, 0);
+              // Replace raw JSON in chat with human-readable agent_response
+              if (parsed.agent_response) {
+                last.content = parsed.agent_response;
+              }
+            }
+
+            // Reset finalTextRef for next turn
+            finalTextRef.current = null;
+          } else if (last?.role === 'reasoning' && !last.isComplete) {
             if (!last.content.trim()) return msgs.slice(0, -1);
             last.isComplete = true;
           }
-          return msgs;
+
+          // Remove empty reasoning messages
+          return msgs.filter(m => !(m.role === 'reasoning' && !m.content.trim()));
         });
         setIsLoading(false);
         setLastTool(null);
         // Sync memory to persistent store, then reload so UI reflects any updates
         if (sessionId) {
           syncSessionMemory(userId, sessionId).then(() => {
-            loadUserMemory(userId).then(fresh => setMemory(fresh));
+            loadUserMemory(userId).then(fresh => {
+              setMemory(fresh);
+              showToast('메모리 동기화 완료', 'success');
+            });
           });
         }
       },
@@ -293,7 +414,7 @@ const LandingPage = () => {
 
   // ─── Reasoning block ─────────────────────────────────────────────────
   const renderReasoningBlock = (msg: Message, idx: number) => {
-    const collapsed = reasoningCollapsed[idx] ?? msg.isComplete;
+    const collapsed = reasoningCollapsed[idx] ?? msg.isComplete; // 완료 시 접힘
     return (
       <div key={idx} className="w-full my-3">
         <button
@@ -306,9 +427,7 @@ const LandingPage = () => {
           <SparklesIcon className={`h-4 w-4 ${!msg.isComplete ? 'text-indigo-500 animate-pulse' : 'text-gray-400'}`} />
           <span className={!msg.isComplete ? 'text-indigo-600' : 'text-gray-500'}>
             {!msg.isComplete
-              ? (lastTool && idx === messages.findIndex(m => m.role === 'reasoning' && !m.isComplete)
-                  ? lastTool
-                  : '생각하는 중...')
+              ? (lastTool ? lastTool : '생각하는 중...')
               : '사고 과정'}
           </span>
           {!msg.isComplete && (
@@ -317,15 +436,105 @@ const LandingPage = () => {
             </span>
           )}
         </button>
-        <div className={`reasoning-content ${collapsed ? 'reasoning-collapsed' : 'reasoning-expanded'}`}>
+        {!collapsed && (
           <div className="mt-2 ml-7 p-3 text-sm text-gray-600 border-l-2 border-indigo-200 bg-gradient-to-r from-indigo-50/50 to-transparent rounded-r-lg">
             <ReactMarkdown components={markdownComponents}>{msg.content}</ReactMarkdown>
-            {!msg.isComplete && <span className="inline-block w-2 h-4 bg-indigo-400 animate-pulse ml-0.5" />}
+            {!msg.isComplete && <span className="inline-block w-2 h-4 bg-indigo-400 animate-pulse" />}
           </div>
+        )}
+      </div>
+    );
+  };
+
+  // ─── Onboarding checklist for new users ──────────────────────────────
+  const onboardingSteps = [
+    {
+      label: '브랜드명 입력',
+      done: !!memory.human_block.display_name,
+      suggestion: '안녕하세요! 저희 브랜드 이름은 ',
+    },
+    {
+      label: '업종 설정',
+      done: !!memory.domain_block.industry,
+      suggestion: '저희 업종은 ',
+    },
+    {
+      label: '톤 설정',
+      done: !!memory.persona_block.tone,
+      suggestion: '브랜드 톤은 친근하고 전문적인 느낌으로 해주세요',
+    },
+    {
+      label: '첫 캠페인 생성',
+      done: memory.total_campaigns > 0,
+      suggestion: '인스타그램에 올릴 신제품 홍보 캠페인을 만들어주세요',
+    },
+  ];
+  const allOnboardingDone = onboardingSteps.every(s => s.done);
+  const showOnboarding = !isInitializing && !allOnboardingDone && memory.total_campaigns === 0;
+
+  const renderOnboardingChecklist = () => {
+    if (!showOnboarding) return null;
+    return (
+      <div className="mx-5 mt-4 mb-2 bg-indigo-50 border border-indigo-100 rounded-xl p-4">
+        <p className="text-sm font-semibold text-indigo-700 mb-3">시작 가이드</p>
+        <div className="space-y-2">
+          {onboardingSteps.map((step, i) => (
+            <button
+              key={i}
+              disabled={step.done || isLoading}
+              onClick={() => {
+                if (!step.done && !isLoading) {
+                  setInputMessage(step.suggestion);
+                  textareaRef.current?.focus();
+                }
+              }}
+              className={`flex items-center gap-2.5 w-full text-left px-2 py-1.5 rounded-lg transition-colors ${
+                step.done
+                  ? 'cursor-default'
+                  : 'hover:bg-indigo-100/60 cursor-pointer'
+              }`}
+            >
+              {step.done ? (
+                <CheckCircleIcon className="w-5 h-5 text-green-500 shrink-0" />
+              ) : (
+                <span className="flex items-center justify-center w-5 h-5 rounded-full border-2 border-gray-300 text-gray-300 text-xs shrink-0">
+                  {i + 1}
+                </span>
+              )}
+              <span className={`text-sm ${step.done ? 'text-gray-400 line-through' : 'text-gray-700'}`}>
+                {step.label}
+              </span>
+            </button>
+          ))}
         </div>
       </div>
     );
   };
+
+  // ─── Skeleton loading for artifact panel ────────────────────────────
+  const renderArtifactSkeleton = () => (
+    <ul role="list" className="grid grid-cols-1 gap-x-6 gap-y-6 lg:grid-cols-2">
+      {[0, 1, 2].map(i => (
+        <li key={i} className="animate-pulse rounded-xl border border-gray-200 bg-white p-5">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-8 h-8 rounded-full bg-gray-200" />
+            <div className="h-4 w-24 bg-gray-200 rounded" />
+          </div>
+          <div className="w-full h-36 bg-gray-100 rounded-lg mb-4" />
+          <div className="space-y-2">
+            <div className="h-3 bg-gray-200 rounded w-full" />
+            <div className="h-3 bg-gray-200 rounded w-4/5" />
+            <div className="h-3 bg-gray-100 rounded w-3/5" />
+          </div>
+          <div className="flex gap-2 mt-4">
+            <div className="h-5 w-16 bg-gray-100 rounded-full" />
+            <div className="h-5 w-20 bg-gray-100 rounded-full" />
+            <div className="h-5 w-14 bg-gray-100 rounded-full" />
+          </div>
+        </li>
+      ))}
+    </ul>
+  );
 
   // ─── Context window progress bar ─────────────────────────────────────
   const renderContextBar = () => {
@@ -478,9 +687,21 @@ const LandingPage = () => {
         activeSection={sideSection}
         onSectionChange={(s) => {
           setSideSection(s);
-          if (s === 'profile') { setShowArtifactPanel(true); setPanelView('profile'); }
+          if (s === 'chat') {
+            // Keep artifact panel open if content was generated, restore to artifacts view
+            if (base) {
+              setShowArtifactPanel(true);
+              setPanelView('artifacts');
+            } else {
+              setShowArtifactPanel(false);
+            }
+          }
+          if (s === 'profile') { setShowArtifactPanel(true); setPanelView('profile'); loadUserMemory(userId).then(setMemory); }
+          if (s === 'history') { setShowArtifactPanel(true); setPanelView('history'); loadUserMemory(userId).then(setMemory); }
+          if (s === 'conversations') { setShowArtifactPanel(true); setPanelView('conversations'); }
           if (s === 'memory') { setShowArtifactPanel(true); setPanelView('memory'); }
           if (s === 'creations') { setShowArtifactPanel(true); setPanelView('creations'); }
+          if (s === 'behavior') { setShowArtifactPanel(true); setPanelView('behavior'); loadUserMemory(userId).then(setMemory); }
         }}
       />
 
@@ -496,18 +717,11 @@ const LandingPage = () => {
             <>
               {/* Panel header */}
               <div className="shrink-0 flex items-center justify-between px-6 py-3 border-b border-gray-100 bg-white">
-                <div className="flex items-center bg-gray-100 rounded-lg p-1">
-                  {(['artifacts', 'context', 'profile', 'memory', 'creations'] as const).map(v => (
-                    <button key={v} onClick={() => setPanelView(v)}
-                      className={`px-3.5 py-1.5 text-xs font-medium rounded-md transition-all ${
-                        panelView === v ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-400 hover:text-gray-600'
-                      }`}>
-                      {v === 'artifacts' ? '아티팩트' : v === 'context' ? '컨텍스트' : v === 'profile' ? '✦ 프로필' : v === 'memory' ? '🧠 메모리' : '🎨 크리에이션'}
-                    </button>
-                  ))}
-                </div>
+                <span className="text-sm font-semibold text-gray-700">
+                  {panelView === 'artifacts' ? '아티팩트' : panelView === 'context' ? '컨텍스트' : panelView === 'profile' ? '브랜드 프로필' : panelView === 'history' ? '캠페인 히스토리' : panelView === 'conversations' ? '대화 히스토리' : panelView === 'memory' ? '메모리 맵' : panelView === 'behavior' ? 'Behavior Graph' : 'Assets'}
+                </span>
                 <div className="flex items-center gap-2">
-                  {base && (
+                  {(panelView === 'artifacts' || panelView === 'context') && base && (
                     <div className="relative" ref={dropdownRef}>
                       <button onClick={() => setIsToolbarOpen(!isToolbarOpen)}
                         className={`flex items-center justify-center w-8 h-8 rounded-lg transition-all ${
@@ -522,39 +736,73 @@ const LandingPage = () => {
                       )}
                     </div>
                   )}
-                  <button onClick={() => setShowArtifactPanel(false)}
+                  <button onClick={() => { setShowArtifactPanel(false); setSideSection('chat'); }}
                     className="flex items-center justify-center w-8 h-8 rounded-lg bg-gray-100 text-gray-500 hover:bg-gray-200 transition-all">
                     <XMarkIcon className="w-4 h-4" />
                   </button>
                 </div>
               </div>
               {/* Panel content */}
-              <div className={`flex-1 overflow-hidden flex flex-col ${panelView === 'memory' ? '' : 'overflow-y-auto px-6 pb-6 pt-4'}`}>
-                {panelView === 'creations' ? (
+              <div className={`flex-1 overflow-hidden flex flex-col ${panelView === 'memory' || panelView === 'creations' || panelView === 'conversations' || panelView === 'behavior' ? '' : 'overflow-y-auto px-6 pb-6 pt-4'}`}>
+                {panelView === 'behavior' ? (
+                  <div className="overflow-y-auto px-6 pb-6 pt-4 flex-1">
+                    <BehaviorGraphBlock
+                      behaviorGraph={memory.behavior_graph ?? { nodes: [], edges: [], platform_best_content_type: {}, topic_performance_summary: {}, overall_best_platform: '' }}
+                      campaigns={memory.campaign_archive}
+                    />
+                  </div>
+                ) : panelView === 'conversations' ? (
+                  <ConversationHistoryTab userId={userId} memory={memory} />
+                ) : panelView === 'creations' ? (
                   <CreationsTab userId={userId} />
                 ) : panelView === 'memory' ? (
                   <MemoryMindMap
                     initialMemory={memory}
                     userId={userId}
                     isActive={isLoading}
-                    onEditClick={() => { setPanelView('profile'); }}
+                    onEditClick={() => { setSideSection('profile'); setPanelView('profile'); }}
                   />
                 ) : panelView === 'profile' ? (
-                  <ul role="list" className="grid grid-cols-1 gap-x-6 gap-y-6 lg:grid-cols-2">
-                    <ProfileBlock memory={memory} onSave={handleMemorySave} userId={userId} />
-                  </ul>
-                ) : base ? (
-                  <ul role="list" className="grid grid-cols-1 gap-x-6 gap-y-6 lg:grid-cols-2">
-                    {panelView === 'artifacts' ? <ArtifactBlocks base={base} campaigns={memory.campaign_archive} /> : <ContextBlocks base={base} setBase={setBase as any} />}
-                  </ul>
-                ) : (
-                  <div className="h-full flex items-center justify-center">
-                    <div className="text-center text-gray-400">
-                      <SparklesIcon className="w-10 h-10 mx-auto mb-3 animate-pulse text-indigo-300" />
-                      <p className="text-sm">콘텐츠 생성 중...</p>
-                    </div>
+                  <div className="w-full">
+                    <ProfileBlock memory={memory} onSave={handleMemorySave} userId={userId} initialTab="identity" />
                   </div>
-                )}
+                ) : panelView === 'history' ? (
+                  <CampaignHistoryBlock
+                    memory={memory}
+                    userId={userId}
+                    onMemoryRefresh={() => loadUserMemory(userId).then(setMemory)}
+                  />
+                ) : panelView === 'artifacts' ? (
+                  base ? (
+                    <ul role="list" className="grid grid-cols-1 gap-x-6 gap-y-6 lg:grid-cols-2">
+                      <ArtifactBlocks base={base} campaigns={memory.campaign_archive} />
+                    </ul>
+                  ) : isLoading ? (
+                    renderArtifactSkeleton()
+                  ) : (
+                    <div className="h-full flex items-center justify-center">
+                      <div className="text-center text-gray-400">
+                        <SparklesIcon className="w-10 h-10 mx-auto mb-3 text-indigo-200" />
+                        <p className="text-sm font-medium text-gray-500 mb-1">아직 생성된 콘텐츠가 없습니다</p>
+                        <p className="text-xs text-gray-400">채팅으로 소셜 미디어 콘텐츠를 생성해보세요</p>
+                      </div>
+                    </div>
+                  )
+                ) : panelView === 'context' ? (
+                  base ? (
+                    <ul role="list" className="grid grid-cols-1 gap-x-6 gap-y-6 lg:grid-cols-2">
+                      <ContextBlocks base={base} setBase={setBase as any} />
+                    </ul>
+                  ) : (
+                    <div className="h-full flex items-center justify-center">
+                      <div className="text-center text-gray-400">
+                        <SparklesIcon className="w-10 h-10 mx-auto mb-3 text-indigo-200" />
+                        <p className="text-sm font-medium text-gray-500 mb-1">컨텍스트 정보가 없습니다</p>
+                        <p className="text-xs text-gray-400">콘텐츠를 생성하면 목표, 타겟 오디언스 등 컨텍스트 정보가 표시됩니다</p>
+                      </div>
+                    </div>
+                  )
+                ) : null}
               </div>
             </>
           )}
@@ -593,6 +841,8 @@ const LandingPage = () => {
               </div>
             ) : (
               <div className="px-5 py-6 space-y-1">
+                {/* Onboarding checklist for new users */}
+                {renderOnboardingChecklist()}
                 {messages.map((msg, idx) => {
                   if (msg.role === 'reasoning') return renderReasoningBlock(msg, idx);
 
@@ -615,13 +865,17 @@ const LandingPage = () => {
 
                   if (msg.role === 'user') {
                     return (
-                      <div key={idx} className="flex justify-end my-4">
+                      <div key={idx} className="flex flex-col items-end my-4">
                         <div className="max-w-[85%] bg-indigo-600 text-white rounded-2xl rounded-br-md px-4 py-3 text-sm">
                           <ReactMarkdown components={markdownComponents}>{msg.content}</ReactMarkdown>
                         </div>
+                        {msg.timestamp && <span className="text-[10px] text-gray-400 mt-1">{msg.timestamp}</span>}
                       </div>
                     );
                   }
+
+                  const isErrorMsg = msg.content.startsWith('__ERROR__');
+                  const displayContent = isErrorMsg ? msg.content.replace('__ERROR__', '') : msg.content;
 
                   return (
                     <div key={idx} className="my-4">
@@ -629,9 +883,26 @@ const LandingPage = () => {
                         <div className="shrink-0 w-7 h-7 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center mt-0.5">
                           <SparklesIcon className="w-4 h-4 text-white" />
                         </div>
-                        <div className="flex-1 min-w-0 prose prose-sm max-w-none text-gray-800">
-                          <ReactMarkdown components={markdownComponents}>{msg.content}</ReactMarkdown>
-                          {!msg.isComplete && <span className="inline-block w-2 h-5 bg-indigo-500 animate-pulse ml-0.5" />}
+                        <div className="flex-1 min-w-0">
+                          <div className="prose prose-sm max-w-none text-gray-800">
+                            <ReactMarkdown components={markdownComponents}>{displayContent}</ReactMarkdown>
+                            {!msg.isComplete && <span className="inline-block w-2 h-5 bg-indigo-500 animate-pulse ml-0.5" />}
+                          </div>
+                          {isErrorMsg && lastSentMessage.current && (
+                            <button
+                              onClick={() => {
+                                if (lastSentMessage.current && lastSentBase.current) {
+                                  sendMessage(lastSentMessage.current, lastSentBase.current, false);
+                                }
+                              }}
+                              disabled={isLoading}
+                              className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 transition-colors disabled:opacity-50"
+                            >
+                              <ArrowPathIcon className="w-3.5 h-3.5" />
+                              다시 시도
+                            </button>
+                          )}
+                          {msg.timestamp && msg.isComplete && <span className="text-[10px] text-gray-400 mt-1 block">{msg.timestamp}</span>}
                         </div>
                       </div>
                     </div>
@@ -646,7 +917,6 @@ const LandingPage = () => {
         </div>
       </div>
 
-      {showLoginModal && <LoginModal onClose={() => setShowLoginModal(false)} />}
     </div>
   );
 };

@@ -1,5 +1,5 @@
 from typing import Generic, List, Optional, TypeVar
-from pydantic import BaseModel, Field, HttpUrl
+from pydantic import BaseModel, Field, HttpUrl, model_validator
 from datetime import datetime
 
 T = TypeVar("T")
@@ -76,28 +76,28 @@ class SocialMediaAgentOutput(BaseModel):
 
 # ─── MemGPT Memory Schemas ────────────────────────────────────────────────────
 
-class BrandVoice(BaseModel):
-    """MemGPT Core Memory: Persona Block — brand identity permanently loaded into context."""
-    tone: str = Field(
-        default="",
-        description="Brand tone (e.g., 'casual and witty', 'professional and authoritative')"
-    )
-    preferred_styles: List[str] = Field(
-        default_factory=list,
-        description="User's preferred visual/content styles, e.g. ['Minimalist', 'Vibrant']"
-    )
-    avoid_topics: List[str] = Field(
-        default_factory=list,
-        description="Topics or themes the brand explicitly avoids."
-    )
-    signature_hashtags: List[str] = Field(
-        default_factory=list,
-        description="Recurring hashtags that represent the brand."
-    )
-    content_pillars: List[str] = Field(
-        default_factory=list,
-        description="Core content themes (e.g., 'Education', 'Behind-the-scenes', 'Product demos')"
-    )
+class PersonaBlock(BaseModel):
+    """MemGPT Core Memory: Persona Block — brand voice and style identity."""
+    tone: str = Field(default="", description="Brand tone")
+    preferred_styles: List[str] = Field(default_factory=list)
+    avoid_topics: List[str] = Field(default_factory=list)
+    signature_hashtags: List[str] = Field(default_factory=list)
+    content_pillars: List[str] = Field(default_factory=list)
+
+
+# Backward compatibility alias
+BrandVoice = PersonaBlock
+
+
+class DomainKnowledge(BaseModel):
+    """
+    도메인 지식 항목 — LLM이 대화 중 수집한 비즈니스 정보를 자유롭게 저장.
+    고정 스키마 없이 key-value로 어떤 산업이든 유연하게 대응.
+    """
+    key: str = Field(description="정보 카테고리 (e.g., 'flagship_product', 'menu_item', 'service', 'material', 'certification', 'partnership')")
+    value: str = Field(description="정보 내용 (e.g., '시그니처 딸기라떼 - 신선한 딸기 사용, 6,500원')")
+    confidence: str = Field(default="confirmed", description="정보 신뢰도: 'confirmed' (사용자 직접 언급), 'inferred' (대화에서 추론)")
+    source_turn: str = Field(default="", description="수집 시점 (ISO timestamp 또는 대화 요약)")
 
 
 class DomainProfileBlock(BaseModel):
@@ -107,6 +107,10 @@ class DomainProfileBlock(BaseModel):
     도메인 유형(restaurant, fashion, fitness, beauty, cafe, retail 등)에 따라
     콘텐츠 전략이 달라지므로 구조화된 필드로 관리.
     """
+    industry: str = Field(
+        default="",
+        description="User's industry or niche (e.g., 'SaaS', 'Fashion', 'Fitness')."
+    )
     domain_type: str = Field(
         default="",
         description="Service domain type: 'restaurant', 'cafe', 'fashion', 'fitness', 'beauty', 'retail', 'education', 'saas', 'other'"
@@ -123,14 +127,6 @@ class DomainProfileBlock(BaseModel):
         default="",
         description="Price range indicating consumer segment (e.g., '₩₩', 'premium', 'budget-friendly')"
     )
-    offline_channels: List[str] = Field(
-        default_factory=list,
-        description="Offline sales/presence channels (e.g., ['매장', '배달', '팝업스토어'])"
-    )
-    seasonal_peaks: List[str] = Field(
-        default_factory=list,
-        description="Peak seasons or key dates (e.g., ['크리스마스', '발렌타인데이', '여름 성수기'])"
-    )
     usp: str = Field(
         default="",
         description="Unique Selling Point — core differentiator from competitors"
@@ -139,9 +135,13 @@ class DomainProfileBlock(BaseModel):
         default_factory=list,
         description="Main competitor brands or businesses"
     )
-    target_age_range: str = Field(
-        default="",
-        description="Primary target age range (e.g., '20-35', '30-50')"
+    knowledge: List[DomainKnowledge] = Field(
+        default_factory=list,
+        description=(
+            "도메인 지식 — LLM이 대화에서 수집한 비즈니스 정보를 자유 형식으로 저장. "
+            "제품, 서비스, 재료, 인증, 제휴, 고객 특성 등 산업에 따라 다른 정보를 유연하게 수집. "
+            "key로 카테고리 구분, value에 상세 내용 저장."
+        )
     )
     domain_extra: dict = Field(
         default_factory=dict,
@@ -149,8 +149,50 @@ class DomainProfileBlock(BaseModel):
     )
 
 
+class HumanBlock(BaseModel):
+    """MemGPT Core Memory: Human Block — user identity and contact."""
+    display_name: str = Field(default="")
+    twitter_handle: Optional[str] = Field(default=None)
+    instagram_handle: Optional[str] = Field(default=None)
+    extra_fields: dict = Field(default_factory=dict)
+
+
+class AudienceTrait(BaseModel):
+    """오디언스 세그먼트의 자유형 속성 — 업종에 따라 다른 정보 수집."""
+    key: str = Field(description="Attribute category: 'occupation', 'pain_point', 'lifestyle', 'budget', 'motivation', 'media_habit', 'purchase_behavior', etc.")
+    value: str = Field(description="Attribute value in natural language.")
+    confidence: str = Field(default="confirmed", description="'confirmed' (user stated) | 'inferred' (agent deduced) | 'discovered' (unexpected finding)")
+
+
+class AudienceSegment(BaseModel):
+    """제품/서비스별 타겟 오디언스 세그먼트."""
+    segment_id: str = Field(default="", description="Unique segment identifier (auto-generated)")
+    name: str = Field(description="Segment name, e.g., '시니어 재활 고객', 'IT 직장인'")
+    source: str = Field(default="confirmed", description="How this segment was identified: 'confirmed' | 'inferred' | 'discovered'")
+    # Common attributes
+    age_range: str = Field(default="", description="Target age range, e.g., '30-40대'")
+    gender: str = Field(default="", description="Gender distribution, e.g., '여성 중심', '남녀 비율 6:4', '무관'")
+    location: str = Field(default="", description="Geographic target, e.g., '서울 강남', '전국', '온라인'")
+    # Connection info
+    products: List[str] = Field(default_factory=list, description="Products/services this segment is interested in")
+    platforms: List[str] = Field(default_factory=list, description="Channels where this segment is most active")
+    # Flexible traits
+    traits: List[AudienceTrait] = Field(default_factory=list, description="Industry-specific attributes collected from conversations")
+    notes: str = Field(default="", description="Free-form notes about this segment")
+
+
+class AudienceBlock(BaseModel):
+    """MemGPT Core Memory: Audience Block — target audience and channel strategy."""
+    target_platforms: List[str] = Field(default_factory=list, description="Brand's primary target platforms")
+    default_age_range: str = Field(default="", description="Brand-wide default target age range")
+    segments: List[AudienceSegment] = Field(default_factory=list, description="Product/service-specific audience segments (max 20)")
+    seasonal_peaks: List[str] = Field(default_factory=list)
+    offline_channels: List[str] = Field(default_factory=list)
+
+
 class UserProfile(BaseModel):
-    """MemGPT Core Memory: Human Block + Domain Profile Block — merged persistent user identity."""
+    """DEPRECATED — kept for backward compatibility with old serialized sessions.
+    New code should use HumanBlock, PersonaBlock, DomainProfileBlock, AudienceBlock directly."""
     display_name: str = Field(default="", description="User's display name or brand name.")
     twitter_handle: Optional[str] = Field(default=None, description="Twitter/X handle (e.g., '@mybrand')")
     instagram_handle: Optional[str] = Field(default=None, description="Instagram handle.")
@@ -253,6 +295,7 @@ class PerformanceEdge(BaseModel):
     edge_id: str = Field(description="Unique edge identifier")
     node_id: str = Field(description="References ContentNode.node_id")
     campaign_id: str = Field(description="References CampaignRecord.campaign_id")
+    segment_id: str = Field(default="", description="References AudienceSegment.segment_id — links performance to a specific audience segment")
     engagement_level: str = Field(default="", description="'low'/'medium'/'high'/'viral'")
     reach_level: str = Field(default="", description="'low'/'medium'/'high'")
     what_worked: List[str] = Field(default_factory=list)
@@ -312,10 +355,16 @@ class GeneratedAsset(BaseModel):
     gcs_url: str = Field(description="Public GCS URL of the stored asset.")
     local_filename: str = Field(default="", description="Original filename used during generation.")
     prompt_used: str = Field(default="", description="The prompt that produced this asset.")
+    caption: str = Field(default="", description="Post caption/text used with this asset (e.g., Instagram caption with hashtags).")
+    hashtags: List[str] = Field(default_factory=list, description="Hashtags used with this asset.")
     platform: str = Field(default="", description="Target platform (e.g., 'instagram', 'tiktok', 'youtube').")
     created_at: str = Field(description="ISO-8601 timestamp when the asset was generated.")
     session_id: str = Field(default="", description="ADK session ID in which the asset was generated.")
     is_user_uploaded: bool = Field(default=False, description="True if uploaded by user, False if AI-generated.")
+    performance: Optional[PerformanceData] = Field(
+        default=None,
+        description="Structured performance data for this asset."
+    )
 
 
 class RecallEntry(BaseModel):
@@ -333,16 +382,6 @@ class RecallEntry(BaseModel):
     )
 
 
-class CampaignEmbedding(BaseModel):
-    """
-    Cached embedding vector for a campaign record.
-    Stored alongside campaign_archive to avoid re-embedding on every search.
-    campaign_id references CampaignRecord.campaign_id.
-    """
-    campaign_id: str
-    vector: List[float] = Field(default_factory=list)
-
-
 class ConversationRecord(BaseModel):
     """MemGPT Archival Memory unit — one conversation turn stored for long-term recall."""
     conversation_id: str = Field(description="Unique conversation turn identifier.")
@@ -353,51 +392,111 @@ class ConversationRecord(BaseModel):
     summary: str = Field(default="", description="Optional short summary annotation of this turn.")
 
 
-class ConversationEmbedding(BaseModel):
-    """
-    Cached embedding vector for a conversation record.
-    conversation_id references ConversationRecord.conversation_id.
-    """
-    conversation_id: str
-    vector: List[float] = Field(default_factory=list)
-
-
 class MemoryState(BaseModel):
     """
     MemGPT-style memory container stored in ADK session.state['memory'].
-    Extended with Domain Profile Block, Audience Behavior Graph, and structured performance tracking.
+    Extended with 4 independent Core Memory blocks, Audience Behavior Graph,
+    and structured performance tracking.
 
-    Layers:
-      - core_profile            → Human Block + Domain Profile Block (always in context)
-      - campaign_archive        → Archival Memory (Vertex AI Vector Search — unlimited)
-      - conversation_archive    → Archival Memory (Vertex AI Vector Search — unlimited)
+    Core Memory Blocks:
+      - human_block             → Human Block (user identity & contact)
+      - persona_block           → Persona Block (brand voice & style)
+      - domain_block            → Domain Profile Block (business details)
+      - audience_block          → Audience Block (target audience & channels)
+    Other Layers:
+      - campaign_archive        → Archival Memory (Qdrant vector search — unlimited)
+      - conversation_archive    → Archival Memory (Qdrant vector search — unlimited)
       - recall_log              → Recall Memory (rolling conversation history, token-budget based)
       - working_summary         → Recall Memory summary (condensed older turns)
       - asset_archive           → Generated asset index (images & videos)
       - behavior_graph          → Audience-level User Behavior Graph
       - performance_pending     → Queue of campaigns awaiting performance data collection
-      - campaign_embeddings     → Local embedding cache (fallback when Vector Search unavailable)
-      - conversation_embeddings → Local embedding cache (fallback when Vector Search unavailable)
     """
-    core_profile: UserProfile = Field(
-        default_factory=UserProfile,
-        description="[Core Memory / Human Block + Domain Block] Permanent user identity. Always injected into agent context."
+
+    @model_validator(mode='before')
+    @classmethod
+    def _migrate_core_profile(cls, data):
+        """Backward compatibility: migrate old nested core_profile to 4 independent blocks."""
+        if isinstance(data, dict) and 'core_profile' in data:
+            cp = data.pop('core_profile')
+            if isinstance(cp, dict):
+                # Migrate to new blocks
+                if 'human_block' not in data:
+                    data['human_block'] = {
+                        'display_name': cp.get('display_name', ''),
+                        'twitter_handle': cp.get('twitter_handle'),
+                        'instagram_handle': cp.get('instagram_handle'),
+                        'extra_fields': cp.get('extra_fields', {}),
+                    }
+                if 'persona_block' not in data:
+                    bv = cp.get('brand_voice', {})
+                    data['persona_block'] = bv if isinstance(bv, dict) else {}
+                if 'domain_block' not in data:
+                    dp = cp.get('domain_profile', {})
+                    if isinstance(dp, dict):
+                        dp = dict(dp)  # shallow copy to avoid mutating original
+                        dp['industry'] = cp.get('industry', dp.get('industry', ''))
+                        # Remove fields that moved to audience_block
+                        dp.pop('target_age_range', None)
+                        dp.pop('seasonal_peaks', None)
+                        dp.pop('offline_channels', None)
+                    else:
+                        dp = {'industry': cp.get('industry', '')}
+                    data['domain_block'] = dp
+                if 'audience_block' not in data:
+                    dp = cp.get('domain_profile', {})
+                    data['audience_block'] = {
+                        'target_platforms': cp.get('target_platforms', []),
+                        'default_age_range': dp.get('target_age_range', '') if isinstance(dp, dict) else '',
+                        'segments': [],
+                        'seasonal_peaks': dp.get('seasonal_peaks', []) if isinstance(dp, dict) else [],
+                        'offline_channels': dp.get('offline_channels', []) if isinstance(dp, dict) else [],
+                    }
+        # ── Migrate old audience_block field names ────────────────────────
+        if isinstance(data, dict) and 'audience_block' in data:
+            ab = data['audience_block']
+            if isinstance(ab, dict):
+                # Rename target_age_range → default_age_range
+                if 'target_age_range' in ab and 'default_age_range' not in ab:
+                    ab['default_age_range'] = ab.pop('target_age_range')
+                # Convert old audience_segments: List[str] → segments: List[AudienceSegment]
+                if 'audience_segments' in ab and 'segments' not in ab:
+                    old_segs = ab.pop('audience_segments')
+                    if isinstance(old_segs, list):
+                        ab['segments'] = [
+                            {'name': s, 'segment_id': f'migrated_{i}'}
+                            if isinstance(s, str)
+                            else s
+                            for i, s in enumerate(old_segs)
+                        ]
+                    else:
+                        ab['segments'] = []
+
+        return data
+
+    human_block: HumanBlock = Field(
+        default_factory=HumanBlock,
+        description="[Core Memory / Human Block] Permanent user identity and contact info."
+    )
+    persona_block: PersonaBlock = Field(
+        default_factory=PersonaBlock,
+        description="[Core Memory / Persona Block] Brand voice and style identity."
+    )
+    domain_block: DomainProfileBlock = Field(
+        default_factory=DomainProfileBlock,
+        description="[Core Memory / Domain Block] Domain-specific business profile."
+    )
+    audience_block: AudienceBlock = Field(
+        default_factory=AudienceBlock,
+        description="[Core Memory / Audience Block] Target audience and channel strategy."
     )
     campaign_archive: List[CampaignRecord] = Field(
         default_factory=list,
-        description="[Archival Memory] Past campaigns. Primary search via Vertex AI Vector Search; local list as metadata store."
-    )
-    campaign_embeddings: List[CampaignEmbedding] = Field(
-        default_factory=list,
-        description="[Archival Memory] Local embedding cache — used as fallback when Vertex AI Vector Search is unavailable."
+        description="[Archival Memory] Past campaigns. Semantic search via Qdrant; local list as metadata store."
     )
     conversation_archive: List[ConversationRecord] = Field(
         default_factory=list,
-        description="[Archival Memory] Full conversation history. Primary search via Vertex AI Vector Search."
-    )
-    conversation_embeddings: List[ConversationEmbedding] = Field(
-        default_factory=list,
-        description="[Archival Memory] Local embedding cache — fallback for conversation search."
+        description="[Archival Memory] Full conversation history. Semantic search via Qdrant."
     )
     asset_archive: List[GeneratedAsset] = Field(
         default_factory=list,
@@ -409,7 +508,15 @@ class MemoryState(BaseModel):
     )
     working_summary: str = Field(
         default="",
-        description="[Recall Memory] Condensed summary of older turns beyond the recall_log token window."
+        description="[Recall Memory L1] Condensed summary of older turns beyond the recall_log token window."
+    )
+    session_summaries: List[str] = Field(
+        default_factory=list,
+        description="[Recall Memory L2] Per-session summaries (each ~500 chars). Max 10 kept."
+    )
+    long_term_summary: str = Field(
+        default="",
+        description="[Recall Memory L3] Long-term cumulative summary across all sessions (~3000 chars)."
     )
     behavior_graph: AudienceBehaviorGraph = Field(
         default_factory=AudienceBehaviorGraph,
@@ -429,7 +536,7 @@ class MemoryState(BaseModel):
 class MemoryUpdateRequest(BaseModel):
     """Input schema for the memory update endpoint."""
     user_id: str
-    field: str = Field(description="Dot-path to the field to update, e.g. 'core_profile.brand_voice.tone'")
+    field: str = Field(description="Dot-path to the field to update, e.g. 'persona_block.tone'")
     value: str = Field(description="New value as a string or JSON string for lists.")
 
 

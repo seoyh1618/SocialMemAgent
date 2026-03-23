@@ -1,6 +1,6 @@
 import { FaHeart, FaCommentDots, FaShare, FaTiktok } from "react-icons/fa6";
 import BaseBlock from './base_block';
-import { ArrowPathIcon } from '@heroicons/react/24/outline';
+import { ArrowPathIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
 
 
 interface TikTokBlockProps {
@@ -26,6 +26,14 @@ export default function TikTokBlock({
             content={
                 <div className="px-3 py-3">
                     <div className="relative h-[440px] bg-black rounded-lg overflow-hidden flex items-center justify-center">
+                        {/* Download button */}
+                        {videoUrl && (
+                            <div className="absolute top-2 right-2 z-10">
+                                <a href={videoUrl} target="_blank" rel="noopener noreferrer" title="Download video" className="p-1.5 bg-black/50 backdrop-blur rounded-md hover:bg-black/70 transition-colors inline-flex">
+                                    <ArrowDownTrayIcon className="w-3.5 h-3.5 text-white" />
+                                </a>
+                            </div>
+                        )}
                         {/* Video Content */}
                         {videoUrl ? (
                             <video

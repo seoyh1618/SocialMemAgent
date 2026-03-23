@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import { FaYoutube } from "react-icons/fa6";
 import { BsDot } from "react-icons/bs";
 import BaseBlock from './base_block';
-import { ArrowPathIcon } from '@heroicons/react/24/outline';
+import { ArrowPathIcon, ClipboardDocumentIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
+import { CheckIcon } from '@heroicons/react/24/solid';
 
 
 interface YouTubeBlockProps {
@@ -24,6 +26,14 @@ export default function YouTubePostBlock({
     uploadTime = "1 day ago",
     descriptionSnippet,
 }: YouTubeBlockProps) {
+    const [copied, setCopied] = useState(false);
+
+    const copyText = [videoTitle, descriptionSnippet].filter(Boolean).join('\n\n');
+    const handleCopy = async () => {
+        await navigator.clipboard.writeText(copyText);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 1500);
+    };
 
     const formattedViews = views.toLocaleString();
 
@@ -37,7 +47,18 @@ export default function YouTubePostBlock({
             title="YouTube"
             content={
                 <div className="px-3 py-3">
-                    <div className="bg-white border border-gray-200 overflow-hidden shadow-sm">
+                    <div className="relative bg-white border border-gray-200 overflow-hidden shadow-sm">
+                        {/* Copy / Download buttons */}
+                        <div className="absolute top-2 right-2 z-10 flex gap-1">
+                            <button onClick={handleCopy} title="Copy text" className="p-1.5 bg-white/80 backdrop-blur rounded-md shadow-sm hover:bg-white transition-colors">
+                                {copied ? <CheckIcon className="w-3.5 h-3.5 text-emerald-500" /> : <ClipboardDocumentIcon className="w-3.5 h-3.5 text-gray-500" />}
+                            </button>
+                            {videoUrl && (
+                                <a href={videoUrl} target="_blank" rel="noopener noreferrer" title="Download video" className="p-1.5 bg-white/80 backdrop-blur rounded-md shadow-sm hover:bg-white transition-colors">
+                                    <ArrowDownTrayIcon className="w-3.5 h-3.5 text-gray-500" />
+                                </a>
+                            )}
+                        </div>
                         <div className="relative w-full aspect-video bg-gray-900 flex items-center justify-center">
                             {videoUrl ? (
                                 <video

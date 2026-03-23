@@ -17,7 +17,7 @@ import {
   PaperAirplaneIcon,
   TrashIcon,
 } from '@heroicons/react/24/outline';
-import { fetchUserAssets, uploadUserAsset, deleteUserAsset } from '../api';
+import { fetchUserAssets, uploadUserAsset, deleteUserAsset, updateAssetPerformance } from '../api';
 import type { GeneratedAsset } from '../memory';
 
 interface CreationsTabProps {
@@ -25,10 +25,16 @@ interface CreationsTabProps {
 }
 
 const PLATFORM_COLORS: Record<string, string> = {
-  instagram: 'bg-pink-100 text-pink-700',
-  youtube:   'bg-red-100 text-red-700',
-  tiktok:    'bg-gray-900 text-white',
-  twitter:   'bg-sky-100 text-sky-700',
+  instagram:  'bg-pink-100 text-pink-700',
+  youtube:    'bg-red-100 text-red-700',
+  tiktok:     'bg-gray-900 text-white',
+  twitter:    'bg-sky-100 text-sky-700',
+  x:          'bg-sky-100 text-sky-700',
+  facebook:   'bg-blue-100 text-blue-700',
+  linkedin:   'bg-blue-200 text-blue-800',
+  pinterest:  'bg-red-50 text-red-600',
+  threads:    'bg-gray-100 text-gray-700',
+  kakao:      'bg-yellow-100 text-yellow-700',
 };
 
 function AssetCard({
@@ -147,7 +153,22 @@ function AssetCard({
             {asset.platform}
           </span>
         )}
-        {asset.prompt_used && (
+        {(asset as any).caption && (
+          <p className="text-[11px] text-gray-700 line-clamp-3 leading-relaxed font-medium">{(asset as any).caption}</p>
+        )}
+        {(asset as any).hashtags && (asset as any).hashtags.length > 0 && (
+          <div className="flex flex-wrap gap-1">
+            {(asset as any).hashtags.slice(0, 6).map((tag: string, i: number) => (
+              <span key={i} className="text-[10px] text-indigo-500 bg-indigo-50 px-1.5 py-0.5 rounded-full">
+                {tag.startsWith('#') ? tag : `#${tag}`}
+              </span>
+            ))}
+            {(asset as any).hashtags.length > 6 && (
+              <span className="text-[10px] text-gray-400">+{(asset as any).hashtags.length - 6}</span>
+            )}
+          </div>
+        )}
+        {!((asset as any).caption) && asset.prompt_used && (
           <p className="text-[11px] text-gray-500 line-clamp-2 leading-relaxed">{asset.prompt_used}</p>
         )}
         {date && <p className="text-[10px] text-gray-400">{date}</p>}
@@ -155,6 +176,8 @@ function AssetCard({
     </div>
   );
 }
+
+type PerfDraft = Partial<{ views: number; clicks: number; impressions: number; likes: number; shares: number; comments: number }>;
 
 export default function CreationsTab({ userId }: CreationsTabProps) {
   const [assets, setAssets] = useState<GeneratedAsset[]>([]);
@@ -164,6 +187,9 @@ export default function CreationsTab({ userId }: CreationsTabProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState<GeneratedAsset | null>(null);
+  const [showPerfForm, setShowPerfForm] = useState(false);
+  const [perfDraft, setPerfDraft] = useState<PerfDraft>({});
+  const [isSavingPerf, setIsSavingPerf] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const LIMIT = 12;
 
@@ -189,7 +215,12 @@ export default function CreationsTab({ userId }: CreationsTabProps) {
   };
 
   const handleSelectAsset = (asset: GeneratedAsset) => {
-    setSelectedAsset(prev => prev?.asset_id === asset.asset_id ? null : asset);
+    setSelectedAsset(prev => {
+      if (prev?.asset_id === asset.asset_id) return null;
+      setShowPerfForm(false);
+      setPerfDraft({});
+      return asset;
+    });
   };
 
   const handleDeleteAsset = async (asset: GeneratedAsset) => {
@@ -289,17 +320,88 @@ export default function CreationsTab({ userId }: CreationsTabProps) {
 
       {/* Publish bar — shown when an asset is selected */}
       {selectedAsset && (
-        <div className="flex items-center justify-between bg-indigo-50 border border-indigo-200 rounded-xl px-4 py-2.5">
-          <p className="text-xs font-medium text-indigo-700 truncate max-w-[60%]">
-            선택됨: {selectedAsset.local_filename || selectedAsset.asset_id.slice(0, 8)}
-          </p>
-          <button
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors"
-            onClick={() => {/* UI only — no backend */}}
-          >
-            <PaperAirplaneIcon className="w-3.5 h-3.5" />
-            게시하기
-          </button>
+        <div className="rounded-xl border border-indigo-200 bg-indigo-50 overflow-hidden">
+          <div className="flex items-center justify-between px-4 py-2.5">
+            <p className="text-xs font-medium text-indigo-700 truncate max-w-[50%]">
+              선택됨: {selectedAsset.local_filename || selectedAsset.asset_id.slice(0, 8)}
+            </p>
+            <div className="flex items-center gap-2">
+              <button
+                className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors ${
+                  showPerfForm
+                    ? 'bg-green-600 text-white hover:bg-green-700'
+                    : 'bg-white text-green-700 border border-green-300 hover:bg-green-50'
+                }`}
+                onClick={() => {
+                  if (!showPerfForm && selectedAsset?.performance) {
+                    const p = selectedAsset.performance;
+                    setPerfDraft({
+                      views: p.views ?? undefined,
+                      clicks: p.clicks ?? undefined,
+                      likes: p.likes ?? undefined,
+                      impressions: p.impressions ?? undefined,
+                      shares: p.shares ?? undefined,
+                      comments: p.comments ?? undefined,
+                    });
+                  }
+                  setShowPerfForm(v => !v);
+                }}
+              >
+                <span>{showPerfForm ? '닫기' : '성과 업데이트'}</span>
+              </button>
+              <button
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors"
+                onClick={() => {/* UI only — no backend */}}
+              >
+                <PaperAirplaneIcon className="w-3.5 h-3.5" />
+                게시하기
+              </button>
+            </div>
+          </div>
+
+          {/* Performance input form */}
+          {showPerfForm && (
+            <div className="border-t border-indigo-200 bg-white px-4 py-3 space-y-3">
+              <p className="text-[11px] font-semibold text-gray-500 uppercase tracking-wide">성과 지표 입력</p>
+              <div className="grid grid-cols-3 gap-2">
+                {(['views', 'clicks', 'likes', 'impressions', 'shares', 'comments'] as const).map(field => (
+                  <div key={field} className="flex flex-col gap-1">
+                    <label className="text-[10px] text-gray-400 capitalize">{field}</label>
+                    <input
+                      type="number"
+                      min={0}
+                      placeholder="0"
+                      value={perfDraft[field] ?? ''}
+                      onChange={e => {
+                        const val = e.target.value === '' ? undefined : Number(e.target.value);
+                        setPerfDraft(prev => ({ ...prev, [field]: val }));
+                      }}
+                      className="w-full rounded-lg border border-gray-200 px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-400"
+                    />
+                  </div>
+                ))}
+              </div>
+              <button
+                disabled={isSavingPerf || Object.keys(perfDraft).length === 0}
+                onClick={async () => {
+                  if (!selectedAsset) return;
+                  setIsSavingPerf(true);
+                  try {
+                    await updateAssetPerformance(userId, selectedAsset.asset_id, perfDraft);
+                    setShowPerfForm(false);
+                    setPerfDraft({});
+                  } catch (err) {
+                    console.error('[Performance update error]', err);
+                  } finally {
+                    setIsSavingPerf(false);
+                  }
+                }}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                {isSavingPerf ? '저장 중...' : '저장'}
+              </button>
+            </div>
+          )}
         </div>
       )}
 

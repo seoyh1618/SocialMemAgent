@@ -14,16 +14,28 @@ load_dotenv()
 
 logger = logging.getLogger(__name__)
 
-# Only Vertex AI supports image generation for now.
-client = Client(
-    vertexai=True,
-    project=os.getenv("GOOGLE_CLOUD_PROJECT"),
-    location=os.getenv("GOOGLE_CLOUD_LOCATION"),
-)
+# Lazy-init to avoid import-time credential errors
+_client = None
+_storage_client = None
+GCS_BUCKET_NAME = "social-media-agent-assets"
 
-# Initialize Google Cloud Storage client
-storage_client = storage.Client(project=os.getenv("GOOGLE_CLOUD_PROJECT"))
-GCS_BUCKET_NAME = "social-media-agent-assets"  # Public to internet
+
+def _get_client():
+    global _client
+    if _client is None:
+        _client = Client(
+            vertexai=True,
+            project=os.getenv("GOOGLE_CLOUD_PROJECT"),
+            location=os.getenv("GOOGLE_CLOUD_LOCATION"),
+        )
+    return _client
+
+
+def _get_storage_client():
+    global _storage_client
+    if _storage_client is None:
+        _storage_client = storage.Client(project=os.getenv("GOOGLE_CLOUD_PROJECT"))
+    return _storage_client
 
 
 def unique_languages_from_voices(voices: Sequence[tts.Voice]):
@@ -111,7 +123,7 @@ def generate_audio(
     gcs_object_name = f"audios/{timestamp}.wav"
 
     try:
-        bucket = storage_client.bucket(GCS_BUCKET_NAME)
+        bucket = _get_storage_client().bucket(GCS_BUCKET_NAME)
 
         blob = bucket.blob(gcs_object_name)
         blob.upload_from_string(audio_bytes, content_type="audio/wav")

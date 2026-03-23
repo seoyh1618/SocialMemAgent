@@ -1,6 +1,7 @@
 /**
  * MemoryMapView — MemGPT 메모리 구조를 시각화하는 마인드맵 스타일 뷰
- * Human Block (UserProfile) + Persona Block (BrandVoice) + Archival + Recall Memory
+ * 4-Block Core Memory: Human Block + Persona Block + Domain Block + Audience Block
+ * + Archival + Recall Memory
  */
 
 import type { MemoryState } from '../memory';
@@ -115,16 +116,18 @@ function CampaignCard({ campaign }: { campaign: MemoryState['campaign_archive'][
 
 /* ─── 메인 컴포넌트 ─── */
 export default function MemoryMapView({ memory, onEditClick }: MemoryMapViewProps) {
-  const profile = memory.core_profile;
-  const voice = profile.brand_voice;
+  const human = memory.human_block;
+  const persona = memory.persona_block;
+  const domain = memory.domain_block;
+  const audience = memory.audience_block;
   const campaigns = memory.campaign_archive ?? [];
 
   const isEmpty =
-    !profile.display_name &&
-    !profile.industry &&
-    !voice.tone &&
-    voice.content_pillars.length === 0 &&
-    voice.signature_hashtags.length === 0 &&
+    !human.display_name &&
+    !domain.industry &&
+    !persona.tone &&
+    persona.content_pillars.length === 0 &&
+    persona.signature_hashtags.length === 0 &&
     campaigns.length === 0 &&
     !memory.working_summary;
 
@@ -170,34 +173,34 @@ export default function MemoryMapView({ memory, onEditClick }: MemoryMapViewProp
       </div>
 
       {/* 중앙 브랜드 카드 */}
-      {(profile.display_name || profile.industry) && (
+      {(human.display_name || domain.industry) && (
         <div className="rounded-2xl bg-gradient-to-r from-indigo-600 to-purple-600 p-4 text-white shadow-md">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center shrink-0">
               <span className="text-lg font-bold">
-                {profile.display_name?.charAt(0)?.toUpperCase() ?? '?'}
+                {human.display_name?.charAt(0)?.toUpperCase() ?? '?'}
               </span>
             </div>
             <div className="min-w-0">
-              <p className="font-bold text-base truncate">{profile.display_name || '브랜드명 미설정'}</p>
-              {profile.industry && (
-                <p className="text-indigo-200 text-[12px]">{profile.industry}</p>
+              <p className="font-bold text-base truncate">{human.display_name || '브랜드명 미설정'}</p>
+              {domain.industry && (
+                <p className="text-indigo-200 text-[12px]">{domain.industry}</p>
               )}
             </div>
           </div>
-          {(profile.twitter_handle || profile.instagram_handle || profile.target_platforms?.length > 0) && (
+          {(human.twitter_handle || human.instagram_handle || audience.target_platforms?.length > 0) && (
             <div className="mt-3 flex flex-wrap gap-2">
-              {profile.twitter_handle && (
+              {human.twitter_handle && (
                 <span className="bg-white/15 text-white text-[11px] px-2 py-0.5 rounded-full">
-                  𝕏 @{profile.twitter_handle}
+                  𝕏 @{human.twitter_handle}
                 </span>
               )}
-              {profile.instagram_handle && (
+              {human.instagram_handle && (
                 <span className="bg-white/15 text-white text-[11px] px-2 py-0.5 rounded-full">
-                  📸 @{profile.instagram_handle}
+                  📸 @{human.instagram_handle}
                 </span>
               )}
-              {profile.target_platforms?.map((p) => (
+              {audience.target_platforms?.map((p) => (
                 <span key={p} className="bg-white/15 text-white text-[11px] px-2 py-0.5 rounded-full capitalize">
                   {p}
                 </span>
@@ -207,36 +210,32 @@ export default function MemoryMapView({ memory, onEditClick }: MemoryMapViewProp
         </div>
       )}
 
-      {/* 2열 그리드: Human Block + Persona Block */}
+      {/* 2x2 그리드: 4-Block Core Memory */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* Human Block */}
         <MemoryCard title="Human Block" icon={UserCircleIcon} accentColor="bg-indigo-500">
-          <FieldRow label="브랜드명" value={profile.display_name} />
-          <FieldRow label="업종" value={profile.industry} />
-          <FieldRow label="트위터" value={profile.twitter_handle ? `@${profile.twitter_handle}` : null} />
-          <FieldRow label="인스타" value={profile.instagram_handle ? `@${profile.instagram_handle}` : null} />
-          {profile.target_platforms?.length > 0 && (
-            <TagRow label="플랫폼" tags={profile.target_platforms} color="indigo" />
-          )}
-          {!profile.display_name && !profile.industry && (
+          <FieldRow label="브랜드명" value={human.display_name} />
+          <FieldRow label="트위터" value={human.twitter_handle ? `@${human.twitter_handle}` : null} />
+          <FieldRow label="인스타" value={human.instagram_handle ? `@${human.instagram_handle}` : null} />
+          {!human.display_name && (
             <p className="text-[12px] text-gray-400 italic">설정된 프로필 정보가 없습니다</p>
           )}
         </MemoryCard>
 
         {/* Persona Block */}
         <MemoryCard title="Persona Block" icon={SparklesIcon} accentColor="bg-purple-500">
-          <FieldRow label="톤앤매너" value={voice.tone} />
-          {voice.content_pillars?.length > 0 && (
-            <TagRow label="콘텐츠" tags={voice.content_pillars} color="purple" />
+          <FieldRow label="톤앤매너" value={persona.tone} />
+          {persona.content_pillars?.length > 0 && (
+            <TagRow label="콘텐츠" tags={persona.content_pillars} color="purple" />
           )}
-          {voice.preferred_styles?.length > 0 && (
-            <TagRow label="스타일" tags={voice.preferred_styles} color="teal" />
+          {persona.preferred_styles?.length > 0 && (
+            <TagRow label="스타일" tags={persona.preferred_styles} color="teal" />
           )}
-          {voice.signature_hashtags?.length > 0 && (
+          {persona.signature_hashtags?.length > 0 && (
             <div className="flex items-start gap-2">
               <span className="text-[11px] text-gray-400 w-16 shrink-0 pt-1">해시태그</span>
               <div className="flex flex-wrap gap-1">
-                {voice.signature_hashtags.map((h) => (
+                {persona.signature_hashtags.map((h) => (
                   <span key={h} className="text-[11px] text-indigo-500 font-medium">
                     {h.startsWith('#') ? h : `#${h}`}
                   </span>
@@ -244,13 +243,50 @@ export default function MemoryMapView({ memory, onEditClick }: MemoryMapViewProp
               </div>
             </div>
           )}
-          {voice.avoid_topics?.length > 0 && (
-            <TagRow label="금지어" tags={voice.avoid_topics} color="rose" />
+          {persona.avoid_topics?.length > 0 && (
+            <TagRow label="금지어" tags={persona.avoid_topics} color="rose" />
           )}
-          {!voice.tone && voice.content_pillars?.length === 0 && (
+          {!persona.tone && persona.content_pillars?.length === 0 && (
             <p className="text-[12px] text-gray-400 italic">브랜드 보이스가 설정되지 않았습니다</p>
           )}
         </MemoryCard>
+
+        {/* Domain Block */}
+        {(domain.industry || domain.domain_type || domain.usp) && (
+          <MemoryCard title="Domain Block" icon={ArchiveBoxIcon} accentColor="bg-amber-500">
+            <FieldRow label="업종" value={domain.industry} />
+            <FieldRow label="유형" value={domain.domain_type} />
+            <FieldRow label="위치" value={domain.business_location} />
+            <FieldRow label="가격대" value={domain.price_range} />
+            <FieldRow label="USP" value={domain.usp} />
+            {domain.competitors?.length > 0 && (
+              <TagRow label="경쟁사" tags={domain.competitors} color="amber" />
+            )}
+          </MemoryCard>
+        )}
+
+        {/* Audience Block */}
+        {(audience.target_platforms?.length > 0 || audience.default_age_range || (audience as any).target_age_range || audience.segments?.length > 0 || (audience as any).audience_segments?.length > 0) && (
+          <MemoryCard title="Audience Block" icon={MegaphoneIcon} accentColor="bg-teal-500">
+            <FieldRow label="기본 연령대" value={audience.default_age_range || (audience as any).target_age_range} />
+            {audience.target_platforms?.length > 0 && (
+              <TagRow label="플랫폼" tags={audience.target_platforms} color="indigo" />
+            )}
+            {audience.segments?.length > 0 && (
+              <TagRow label="세그먼트" tags={audience.segments.map(s => s.name)} color="teal" />
+            )}
+            {/* Backward compat: old audience_segments as string[] */}
+            {!(audience.segments?.length > 0) && (audience as any).audience_segments?.length > 0 && (
+              <TagRow label="세그먼트" tags={(audience as any).audience_segments} color="teal" />
+            )}
+            {audience.seasonal_peaks?.length > 0 && (
+              <TagRow label="성수기" tags={audience.seasonal_peaks} color="amber" />
+            )}
+            {audience.offline_channels?.length > 0 && (
+              <TagRow label="오프라인" tags={audience.offline_channels} color="slate" />
+            )}
+          </MemoryCard>
+        )}
       </div>
 
       {/* Recall Memory */}
@@ -282,8 +318,8 @@ export default function MemoryMapView({ memory, onEditClick }: MemoryMapViewProp
       <div className="grid grid-cols-3 gap-3">
         {[
           { label: '총 캠페인', value: memory.total_campaigns ?? campaigns.length, icon: CalendarDaysIcon, color: 'text-indigo-600' },
-          { label: '콘텐츠 기둥', value: voice.content_pillars?.length ?? 0, icon: StarIcon, color: 'text-purple-600' },
-          { label: '해시태그', value: voice.signature_hashtags?.length ?? 0, icon: HashtagIcon, color: 'text-teal-600' },
+          { label: '콘텐츠 기둥', value: persona.content_pillars?.length ?? 0, icon: StarIcon, color: 'text-purple-600' },
+          { label: '해시태그', value: persona.signature_hashtags?.length ?? 0, icon: HashtagIcon, color: 'text-teal-600' },
         ].map(({ label, value, icon: Icon, color }) => (
           <div key={label} className="rounded-xl border bg-white p-3 text-center">
             <Icon className={`w-5 h-5 mx-auto mb-1 ${color}`} />

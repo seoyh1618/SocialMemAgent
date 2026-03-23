@@ -2,6 +2,11 @@ import InstagramPostBlock from "./blocks/instagram_post_block";
 import TikTokPostBlock from "./blocks/tiktok_post_block";
 import TwitterPostBlock from "./blocks/twitter_post_block";
 import YouTubePostBlock from "./blocks/youtube_post_block";
+import FacebookPostBlock from "./blocks/facebook_post_block";
+import LinkedInPostBlock from "./blocks/linkedin_post_block";
+import PinterestPostBlock from "./blocks/pinterest_post_block";
+import ThreadsPostBlock from "./blocks/threads_post_block";
+import KakaoPostBlock from "./blocks/kakao_post_block";
 import type { Base } from "../base";
 import type { CampaignRecord, PerformanceData } from "../memory";
 
@@ -49,62 +54,83 @@ function getLatestPerformance(campaigns: CampaignRecord[], platform: string): Pe
   return relevant[0]?.performance ?? null;
 }
 
+function ChannelWrapper({ children, campaigns, platform }: { children: React.ReactNode; campaigns: CampaignRecord[]; platform: string }) {
+  const perf = getLatestPerformance(campaigns, platform);
+  return (
+    <li className="overflow-hidden rounded-xl border border-gray-200">
+      {children}
+      {perf && <PerformanceMetrics performance={perf} />}
+    </li>
+  );
+}
+
 export default function ArtifactBlocks({ base, campaigns = [] }: ArtifactBlocksProps) {
   return (
     <>
-      {base.twitter_post.enabled && (
-        <li className="overflow-hidden rounded-xl border border-gray-200">
-          <TwitterPostBlock
-            contentText={base.twitter_post.value}
-            username="BrandDesigner"
-            profilePicUrl="https://randomuser.me/api/portraits/men/32.jpg"
-          />
-          {(() => {
-            const perf = getLatestPerformance(campaigns, "twitter");
-            return perf ? <PerformanceMetrics performance={perf} /> : null;
-          })()}
-        </li>
-      )}
-      {base.instagram_post.enabled && (
-        <li className="overflow-hidden rounded-xl border border-gray-200">
+      {base.instagram_post?.enabled && (base.instagram_post.value.post_text || base.instagram_post.value.image_url) && (
+        <ChannelWrapper campaigns={campaigns} platform="instagram">
           <InstagramPostBlock
             mediaUrl={base.instagram_post.value.image_url}
             contentText={base.instagram_post.value.post_text}
-            username="BrandDesigner"
-            profilePicUrl="https://randomuser.me/api/portraits/men/32.jpg"
           />
-          {(() => {
-            const perf = getLatestPerformance(campaigns, "instagram");
-            return perf ? <PerformanceMetrics performance={perf} /> : null;
-          })()}
-        </li>
+        </ChannelWrapper>
       )}
-      {base.youtube_post.enabled && (
-        <li className="overflow-hidden rounded-xl border border-gray-200">
+      {base.facebook_post?.enabled && base.facebook_post.value && typeof base.facebook_post.value === 'object' && (base.facebook_post.value as any).post_text && (
+        <ChannelWrapper campaigns={campaigns} platform="facebook">
+          <FacebookPostBlock
+            contentText={(base.facebook_post.value as any).post_text}
+            mediaUrl={(base.facebook_post.value as any).image_url}
+          />
+        </ChannelWrapper>
+      )}
+      {base.twitter_post?.enabled && base.twitter_post.value && (
+        <ChannelWrapper campaigns={campaigns} platform="twitter">
+          <TwitterPostBlock contentText={base.twitter_post.value} />
+        </ChannelWrapper>
+      )}
+      {base.threads_post?.enabled && base.threads_post.value && (
+        <ChannelWrapper campaigns={campaigns} platform="threads">
+          <ThreadsPostBlock contentText={base.threads_post.value} />
+        </ChannelWrapper>
+      )}
+      {base.linkedin_post?.enabled && base.linkedin_post.value && typeof base.linkedin_post.value === 'object' && (base.linkedin_post.value as any).post_text && (
+        <ChannelWrapper campaigns={campaigns} platform="linkedin">
+          <LinkedInPostBlock
+            contentText={(base.linkedin_post.value as any).post_text}
+            mediaUrl={(base.linkedin_post.value as any).image_url}
+          />
+        </ChannelWrapper>
+      )}
+      {base.youtube_post?.enabled && base.youtube_post.value?.title && (
+        <ChannelWrapper campaigns={campaigns} platform="youtube">
           <YouTubePostBlock
             videoUrl={base.youtube_post.value.video_url}
             descriptionSnippet={base.youtube_post.value.description}
-            thumbnailUrl="https://randomuser.me/api/portraits/men/32.jpg"
             videoTitle={base.youtube_post.value.title}
-            channelName="branding_channel"
+            channelName="Brand Channel"
           />
-          {(() => {
-            const perf = getLatestPerformance(campaigns, "youtube");
-            return perf ? <PerformanceMetrics performance={perf} /> : null;
-          })()}
-        </li>
+        </ChannelWrapper>
       )}
-      {base.tiktok_post.enabled && (
-        <li className="overflow-hidden rounded-xl border border-gray-200">
-          <TikTokPostBlock
-            videoUrl={base.tiktok_post.value.video_url}
-            profilePicUrl="https://randomuser.me/api/portraits/men/32.jpg"
+      {base.tiktok_post?.enabled && base.tiktok_post.value?.video_url && (
+        <ChannelWrapper campaigns={campaigns} platform="tiktok">
+          <TikTokPostBlock videoUrl={base.tiktok_post.value.video_url} />
+        </ChannelWrapper>
+      )}
+      {base.pinterest_post?.enabled && base.pinterest_post.value && typeof base.pinterest_post.value === 'object' && (base.pinterest_post.value as any).image_url && (
+        <ChannelWrapper campaigns={campaigns} platform="pinterest">
+          <PinterestPostBlock
+            mediaUrl={(base.pinterest_post.value as any).image_url}
+            description={(base.pinterest_post.value as any).post_text}
           />
-          {(() => {
-            const perf = getLatestPerformance(campaigns, "tiktok");
-            return perf ? <PerformanceMetrics performance={perf} /> : null;
-          })()}
-        </li>
+        </ChannelWrapper>
+      )}
+      {base.kakao_post?.enabled && base.kakao_post.value && typeof base.kakao_post.value === 'object' && (base.kakao_post.value as any).post_text && (
+        <ChannelWrapper campaigns={campaigns} platform="kakao">
+          <KakaoPostBlock
+            contentText={(base.kakao_post.value as any).post_text}
+            mediaUrl={(base.kakao_post.value as any).image_url}
+          />
+        </ChannelWrapper>
       )}
     </>
   );

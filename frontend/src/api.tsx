@@ -61,14 +61,54 @@ interface SSECallbacks {
   onData: (data: AgentResponse) => void;
   onStateDelta?: (delta: Record<string, unknown>) => void;
   onMemoryToolCall?: (toolName: string) => void;
+  onToolCall?: (toolName: string, author: string) => void;
+  onFinalText?: (text: string, author: string) => void;
   onError?: (error: Error) => void;
   onComplete?: () => void;
 }
 
+// Display names for tools — mirrors backend _TOOL_DISPLAY_NAMES
+const TOOL_DISPLAY_NAMES: Record<string, string> = {
+  advanced_search: 'Twitter 검색 중',
+  get_trends: '트렌드 조회 중',
+  generate_image: '이미지 생성 중',
+  generate_video: '동영상 생성 중',
+  generate_audio: '오디오 생성 중',
+  analyze_user_image: '첨부 이미지 분석 중',
+  memory_get_core_profile: '브랜드 프로필 조회 중',
+  memory_update_user_profile: '사용자 프로필 업데이트 중',
+  memory_update_brand_voice: '브랜드 보이스 업데이트 중',
+  memory_update_domain_profile: '도메인 프로파일 업데이트 중',
+  memory_archive_campaign: '캠페인 저장 중',
+  memory_search_campaigns: '캠페인 검색 중',
+  memory_get_recent_campaigns: '최근 캠페인 조회 중',
+  memory_record_generated_asset: '에셋 저장 중',
+  memory_get_assets: '에셋 목록 조회 중',
+  memory_get_behavior_insights: '행동 인사이트 분석 중',
+  memory_collect_performance: '성과 데이터 기록 중',
+  memory_get_performance_pending: '성과 수집 목록 확인 중',
+  memory_update_working_summary: '대화 요약 업데이트 중',
+  memory_archive_conversation: '대화 기록 저장 중',
+  memory_search_conversations: '대화 기록 검색 중',
+  instagram_strategist: '📱 Instagram 콘텐츠 생성 중',
+  facebook_strategist: '📘 Facebook 콘텐츠 생성 중',
+  x_strategist: '🐦 X(Twitter) 콘텐츠 생성 중',
+  tiktok_strategist: '🎵 TikTok 콘텐츠 생성 중',
+  youtube_strategist: '🎬 YouTube 콘텐츠 생성 중',
+  linkedin_strategist: '💼 LinkedIn 콘텐츠 생성 중',
+  pinterest_strategist: '📌 Pinterest 콘텐츠 생성 중',
+  threads_strategist: '🧵 Threads 콘텐츠 생성 중',
+  kakao_strategist: '💬 카카오 콘텐츠 생성 중',
+  idea_generation_agent: '💡 아이디어 생성 중',
+  content_orchestrator: '🎯 콘텐츠 전략 수립 중',
+};
+
 const MEMORY_TOOLS = new Set([
   'memory_get_core_profile',
-  'memory_update_user_profile',
-  'memory_update_brand_voice',
+  'memory_update_human_block',
+  'memory_update_persona_block',
+  'memory_update_domain_block',
+  'memory_update_audience_block',
   'memory_archive_campaign',
   'memory_search_campaigns',
   'memory_get_recent_campaigns',
@@ -138,19 +178,44 @@ export const sendMessageToAgentSSE = (
           // 3. Final reponse that repeats all historical thoughts/text.
           // Removing this check will also require updating logics in ChatInterface because it messes up the message
           // completion logics.
+          // Extract state_delta from ALL events (partial and non-partial)
+          // This is critical for real-time reasoning step display
+          const anyDelta = data.actions?.state_delta;
+          if (anyDelta && Object.keys(anyDelta).length > 0 && callbacks.onStateDelta) {
+            callbacks.onStateDelta(anyDelta as Record<string, unknown>);
+          }
+
           if (data.partial == true) {
             callbacks.onData(data);
           }
           if (!data.partial) {
-            // Extract state_delta from all non-partial events (carries _ctx_usage_pct etc.)
-            const delta = data.actions?.state_delta;
-            if (delta && Object.keys(delta).length > 0 && callbacks.onStateDelta) {
-              callbacks.onStateDelta(delta as Record<string, unknown>);
+            // Non-partial = final event. Do NOT send to onData (would duplicate streamed text).
+            // Instead, store final text for onComplete to use for JSON parsing.
+            const hasText = data.content?.parts?.some(p => p.text);
+            const author = data.author;
+            const isFinalAgent = author === "general_chat_agent" || author === "content_orchestrator";
+            if (hasText && isFinalAgent) {
+              // Store the final complete text for JSON extraction in onComplete
+              const finalText = data.content.parts.map(p => p.text || '').join('');
+              if (callbacks.onFinalText) {
+                callbacks.onFinalText(finalText, author || '');
+              }
             }
-            if (callbacks.onMemoryToolCall) {
-              const fnCall = data.content?.parts?.[0]?.functionCall;
-              if (fnCall && MEMORY_TOOLS.has(fnCall.name)) {
+
+            // Handle tool calls — also synthesize _last_tool for reasoning display
+            const fnCall = data.content?.parts?.[0]?.functionCall;
+            if (fnCall) {
+              if (callbacks.onMemoryToolCall && MEMORY_TOOLS.has(fnCall.name)) {
                 callbacks.onMemoryToolCall(fnCall.name);
+              }
+              // Notify all tool calls for reasoning display
+              if (callbacks.onToolCall) {
+                callbacks.onToolCall(fnCall.name, author || '');
+              }
+              // Synthesize _last_tool state_delta so reasoning steps update in real-time
+              if (callbacks.onStateDelta) {
+                const displayName = TOOL_DISPLAY_NAMES[fnCall.name] || fnCall.name.replace(/_/g, ' ');
+                callbacks.onStateDelta({ '_last_tool': displayName } as Record<string, unknown>);
               }
             }
           }
@@ -382,7 +447,11 @@ export const uploadUserAsset = async (
 export const updateCampaignPerformance = async (
   userId: string,
   campaignId: string,
-  performance: Partial<{ views: number; clicks: number; impressions: number; likes: number; shares: number; comments: number }>
+  performance: Partial<{
+    views: number; clicks: number; impressions: number; likes: number; shares: number; comments: number;
+    engagement_level: string; reach_level: string; conversion_level: string;
+    best_platform: string; what_worked: string[]; what_failed: string[];
+  }>
 ): Promise<void> => {
   const response = await fetch(`${API_BASE_URL}/memory/${userId}/campaigns/${campaignId}/performance`, {
     method: 'PUT',
@@ -392,6 +461,26 @@ export const updateCampaignPerformance = async (
   if (!response.ok) {
     const err = await response.text();
     throw new Error(`Performance update failed: ${response.status} ${err}`);
+  }
+};
+
+/**
+ * Update performance metrics for a specific asset in asset_gallery.
+ * Accepts partial updates — only provided fields are overwritten.
+ */
+export const updateAssetPerformance = async (
+  userId: string,
+  assetId: string,
+  performance: Partial<{ views: number; clicks: number; impressions: number; likes: number; shares: number; comments: number }>
+): Promise<void> => {
+  const response = await fetch(`${API_BASE_URL}/memory/${userId}/assets/${assetId}/performance`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(performance),
+  });
+  if (!response.ok) {
+    const err = await response.text();
+    throw new Error(`Asset performance update failed: ${response.status} ${err}`);
   }
 };
 
@@ -410,6 +499,29 @@ export const deleteUserAsset = async (
     throw new Error(`Delete failed: ${response.status} ${err}`);
   }
 };
+
+/**
+ * Fetch generated assets (images & videos) from Asset Archive with pagination.
+ * asset_type: optional 'image' | 'video' filter.
+ */
+/**
+ * Fetch conversation history (recall_log + conversation_archive merged).
+ */
+export const fetchConversationHistory = async (
+  userId: string,
+  options: { limit?: number; page?: number } = {}
+): Promise<{ conversations: any[]; total: number; page: number; limit: number; working_summary: string }> => {
+  const { limit = 30, page = 0 } = options;
+  const params = new URLSearchParams({ limit: String(limit), page: String(page) });
+  try {
+    const response = await fetch(`${API_BASE_URL}/memory/${userId}/conversations?${params}`);
+    if (!response.ok) return { conversations: [], total: 0, page, limit, working_summary: '' };
+    return await response.json();
+  } catch {
+    return { conversations: [], total: 0, page, limit, working_summary: '' };
+  }
+};
+
 
 /**
  * Fetch generated assets (images & videos) from Asset Archive with pagination.

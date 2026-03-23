@@ -1,6 +1,9 @@
-import { FaXTwitter, FaRegComment, FaRetweet, FaRegHeart, FaShareFromSquare } from "react-icons/fa6"; 
+import { useState } from 'react';
+import { FaXTwitter, FaRegComment, FaRetweet, FaRegHeart, FaShareFromSquare } from "react-icons/fa6";
 import { BsDot } from "react-icons/bs";
 import BaseBlock from './base_block';
+import { ClipboardDocumentIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
+import { CheckIcon } from '@heroicons/react/24/solid';
 
 
 interface TwitterBlockProps {
@@ -27,6 +30,13 @@ export default function TwitterPostBlock({
     retweetsCount = 45,
     likesCount = 120,
 }: TwitterBlockProps) {
+    const [copied, setCopied] = useState(false);
+
+    const handleCopy = async () => {
+        await navigator.clipboard.writeText(contentText);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 1500);
+    };
 
     return (
         <BaseBlock
@@ -34,7 +44,18 @@ export default function TwitterPostBlock({
             title="X"
             content={
                 <div className="px-3 py-3">
-                    <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-4">
+                    <div className="relative bg-white border border-gray-200 rounded-lg shadow-sm p-4">
+                        {/* Copy / Download buttons */}
+                        <div className="absolute top-2 right-2 z-10 flex gap-1">
+                            <button onClick={handleCopy} title="Copy text" className="p-1.5 bg-white/80 backdrop-blur rounded-md shadow-sm hover:bg-white transition-colors">
+                                {copied ? <CheckIcon className="w-3.5 h-3.5 text-emerald-500" /> : <ClipboardDocumentIcon className="w-3.5 h-3.5 text-gray-500" />}
+                            </button>
+                            {mediaUrl && (
+                                <a href={mediaUrl} target="_blank" rel="noopener noreferrer" title="Download media" className="p-1.5 bg-white/80 backdrop-blur rounded-md shadow-sm hover:bg-white transition-colors">
+                                    <ArrowDownTrayIcon className="w-3.5 h-3.5 text-gray-500" />
+                                </a>
+                            )}
+                        </div>
                         <div className="flex space-x-3 ]">
                             {/* Profile Picture */}
                             <img

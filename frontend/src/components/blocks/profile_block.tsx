@@ -1,32 +1,41 @@
 /**
- * ProfileBlock — MemGPT Core Memory UI
+ * ProfileBlock — MemGPT Core Memory UI (4-Block Architecture)
  *
- * Displays and edits the user's persistent profile (Human Block) and
- * brand voice (Persona Block). Changes are saved via the /memory API
- * and persist across sessions.
+ * Displays and edits the user's persistent profile across 4 blocks:
+ *   Human Block    → display_name, handles, extra_fields
+ *   Persona Block  → tone, preferred_styles, avoid_topics, signature_hashtags, content_pillars
+ *   Domain Block   → industry, domain_type, usp, competitors, knowledge, etc.
+ *   Audience Block → target_platforms, default_age_range, segments (AudienceSegment[]), seasonal_peaks, offline_channels
  *
- * Architecture:
- *   Human Block   → display_name, handles, industry, target_platforms
- *   Persona Block → tone, preferred_styles, avoid_topics, signature_hashtags, content_pillars
+ * Changes are saved via the /memory API and persist across sessions.
  */
 
 import { useState } from 'react';
-import type { MemoryState, BrandVoice, UserProfile, CampaignRecord, PerformanceData } from '../../memory';
-import { updateCampaignPerformance } from '../../api';
+import type {
+  MemoryState,
+  HumanBlock,
+  PersonaBlock,
+  DomainBlock,
+  AudienceBlock,
+  AudienceSegment,
+  AudienceTrait,
+} from '../../memory';
+import { useToast } from '../../contexts/ToastContext';
 import {
   UserCircleIcon,
   SparklesIcon,
   CheckIcon,
   PencilIcon,
-  ClockIcon,
-  ChartBarIcon,
+  PlusIcon,
+  XMarkIcon,
+  UserGroupIcon,
 } from '@heroicons/react/24/outline';
-import PerformanceChart from './performance_chart';
 
 interface ProfileBlockProps {
   memory: MemoryState;
   onSave: (updated: MemoryState) => Promise<void>;
   userId: string;
+  initialTab?: 'identity' | 'voice' | 'domain' | 'audience';
 }
 
 // ─── Tag list editor ─────────────────────────────────────────────────
@@ -41,7 +50,7 @@ function TagListEditor({
   tags: string[];
   onChange: (tags: string[]) => void;
   placeholder: string;
-  color?: 'indigo' | 'pink' | 'red' | 'green' | 'yellow';
+  color?: 'indigo' | 'pink' | 'red' | 'green' | 'yellow' | 'amber' | 'teal';
 }) {
   const [input, setInput] = useState('');
 
@@ -51,6 +60,8 @@ function TagListEditor({
     red: 'bg-red-50 text-red-700 border-red-200',
     green: 'bg-green-50 text-green-700 border-green-200',
     yellow: 'bg-yellow-50 text-yellow-700 border-yellow-200',
+    amber: 'bg-amber-50 text-amber-700 border-amber-200',
+    teal: 'bg-teal-50 text-teal-700 border-teal-200',
   };
 
   const addTag = () => {
@@ -163,32 +174,352 @@ function ExtraFieldsEditor({
   );
 }
 
+// ─── Source badge colors ──────────────────────────────────────────────
+const SOURCE_STYLE: Record<string, string> = {
+  confirmed: 'bg-green-50 text-green-700 border-green-200',
+  inferred: 'bg-amber-50 text-amber-700 border-amber-200',
+  discovered: 'bg-purple-50 text-purple-700 border-purple-200',
+};
+
+// ─── Audience Segment Manager ────────────────────────────────────────
+function AudienceTabContent({
+  audience,
+  isEditing,
+  updateAudience,
+}: {
+  audience: AudienceBlock;
+  isEditing: boolean;
+  updateAudience: (patch: Partial<AudienceBlock>) => void;
+}) {
+  const [showNewSegment, setShowNewSegment] = useState(false);
+  const [newSeg, setNewSeg] = useState({ name: '', age_range: '', gender: '', location: '', products: '' });
+  const [addingTraitFor, setAddingTraitFor] = useState<string | null>(null);
+  const [traitKey, setTraitKey] = useState('');
+  const [traitVal, setTraitVal] = useState('');
+
+  const segments = audience.segments ?? [];
+
+  const addSegment = () => {
+    if (!newSeg.name.trim()) return;
+    const seg: AudienceSegment = {
+      segment_id: `seg_${Date.now()}`,
+      name: newSeg.name.trim(),
+      source: 'confirmed',
+      age_range: newSeg.age_range,
+      gender: newSeg.gender,
+      location: newSeg.location,
+      products: newSeg.products ? newSeg.products.split(',').map(s => s.trim()).filter(Boolean) : [],
+      platforms: [],
+      traits: [],
+      notes: '',
+    };
+    updateAudience({ segments: [...segments, seg] });
+    setNewSeg({ name: '', age_range: '', gender: '', location: '', products: '' });
+    setShowNewSegment(false);
+  };
+
+  const removeSegment = (segId: string) => {
+    updateAudience({ segments: segments.filter(s => s.segment_id !== segId) });
+  };
+
+  const addTrait = (segId: string) => {
+    if (!traitKey.trim() || !traitVal.trim()) return;
+    const newTrait: AudienceTrait = { key: traitKey.trim(), value: traitVal.trim(), confidence: 'confirmed' };
+    updateAudience({
+      segments: segments.map(s =>
+        s.segment_id === segId ? { ...s, traits: [...s.traits, newTrait] } : s
+      ),
+    });
+    setTraitKey('');
+    setTraitVal('');
+    setAddingTraitFor(null);
+  };
+
+  const removeTrait = (segId: string, traitIdx: number) => {
+    updateAudience({
+      segments: segments.map(s =>
+        s.segment_id === segId ? { ...s, traits: s.traits.filter((_, i) => i !== traitIdx) } : s
+      ),
+    });
+  };
+
+  return (
+    <div className="space-y-4">
+      {/* Default Age Range */}
+      <div>
+        <label className="block text-xs font-medium text-gray-500 mb-1">Default Age Range</label>
+        {isEditing ? (
+          <input
+            type="text"
+            value={audience.default_age_range || (audience as any).target_age_range || ""}
+            onChange={(e) => updateAudience({ default_age_range: e.target.value })}
+            placeholder="20-35, 18-45..."
+            className="w-full text-sm px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-400"
+          />
+        ) : (
+          <p className="text-sm text-gray-800">{audience.default_age_range || (audience as any).target_age_range || <span className="text-gray-400 italic">Not set</span>}</p>
+        )}
+      </div>
+
+      <TagListEditor
+        label="Target Platforms"
+        tags={audience.target_platforms}
+        onChange={(t) => updateAudience({ target_platforms: t })}
+        placeholder="twitter, instagram, tiktok..."
+        color="indigo"
+      />
+
+      {/* ── Segment Cards ── */}
+      <div>
+        <div className="flex items-center justify-between mb-2">
+          <label className="block text-xs font-medium text-gray-500 uppercase tracking-wider">Audience Segments</label>
+          {isEditing && (
+            <button
+              onClick={() => setShowNewSegment(!showNewSegment)}
+              className="flex items-center gap-1 px-2 py-1 text-xs text-teal-600 bg-teal-50 border border-teal-200 rounded-lg hover:bg-teal-100 transition-colors"
+            >
+              <PlusIcon className="w-3.5 h-3.5" />
+              세그먼트 추가
+            </button>
+          )}
+        </div>
+
+        {/* New Segment Form */}
+        {isEditing && showNewSegment && (
+          <div className="mb-3 p-3 bg-teal-50/50 border border-teal-200 rounded-xl space-y-2">
+            <input
+              type="text"
+              value={newSeg.name}
+              onChange={(e) => setNewSeg(p => ({ ...p, name: e.target.value }))}
+              placeholder="세그먼트 이름 (예: 20대 직장인)"
+              className="w-full text-xs px-2.5 py-1.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-teal-400 bg-white"
+            />
+            <div className="grid grid-cols-3 gap-2">
+              <input
+                type="text"
+                value={newSeg.age_range}
+                onChange={(e) => setNewSeg(p => ({ ...p, age_range: e.target.value }))}
+                placeholder="연령대 (20-30)"
+                className="text-xs px-2.5 py-1.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-teal-400 bg-white"
+              />
+              <input
+                type="text"
+                value={newSeg.gender}
+                onChange={(e) => setNewSeg(p => ({ ...p, gender: e.target.value }))}
+                placeholder="성별"
+                className="text-xs px-2.5 py-1.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-teal-400 bg-white"
+              />
+              <input
+                type="text"
+                value={newSeg.location}
+                onChange={(e) => setNewSeg(p => ({ ...p, location: e.target.value }))}
+                placeholder="지역"
+                className="text-xs px-2.5 py-1.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-teal-400 bg-white"
+              />
+            </div>
+            <input
+              type="text"
+              value={newSeg.products}
+              onChange={(e) => setNewSeg(p => ({ ...p, products: e.target.value }))}
+              placeholder="연관 제품 (쉼표 구분)"
+              className="w-full text-xs px-2.5 py-1.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-teal-400 bg-white"
+            />
+            <div className="flex gap-2">
+              <button onClick={addSegment} className="px-3 py-1.5 text-xs bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors">추가</button>
+              <button onClick={() => setShowNewSegment(false)} className="px-3 py-1.5 text-xs text-gray-500 hover:text-gray-700 transition-colors">취소</button>
+            </div>
+          </div>
+        )}
+
+        {/* Segment Card List */}
+        {segments.length === 0 ? (
+          <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg border border-gray-100">
+            <UserGroupIcon className="w-5 h-5 text-gray-300" />
+            <p className="text-xs text-gray-400 italic">아직 세그먼트가 없습니다. {isEditing ? '위에서 추가하세요.' : '편집 모드에서 추가할 수 있습니다.'}</p>
+          </div>
+        ) : (
+          <div className="space-y-2.5">
+            {segments.map((seg) => (
+              <div key={seg.segment_id || seg.name} className="relative p-3 bg-white border border-gray-200 rounded-xl">
+                {/* Delete button */}
+                {isEditing && (
+                  <button
+                    onClick={() => removeSegment(seg.segment_id)}
+                    className="absolute top-2 right-2 w-5 h-5 flex items-center justify-center text-gray-300 hover:text-red-500 transition-colors"
+                    title="세그먼트 삭제"
+                  >
+                    <XMarkIcon className="w-4 h-4" />
+                  </button>
+                )}
+
+                {/* Name + Source badge */}
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-sm font-semibold text-gray-800">{seg.name}</span>
+                  <span className={`text-[10px] px-1.5 py-0.5 rounded-full border font-medium ${SOURCE_STYLE[seg.source] || SOURCE_STYLE.confirmed}`}>
+                    {seg.source}
+                  </span>
+                </div>
+
+                {/* Demographics row */}
+                <div className="flex flex-wrap gap-x-4 gap-y-1 mb-2">
+                  {seg.age_range && (
+                    <span className="text-xs text-gray-500"><span className="text-gray-400">Age:</span> {seg.age_range}</span>
+                  )}
+                  {seg.gender && (
+                    <span className="text-xs text-gray-500"><span className="text-gray-400">Gender:</span> {seg.gender}</span>
+                  )}
+                  {seg.location && (
+                    <span className="text-xs text-gray-500"><span className="text-gray-400">Location:</span> {seg.location}</span>
+                  )}
+                </div>
+
+                {/* Products chips */}
+                {seg.products.length > 0 && (
+                  <div className="mb-2">
+                    <span className="text-[10px] text-gray-400 uppercase tracking-wider mr-1.5">Products</span>
+                    <div className="flex flex-wrap gap-1 mt-0.5">
+                      {seg.products.map(p => (
+                        <span key={p} className="px-1.5 py-0.5 bg-indigo-50 text-indigo-600 border border-indigo-200 rounded text-[10px]">{p}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Platforms chips */}
+                {seg.platforms.length > 0 && (
+                  <div className="mb-2">
+                    <span className="text-[10px] text-gray-400 uppercase tracking-wider mr-1.5">Platforms</span>
+                    <div className="flex flex-wrap gap-1 mt-0.5">
+                      {seg.platforms.map(p => (
+                        <span key={p} className="px-1.5 py-0.5 bg-sky-50 text-sky-600 border border-sky-200 rounded text-[10px]">{p}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Traits list */}
+                {seg.traits.length > 0 && (
+                  <div className="mb-2">
+                    <span className="text-[10px] text-gray-400 uppercase tracking-wider">Traits</span>
+                    <div className="mt-1 space-y-0.5">
+                      {seg.traits.map((t, ti) => (
+                        <div key={ti} className="flex items-center gap-1.5">
+                          <span className="text-[11px] text-gray-500">{t.key}:</span>
+                          <span className="text-[11px] text-gray-700 font-medium">{t.value}</span>
+                          <span className={`text-[9px] px-1 py-0.5 rounded border ${SOURCE_STYLE[t.confidence] || SOURCE_STYLE.confirmed}`}>
+                            {t.confidence}
+                          </span>
+                          {isEditing && (
+                            <button onClick={() => removeTrait(seg.segment_id, ti)} className="text-gray-300 hover:text-red-400 text-[10px] transition-colors ml-auto">x</button>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Add trait inline */}
+                {isEditing && (
+                  <>
+                    {addingTraitFor === seg.segment_id ? (
+                      <div className="flex gap-1.5 mt-1">
+                        <input
+                          type="text"
+                          value={traitKey}
+                          onChange={(e) => setTraitKey(e.target.value)}
+                          placeholder="Key"
+                          className="w-20 text-[11px] px-2 py-1 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-teal-400 bg-gray-50"
+                        />
+                        <input
+                          type="text"
+                          value={traitVal}
+                          onChange={(e) => setTraitVal(e.target.value)}
+                          onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addTrait(seg.segment_id))}
+                          placeholder="Value"
+                          className="flex-1 text-[11px] px-2 py-1 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-teal-400 bg-gray-50"
+                        />
+                        <button onClick={() => addTrait(seg.segment_id)} className="px-2 py-1 text-[11px] bg-teal-100 text-teal-700 rounded-lg hover:bg-teal-200 transition-colors">OK</button>
+                        <button onClick={() => { setAddingTraitFor(null); setTraitKey(''); setTraitVal(''); }} className="px-2 py-1 text-[11px] text-gray-400 hover:text-gray-600 transition-colors">x</button>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => setAddingTraitFor(seg.segment_id)}
+                        className="flex items-center gap-1 mt-1 text-[10px] text-teal-600 hover:text-teal-700 transition-colors"
+                      >
+                        <PlusIcon className="w-3 h-3" />
+                        Trait 추가
+                      </button>
+                    )}
+                  </>
+                )}
+
+                {/* Notes */}
+                {seg.notes && (
+                  <p className="mt-1.5 text-[11px] text-gray-400 italic">{seg.notes}</p>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <TagListEditor
+        label="Seasonal Peaks"
+        tags={audience.seasonal_peaks}
+        onChange={(t) => updateAudience({ seasonal_peaks: t })}
+        placeholder="Christmas, Summer, Black Friday..."
+        color="amber"
+      />
+
+      <TagListEditor
+        label="Offline Channels"
+        tags={audience.offline_channels}
+        onChange={(t) => updateAudience({ offline_channels: t })}
+        placeholder="Pop-up store, Trade shows..."
+        color="green"
+      />
+    </div>
+  );
+}
+
 // ─── Main ProfileBlock ────────────────────────────────────────────────
-export default function ProfileBlock({ memory, onSave, userId }: ProfileBlockProps) {
+export default function ProfileBlock({ memory, onSave, userId, initialTab = 'identity' }: ProfileBlockProps) {
+  const { showToast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [draft, setDraft] = useState<MemoryState>(memory);
-  const [activeTab, setActiveTab] = useState<'identity' | 'voice' | 'history'>('identity');
-  const [editingCampaignId, setEditingCampaignId] = useState<string | null>(null);
-  const [perfDraft, setPerfDraft] = useState<Record<string, number>>({});
+  const [activeTab, setActiveTab] = useState<'identity' | 'voice' | 'domain' | 'audience'>(initialTab);
 
-  const profile = draft.core_profile;
-  const voice = profile.brand_voice;
+  const human = draft.human_block;
+  const persona = draft.persona_block;
+  const domain = draft.domain_block;
+  const audience = draft.audience_block;
 
-  const updateProfile = (patch: Partial<UserProfile>) => {
+  const updateHuman = (patch: Partial<HumanBlock>) => {
     setDraft((prev) => ({
       ...prev,
-      core_profile: { ...prev.core_profile, ...patch },
+      human_block: { ...prev.human_block, ...patch },
     }));
   };
 
-  const updateVoice = (patch: Partial<BrandVoice>) => {
+  const updatePersona = (patch: Partial<PersonaBlock>) => {
     setDraft((prev) => ({
       ...prev,
-      core_profile: {
-        ...prev.core_profile,
-        brand_voice: { ...prev.core_profile.brand_voice, ...patch },
-      },
+      persona_block: { ...prev.persona_block, ...patch },
+    }));
+  };
+
+  const updateDomain = (patch: Partial<DomainBlock>) => {
+    setDraft((prev) => ({
+      ...prev,
+      domain_block: { ...prev.domain_block, ...patch },
+    }));
+  };
+
+  const updateAudience = (patch: Partial<AudienceBlock>) => {
+    setDraft((prev) => ({
+      ...prev,
+      audience_block: { ...prev.audience_block, ...patch },
     }));
   };
 
@@ -197,6 +528,7 @@ export default function ProfileBlock({ memory, onSave, userId }: ProfileBlockPro
     try {
       await onSave(draft);
       setIsEditing(false);
+      showToast('프로필 저장 완료', 'success');
     } finally {
       setIsSaving(false);
     }
@@ -208,7 +540,7 @@ export default function ProfileBlock({ memory, onSave, userId }: ProfileBlockPro
   };
 
   const isProfileEmpty =
-    !profile.display_name && !profile.industry && !profile.twitter_handle;
+    !human.display_name && !domain.industry && !human.twitter_handle;
 
   return (
     <li className="col-span-2 overflow-hidden rounded-xl border border-indigo-100 bg-gradient-to-br from-indigo-50/40 to-purple-50/20 shadow-sm">
@@ -220,7 +552,7 @@ export default function ProfileBlock({ memory, onSave, userId }: ProfileBlockPro
           </div>
           <div>
             <h3 className="text-sm font-semibold text-gray-800">
-              {profile.display_name || 'Your Brand Profile'}
+              {human.display_name || 'Your Brand Profile'}
             </h3>
             <p className="text-xs text-indigo-500 font-medium">MemGPT · Persistent Memory</p>
           </div>
@@ -270,25 +602,30 @@ export default function ProfileBlock({ memory, onSave, userId }: ProfileBlockPro
         </div>
       )}
 
-      {/* Tabs */}
+      {/* Tabs — 4 sections */}
       <div className="flex border-b border-gray-100 px-5 pt-3">
-        {(['identity', 'voice', 'history'] as const).map((tab) => (
+        {([
+          { key: 'identity' as const, label: '👤 사용자 정보' },
+          { key: 'voice' as const, label: '🎨 브랜드 보이스' },
+          { key: 'domain' as const, label: '🏪 도메인 프로필' },
+          { key: 'audience' as const, label: '🎯 타겟 오디언스' },
+        ]).map((tab) => (
           <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`mr-5 pb-2.5 text-xs font-medium capitalize border-b-2 transition-colors ${
-              activeTab === tab
+            key={tab.key}
+            onClick={() => setActiveTab(tab.key)}
+            className={`mr-5 pb-2.5 text-xs font-medium border-b-2 transition-colors ${
+              activeTab === tab.key
                 ? 'border-indigo-500 text-indigo-600'
                 : 'border-transparent text-gray-400 hover:text-gray-600'
             }`}
           >
-            {tab === 'identity' ? '👤 Identity' : tab === 'voice' ? '🎨 Brand Voice' : '📋 History'}
+            {tab.label}
           </button>
         ))}
       </div>
 
       <div className="px-5 py-4">
-        {/* ── Identity Tab ── */}
+        {/* ── 사용자 정보 Tab (Human Block) ── */}
         {activeTab === 'identity' && (
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
@@ -297,28 +634,13 @@ export default function ProfileBlock({ memory, onSave, userId }: ProfileBlockPro
                 {isEditing ? (
                   <input
                     type="text"
-                    value={profile.display_name}
-                    onChange={(e) => updateProfile({ display_name: e.target.value })}
+                    value={human.display_name}
+                    onChange={(e) => updateHuman({ display_name: e.target.value })}
                     placeholder="Acme Co."
                     className="w-full text-sm px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-400"
                   />
                 ) : (
-                  <p className="text-sm text-gray-800 font-medium">{profile.display_name || <span className="text-gray-400 italic">Not set</span>}</p>
-                )}
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1">Industry</label>
-                {isEditing ? (
-                  <input
-                    type="text"
-                    value={profile.industry}
-                    onChange={(e) => updateProfile({ industry: e.target.value })}
-                    placeholder="SaaS, Fashion, Fitness..."
-                    className="w-full text-sm px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-400"
-                  />
-                ) : (
-                  <p className="text-sm text-gray-800">{profile.industry || <span className="text-gray-400 italic">Not set</span>}</p>
+                  <p className="text-sm text-gray-800 font-medium">{human.display_name || <span className="text-gray-400 italic">Not set</span>}</p>
                 )}
               </div>
 
@@ -327,13 +649,13 @@ export default function ProfileBlock({ memory, onSave, userId }: ProfileBlockPro
                 {isEditing ? (
                   <input
                     type="text"
-                    value={profile.twitter_handle || ''}
-                    onChange={(e) => updateProfile({ twitter_handle: e.target.value || null })}
+                    value={human.twitter_handle || ''}
+                    onChange={(e) => updateHuman({ twitter_handle: e.target.value || null })}
                     placeholder="@mybrand"
                     className="w-full text-sm px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-400"
                   />
                 ) : (
-                  <p className="text-sm text-gray-800">{profile.twitter_handle || <span className="text-gray-400 italic">Not set</span>}</p>
+                  <p className="text-sm text-gray-800">{human.twitter_handle || <span className="text-gray-400 italic">Not set</span>}</p>
                 )}
               </div>
 
@@ -342,51 +664,28 @@ export default function ProfileBlock({ memory, onSave, userId }: ProfileBlockPro
                 {isEditing ? (
                   <input
                     type="text"
-                    value={profile.instagram_handle || ''}
-                    onChange={(e) => updateProfile({ instagram_handle: e.target.value || null })}
+                    value={human.instagram_handle || ''}
+                    onChange={(e) => updateHuman({ instagram_handle: e.target.value || null })}
                     placeholder="@mybrand_official"
                     className="w-full text-sm px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-400"
                   />
                 ) : (
-                  <p className="text-sm text-gray-800">{profile.instagram_handle || <span className="text-gray-400 italic">Not set</span>}</p>
+                  <p className="text-sm text-gray-800">{human.instagram_handle || <span className="text-gray-400 italic">Not set</span>}</p>
                 )}
               </div>
             </div>
 
-            {isEditing && (
-              <TagListEditor
-                label="Target Platforms"
-                tags={profile.target_platforms}
-                onChange={(t) => updateProfile({ target_platforms: t })}
-                placeholder="twitter, instagram, tiktok..."
-                color="indigo"
-              />
-            )}
-
-            {!isEditing && profile.target_platforms.length > 0 && (
-              <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1.5">Target Platforms</label>
-                <div className="flex flex-wrap gap-1.5">
-                  {profile.target_platforms.map((p) => (
-                    <span key={p} className="px-2 py-0.5 bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-full text-xs font-medium">
-                      {p}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-
             {/* Extra fields */}
             {isEditing ? (
               <ExtraFieldsEditor
-                fields={profile.extra_fields ?? {}}
-                onChange={(f) => updateProfile({ extra_fields: f })}
+                fields={human.extra_fields ?? {}}
+                onChange={(f) => updateHuman({ extra_fields: f })}
               />
-            ) : Object.keys(profile.extra_fields ?? {}).length > 0 && (
+            ) : Object.keys(human.extra_fields ?? {}).length > 0 && (
               <div>
                 <label className="block text-xs font-medium text-gray-500 mb-1.5">추가 정보</label>
                 <div className="grid grid-cols-2 gap-x-4 gap-y-1">
-                  {Object.entries(profile.extra_fields ?? {}).map(([k, v]) => (
+                  {Object.entries(human.extra_fields ?? {}).map(([k, v]) => (
                     <div key={k} className="flex items-baseline gap-1.5">
                       <span className="text-[10px] text-gray-400 capitalize shrink-0">{k.replace(/_/g, ' ')}</span>
                       <span className="text-xs text-gray-700 font-medium truncate">{v}</span>
@@ -405,7 +704,7 @@ export default function ProfileBlock({ memory, onSave, userId }: ProfileBlockPro
           </div>
         )}
 
-        {/* ── Brand Voice Tab ── */}
+        {/* ── 브랜드 보이스 Tab (Persona Block) ── */}
         {activeTab === 'voice' && (
           <div className="space-y-5">
             <div>
@@ -413,15 +712,15 @@ export default function ProfileBlock({ memory, onSave, userId }: ProfileBlockPro
               {isEditing ? (
                 <input
                   type="text"
-                  value={voice.tone}
-                  onChange={(e) => updateVoice({ tone: e.target.value })}
+                  value={persona.tone}
+                  onChange={(e) => updatePersona({ tone: e.target.value })}
                   placeholder="casual and witty, professional, bold..."
                   className="w-full text-sm px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-400"
                 />
               ) : (
                 <p className="text-sm text-gray-800">
-                  {voice.tone ? (
-                    <span className="italic">"{voice.tone}"</span>
+                  {persona.tone ? (
+                    <span className="italic">"{persona.tone}"</span>
                   ) : (
                     <span className="text-gray-400 italic">Not defined</span>
                   )}
@@ -431,148 +730,172 @@ export default function ProfileBlock({ memory, onSave, userId }: ProfileBlockPro
 
             <TagListEditor
               label="Preferred Styles"
-              tags={voice.preferred_styles}
-              onChange={(t) => updateVoice({ preferred_styles: t })}
+              tags={persona.preferred_styles}
+              onChange={(t) => updatePersona({ preferred_styles: t })}
               placeholder="Minimalist, Vibrant, Dark..."
               color="indigo"
             />
 
             <TagListEditor
               label="Content Pillars"
-              tags={voice.content_pillars}
-              onChange={(t) => updateVoice({ content_pillars: t })}
+              tags={persona.content_pillars}
+              onChange={(t) => updatePersona({ content_pillars: t })}
               placeholder="Education, Behind-the-scenes..."
               color="green"
             />
 
             <TagListEditor
               label="Signature Hashtags"
-              tags={voice.signature_hashtags}
-              onChange={(t) => updateVoice({ signature_hashtags: t })}
+              tags={persona.signature_hashtags}
+              onChange={(t) => updatePersona({ signature_hashtags: t })}
               placeholder="#BuildInPublic, #YourBrand..."
               color="yellow"
             />
 
             <TagListEditor
               label="Topics to Avoid"
-              tags={voice.avoid_topics}
-              onChange={(t) => updateVoice({ avoid_topics: t })}
+              tags={persona.avoid_topics}
+              onChange={(t) => updatePersona({ avoid_topics: t })}
               placeholder="politics, competitors..."
               color="red"
             />
           </div>
         )}
 
-        {/* ── History Tab ── */}
-        {activeTab === 'history' && (
-          <div className="space-y-3">
-            {memory.campaign_archive.length === 0 ? (
-              <p className="text-sm text-gray-400 italic text-center py-4">
-                No campaigns archived yet. Generate content to build history.
-              </p>
-            ) : (
-              <>
-                <PerformanceChart campaigns={memory.campaign_archive} />
-                <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
-                {[...memory.campaign_archive].reverse().slice(0, 10).map((campaign) => (
-                  <div
-                    key={campaign.campaign_id}
-                    className="p-3 bg-white rounded-lg border border-gray-100 hover:border-indigo-100 transition-colors"
-                  >
-                    <div className="flex items-start justify-between gap-2">
-                      <p className="text-xs font-medium text-gray-700 line-clamp-2">{campaign.goal}</p>
-                      <span className="shrink-0 text-xs text-gray-300 font-mono">#{campaign.campaign_id}</span>
-                    </div>
-                    <div className="mt-1.5 flex flex-wrap gap-1">
-                      {campaign.platforms_used.map((p) => (
-                        <span key={p} className="px-1.5 py-0.5 bg-gray-50 text-gray-500 border border-gray-100 rounded text-[10px]">
-                          {p}
-                        </span>
-                      ))}
-                      {campaign.selected_trend && (
-                        <span className="px-1.5 py-0.5 bg-blue-50 text-blue-500 border border-blue-100 rounded text-[10px]">
-                          #{campaign.selected_trend}
-                        </span>
-                      )}
-                    </div>
-                    {campaign.guideline_summary && (
-                      <p className="mt-1 text-[10px] text-gray-400 line-clamp-1">{campaign.guideline_summary}</p>
-                    )}
-                    <div className="mt-1 flex items-center gap-1 text-[10px] text-gray-300">
-                      <ClockIcon className="w-3 h-3" />
-                      {new Date(campaign.timestamp).toLocaleDateString()}
-                    </div>
-                    {/* Performance stats display */}
-                    {campaign.performance && (
-                      <div className="mt-1.5 grid grid-cols-3 gap-1">
-                        {(['views','clicks','impressions','likes','shares','comments'] as const).map((k) => (
-                          <div key={k} className="text-center">
-                            <p className="text-[10px] font-semibold text-gray-600">{campaign.performance![k].toLocaleString()}</p>
-                            <p className="text-[9px] text-gray-300">{k}</p>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                    {/* Performance edit toggle */}
-                    <button
-                      onClick={() => {
-                        if (editingCampaignId === campaign.campaign_id) {
-                          setEditingCampaignId(null);
-                        } else {
-                          setEditingCampaignId(campaign.campaign_id);
-                          setPerfDraft({
-                            views: campaign.performance?.views ?? 0,
-                            clicks: campaign.performance?.clicks ?? 0,
-                            impressions: campaign.performance?.impressions ?? 0,
-                            likes: campaign.performance?.likes ?? 0,
-                            shares: campaign.performance?.shares ?? 0,
-                            comments: campaign.performance?.comments ?? 0,
-                          });
-                        }
-                      }}
-                      className="mt-1.5 flex items-center gap-1 text-[10px] text-indigo-400 hover:text-indigo-600"
-                    >
-                      <ChartBarIcon className="w-3 h-3" />
-                      {editingCampaignId === campaign.campaign_id ? 'Cancel' : (campaign.performance ? 'Update Performance' : 'Add Performance')}
-                    </button>
-                    {editingCampaignId === campaign.campaign_id && (
-                      <div className="mt-2 space-y-1.5">
-                        <div className="grid grid-cols-2 gap-1">
-                          {(['views','clicks','impressions','likes','shares','comments'] as const).map((k) => (
-                            <div key={k} className="flex flex-col">
-                              <label className="text-[9px] text-gray-400">{k}</label>
-                              <input
-                                type="number"
-                                min={0}
-                                value={perfDraft[k] ?? 0}
-                                onChange={(e) => setPerfDraft((prev) => ({ ...prev, [k]: Number(e.target.value) }))}
-                                className="text-xs px-1.5 py-1 border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-indigo-400"
-                              />
-                            </div>
-                          ))}
-                        </div>
-                        <button
-                          onClick={async () => {
-                            await updateCampaignPerformance(userId, campaign.campaign_id, perfDraft as any);
-                            setEditingCampaignId(null);
-                          }}
-                          className="w-full text-xs py-1 bg-indigo-600 text-white rounded hover:bg-indigo-700"
-                        >
-                          Save Performance
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                ))}
+        {/* ── 도메인 프로필 Tab (Domain Block) ── */}
+        {activeTab === 'domain' && (
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">Industry</label>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    value={domain.industry}
+                    onChange={(e) => updateDomain({ industry: e.target.value })}
+                    placeholder="SaaS, Fashion, Fitness..."
+                    className="w-full text-sm px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-400"
+                  />
+                ) : (
+                  <p className="text-sm text-gray-800">{domain.industry || <span className="text-gray-400 italic">Not set</span>}</p>
+                )}
               </div>
-              </>
-            )}
 
-            <p className="text-[10px] text-gray-300 text-center">
-              Showing last 10 of {memory.campaign_archive.length} campaigns
-            </p>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">Domain Type</label>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    value={domain.domain_type}
+                    onChange={(e) => updateDomain({ domain_type: e.target.value })}
+                    placeholder="B2B, B2C, D2C..."
+                    className="w-full text-sm px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-400"
+                  />
+                ) : (
+                  <p className="text-sm text-gray-800">{domain.domain_type || <span className="text-gray-400 italic">Not set</span>}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">Business Location</label>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    value={domain.business_location}
+                    onChange={(e) => updateDomain({ business_location: e.target.value })}
+                    placeholder="Seoul, New York..."
+                    className="w-full text-sm px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-400"
+                  />
+                ) : (
+                  <p className="text-sm text-gray-800">{domain.business_location || <span className="text-gray-400 italic">Not set</span>}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">Price Range</label>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    value={domain.price_range}
+                    onChange={(e) => updateDomain({ price_range: e.target.value })}
+                    placeholder="$$, Premium, Budget..."
+                    className="w-full text-sm px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-400"
+                  />
+                ) : (
+                  <p className="text-sm text-gray-800">{domain.price_range || <span className="text-gray-400 italic">Not set</span>}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">Operating Hours</label>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    value={domain.operating_hours}
+                    onChange={(e) => updateDomain({ operating_hours: e.target.value })}
+                    placeholder="9AM-6PM, 24/7..."
+                    className="w-full text-sm px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-400"
+                  />
+                ) : (
+                  <p className="text-sm text-gray-800">{domain.operating_hours || <span className="text-gray-400 italic">Not set</span>}</p>
+                )}
+              </div>
+
+              <div className="col-span-2">
+                <label className="block text-xs font-medium text-gray-500 mb-1">USP (Unique Selling Proposition)</label>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    value={domain.usp}
+                    onChange={(e) => updateDomain({ usp: e.target.value })}
+                    placeholder="What makes your brand unique..."
+                    className="w-full text-sm px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-400"
+                  />
+                ) : (
+                  <p className="text-sm text-gray-800">{domain.usp || <span className="text-gray-400 italic">Not set</span>}</p>
+                )}
+              </div>
+            </div>
+
+            <TagListEditor
+              label="Competitors"
+              tags={domain.competitors}
+              onChange={(t) => updateDomain({ competitors: t })}
+              placeholder="Competitor A, Competitor B..."
+              color="amber"
+            />
+
+            {/* Domain extra fields */}
+            {isEditing ? (
+              <ExtraFieldsEditor
+                fields={domain.domain_extra ?? {}}
+                onChange={(f) => updateDomain({ domain_extra: f })}
+              />
+            ) : Object.keys(domain.domain_extra ?? {}).length > 0 && (
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1.5">도메인 추가 정보</label>
+                <div className="grid grid-cols-2 gap-x-4 gap-y-1">
+                  {Object.entries(domain.domain_extra ?? {}).map(([k, v]) => (
+                    <div key={k} className="flex items-baseline gap-1.5">
+                      <span className="text-[10px] text-gray-400 capitalize shrink-0">{k.replace(/_/g, ' ')}</span>
+                      <span className="text-xs text-gray-700 font-medium truncate">{v}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
+
+        {/* ── 타겟 오디언스 Tab (Audience Block) ── */}
+        {activeTab === 'audience' && (
+          <AudienceTabContent
+            audience={audience}
+            isEditing={isEditing}
+            updateAudience={updateAudience}
+          />
+        )}
+
       </div>
     </li>
   );

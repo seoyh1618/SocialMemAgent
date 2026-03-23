@@ -6,7 +6,6 @@
 
 import { useState } from 'react';
 import { useAuth } from '../AuthContext';
-import LoginModal from './LoginModal';
 import {
   SparklesIcon,
   UserCircleIcon,
@@ -16,16 +15,17 @@ import {
   Cog6ToothIcon,
   ArrowRightOnRectangleIcon,
   ChevronRightIcon,
-  BoltIcon,
   CpuChipIcon,
   PhotoIcon,
+  ChatBubbleLeftRightIcon,
+  PresentationChartLineIcon,
 } from '@heroicons/react/24/outline';
 import type { MemoryState } from '../memory';
 
 interface AppSidebarProps {
   memory: MemoryState;
-  activeSection: 'chat' | 'profile' | 'history' | 'memory' | 'creations';
-  onSectionChange: (s: 'chat' | 'profile' | 'history' | 'memory' | 'creations') => void;
+  activeSection: 'chat' | 'profile' | 'history' | 'conversations' | 'memory' | 'creations' | 'behavior';
+  onSectionChange: (s: 'chat' | 'profile' | 'history' | 'conversations' | 'memory' | 'creations' | 'behavior') => void;
   totalCampaigns?: number;
 }
 
@@ -34,25 +34,20 @@ export default function AppSidebar({
   activeSection,
   onSectionChange,
   totalCampaigns = 0,
-}: AppSidebarProps & { activeSection: 'chat' | 'profile' | 'history' | 'memory' | 'creations'; onSectionChange: (s: 'chat' | 'profile' | 'history' | 'memory' | 'creations') => void }) {
-  const { user, isAuthenticated, doLogout } = useAuth();
-  const [showLoginModal, setShowLoginModal] = useState(false);
-  const [loginTab, setLoginTab] = useState<'login' | 'signup'>('login');
+}: AppSidebarProps & { activeSection: 'chat' | 'profile' | 'history' | 'conversations' | 'memory' | 'creations' | 'behavior'; onSectionChange: (s: 'chat' | 'profile' | 'history' | 'conversations' | 'memory' | 'creations' | 'behavior') => void }) {
+  const { user, doLogout } = useAuth();
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
-  const openLogin = (tab: 'login' | 'signup' = 'login') => {
-    setLoginTab(tab);
-    setShowLoginModal(true);
-  };
-
-  const voice = memory.core_profile.brand_voice;
-  const profile = memory.core_profile;
+  const voice = memory.persona_block;
+  const profile = memory.human_block;
 
   const navItems = [
     { id: 'chat' as const, icon: Squares2X2Icon, label: '콘텐츠 생성' },
     { id: 'profile' as const, icon: UserCircleIcon, label: '브랜드 프로필' },
     { id: 'history' as const, icon: ClockIcon, label: '캠페인 히스토리' },
+    { id: 'conversations' as const, icon: ChatBubbleLeftRightIcon, label: '대화 히스토리' },
     { id: 'memory' as const, icon: CpuChipIcon, label: '메모리 맵' },
+    { id: 'behavior' as const, icon: PresentationChartLineIcon, label: 'Behavior Graph' },
     { id: 'creations' as const, icon: PhotoIcon, label: 'Assets' },
   ];
 
@@ -72,9 +67,8 @@ export default function AppSidebar({
           </div>
         </div>
 
-        {/* ─── Auth section ─── */}
-        {isAuthenticated && user ? (
-          /* Logged-in user card */
+        {/* ─── User card ─── */}
+        {user && (
           <div className="px-4 py-4 border-b border-white/10">
             <div className="flex items-center gap-3">
               {user.avatarUrl ? (
@@ -110,31 +104,6 @@ export default function AppSidebar({
               </div>
             </div>
           </div>
-        ) : (
-          /* Guest CTA */
-          <div className="px-4 py-5 border-b border-white/10">
-            <div className="bg-gradient-to-br from-indigo-600/20 to-purple-600/20 border border-indigo-500/20 rounded-xl p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <BoltIcon className="w-4 h-4 text-indigo-400" />
-                <p className="text-xs font-semibold text-indigo-300">영구 메모리 활성화</p>
-              </div>
-              <p className="text-[11px] text-gray-400 mb-3 leading-relaxed">
-                로그인하면 브랜드 톤·스타일·해시태그가 세션을 넘어 기억됩니다
-              </p>
-              <button
-                onClick={() => openLogin('login')}
-                className="w-full py-2 text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 rounded-lg transition-colors"
-              >
-                로그인
-              </button>
-              <button
-                onClick={() => openLogin('signup')}
-                className="w-full mt-1.5 py-2 text-xs font-medium text-gray-300 hover:text-white border border-white/10 hover:border-white/20 rounded-lg transition-colors"
-              >
-                회원가입
-              </button>
-            </div>
-          </div>
         )}
 
         {/* ─── Navigation ─── */}
@@ -143,25 +112,24 @@ export default function AppSidebar({
           {navItems.map(({ id, icon: Icon, label }) => (
             <button
               key={id}
-              onClick={() => isAuthenticated ? onSectionChange(id) : openLogin('login')}
+              onClick={() => onSectionChange(id)}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all ${
-                activeSection === id && isAuthenticated
+                activeSection === id
                   ? 'bg-indigo-600 text-white font-medium shadow-lg shadow-indigo-900/30'
                   : 'text-gray-400 hover:text-white hover:bg-white/5'
               }`}
             >
               <Icon className="w-4.5 h-4.5 shrink-0" />
               <span className="flex-1 text-left">{label}</span>
-              {activeSection === id && isAuthenticated && (
+              {activeSection === id && (
                 <ChevronRightIcon className="w-3.5 h-3.5" />
               )}
-              {!isAuthenticated && <span className="text-[10px] text-gray-600">🔒</span>}
             </button>
           ))}
         </nav>
 
-        {/* ─── Memory snapshot (logged in only) ─── */}
-        {isAuthenticated && (
+        {/* ─── Memory snapshot ─── */}
+        {user && (
           <div className="px-4 py-4 border-t border-white/10">
             <p className="text-[10px] font-semibold text-gray-600 uppercase tracking-widest mb-2.5">
               브랜드 메모리 스냅샷
@@ -210,55 +178,37 @@ export default function AppSidebar({
           </div>
         )}
 
-        {/* ─── Bottom: logout / settings ─── */}
+        {/* ─── Bottom: logout ─── */}
         <div className="px-3 py-3 border-t border-white/10">
-          {isAuthenticated ? (
-            showLogoutConfirm ? (
-              <div className="bg-red-950/50 border border-red-500/20 rounded-xl p-3">
-                <p className="text-xs text-red-300 mb-2">로그아웃 하시겠습니까?</p>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => { doLogout(); setShowLogoutConfirm(false); }}
-                    className="flex-1 py-1.5 text-xs bg-red-600 hover:bg-red-500 rounded-lg transition-colors"
-                  >
-                    로그아웃
-                  </button>
-                  <button
-                    onClick={() => setShowLogoutConfirm(false)}
-                    className="flex-1 py-1.5 text-xs text-gray-400 hover:text-white border border-white/10 rounded-lg transition-colors"
-                  >
-                    취소
-                  </button>
-                </div>
+          {showLogoutConfirm ? (
+            <div className="bg-red-950/50 border border-red-500/20 rounded-xl p-3">
+              <p className="text-xs text-red-300 mb-2">로그아웃 하시겠습니까?</p>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => { doLogout(); setShowLogoutConfirm(false); }}
+                  className="flex-1 py-1.5 text-xs bg-red-600 hover:bg-red-500 rounded-lg transition-colors"
+                >
+                  로그아웃
+                </button>
+                <button
+                  onClick={() => setShowLogoutConfirm(false)}
+                  className="flex-1 py-1.5 text-xs text-gray-400 hover:text-white border border-white/10 rounded-lg transition-colors"
+                >
+                  취소
+                </button>
               </div>
-            ) : (
-              <button
-                onClick={() => setShowLogoutConfirm(true)}
-                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-500 hover:text-red-400 hover:bg-red-950/30 transition-all"
-              >
-                <ArrowRightOnRectangleIcon className="w-4.5 h-4.5" />
-                <span>로그아웃</span>
-              </button>
-            )
+            </div>
           ) : (
             <button
-              onClick={() => openLogin('login')}
-              className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-sm text-indigo-400 hover:text-white hover:bg-indigo-600 border border-indigo-500/30 transition-all"
+              onClick={() => setShowLogoutConfirm(true)}
+              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-500 hover:text-red-400 hover:bg-red-950/30 transition-all"
             >
               <ArrowRightOnRectangleIcon className="w-4.5 h-4.5" />
-              <span>로그인</span>
+              <span>로그아웃</span>
             </button>
           )}
         </div>
       </aside>
-
-      {/* Login Modal */}
-      {showLoginModal && (
-        <LoginModal
-          defaultTab={loginTab}
-          onClose={() => setShowLoginModal(false)}
-        />
-      )}
     </>
   );
 }

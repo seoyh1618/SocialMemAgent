@@ -8,6 +8,29 @@ load_dotenv()
 
 logger = logging.getLogger(__name__)
 
+
+def _make_request(url: str, headers: dict, params: dict) -> dict:
+    """Make an HTTP GET request and return parsed JSON response.
+
+    Returns a dict with 'status' key set to 'Error' on failure.
+    """
+    try:
+        response = requests.get(url, headers=headers, params=params, timeout=10)
+        response.raise_for_status()
+    except requests.exceptions.HTTPError as e:
+        logger.error("HTTP error from Twitter API: status=%s url=%s", e.response.status_code, url)
+        return {"status": "Error", "message": f"HTTP {e.response.status_code} from Twitter API"}
+    except requests.exceptions.RequestException as e:
+        logger.error("Network error calling Twitter API: %s", type(e).__name__)
+        return {"status": "Error", "message": "Network error calling Twitter API"}
+
+    try:
+        return response.json()
+    except json.JSONDecodeError:
+        logger.error("Invalid JSON response from Twitter API url=%s", url)
+        return {"status": "Error", "message": "Invalid JSON response from Twitter API"}
+
+
 def advanced_search(query: str, queryType: str, cursor: str) -> dict:
     """Search for related tweets.
 
@@ -22,26 +45,24 @@ def advanced_search(query: str, queryType: str, cursor: str) -> dict:
         cursor str: Cursor for fetching the next page of results.
     """
     logger.info("Tool: advanced_search | query=%s", query)
-    
-    url = "https://api.twitterapi.io/twitter/tweet/advanced_search"
 
-    # Build the header with api key.
     x_api_key = os.getenv("X_API_KEY")
     if not x_api_key:
-        return {"statue": "Error", "message": "X_API_KEY not specified"}
-    headers = {"X-API-Key": x_api_key}
+        return {"status": "skipped", "message": "X API key not configured. Skipping Twitter search.", "tweets": []}
 
-    # Build the query string.
-    querystring = {
-        "query": query,
-        "queryType": queryType,
-        "cursor": cursor
-    }
+    try:
+        url = "https://api.twitterapi.io/twitter/tweet/advanced_search"
+        headers = {"X-API-Key": x_api_key}
+        querystring = {"query": query, "queryType": queryType, "cursor": cursor}
+        result = _make_request(url, headers, querystring)
+        if result.get("status") == "Error":
+            logger.warning("Twitter advanced_search failed: %s", result.get("message"))
+            return {"status": "skipped", "message": f"Twitter API unavailable: {result.get('message', 'unknown error')}. Skipping.", "tweets": []}
+        return result
+    except Exception as e:
+        logger.warning("Twitter advanced_search exception: %s", e)
+        return {"status": "skipped", "message": f"Twitter API error: {e}. Skipping.", "tweets": []}
 
-    # Get response from server.
-    response = requests.request("GET", url, headers=headers, params=querystring)
-
-    return response.text
 
 def get_trends():
     """
@@ -54,30 +75,35 @@ def get_trends():
         The list of trends (sorted from most popular to less popular).
     """
     logger.info("Tool: get_trends")
-    url = "https://api.twitterapi.io/twitter/trends"
 
-    # Use the default woeid as US.
-    querystring = {"woeid":"23424977"}
-
-    # Build the header with api key.
     x_api_key = os.getenv("X_API_KEY")
     if not x_api_key:
-        return {"statue": "Error", "message": "X_API_KEY not specified"}
-    headers = {"X-API-Key": x_api_key}
+        return {"status": "skipped", "message": "X API key not configured. Skipping trends.", "trends": []}
 
-    response = requests.request("GET", url, headers=headers, params=querystring)
+    try:
+        url = "https://api.twitterapi.io/twitter/trends"
+        querystring = {"woeid": "23424977"}
+        headers = {"X-API-Key": x_api_key}
 
-    data = json.loads(response.text)
-    trends = data.get("trends", [])[:20]
-    trend_names = []
-    for item in trends:
-        trend = item.get("trend", {})
-        name = trend.get("name")
-        if name is not None:
-            trend_names.append(name)
+        data = _make_request(url, headers, querystring)
+        if data.get("status") == "Error":
+            logger.warning("Twitter get_trends failed: %s", data.get("message"))
+            return {"status": "skipped", "message": f"Twitter API unavailable: {data.get('message', 'unknown error')}. Skipping.", "trends": []}
 
-    logger.debug("get_trends result: %s", trend_names)
-    return trend_names
+        trends = data.get("trends", [])[:20]
+        trend_names = []
+        for item in trends:
+            trend = item.get("trend", {})
+            name = trend.get("name")
+            if name is not None:
+                trend_names.append(name)
+
+        logger.debug("get_trends result: %s", trend_names)
+        return trend_names
+    except Exception as e:
+        logger.warning("Twitter get_trends exception: %s", e)
+        return {"status": "skipped", "message": f"Twitter API error: {e}. Skipping.", "trends": []}
+
 
 def get_user_posts(userId: str, cursor: str):
     """
@@ -92,22 +118,18 @@ def get_user_posts(userId: str, cursor: str):
         has_next_page boolean: Whether there is a next page. (Every page has 20 tweets)
         cursor str: Cursor for fetching the next page of results.
     """
+    logger.info("Tool: get_user_posts | userId=%s", userId)
     url = "https://api.twitterapi.io/twitter/tweet/advanced_search"
 
-    # Build the header with api key.
     x_api_key = os.getenv("X_API_KEY")
     if not x_api_key:
-        return {"statue": "Error", "message": "X_API_KEY not specified"}
+        return {"status": "Error", "message": "X_API_KEY not specified"}
     headers = {"X-API-Key": x_api_key}
 
-    # Build the query string.
     querystring = {
         "query": f"from:{userId}",
         "queryType": "Latest",
         "cursor": cursor
     }
 
-    # Get response from server.
-    response = requests.request("GET", url, headers=headers, params=querystring)
-
-    return response.text
+    return _make_request(url, headers, querystring)

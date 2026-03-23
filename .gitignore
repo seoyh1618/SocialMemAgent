@@ -2,3 +2,33 @@
 .env
 .env.*
 ./agents/src/agents/.env
+
+# Claude/Agent skills (symlinks, machine-specific)
+agents/.agent/
+agents/.agents/
+agents/.claude/
+agents/skills/
+agents/skills-lock.json
+.agent/
+.agents/
+.claude/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Node
+node_modules/
+dist/
+
+# DB
+*.db
+
+# Poetry
+poetry.lock
+
+# IDE
+.vscode/
+.idea/*.Zone.Identifier
+run.txt

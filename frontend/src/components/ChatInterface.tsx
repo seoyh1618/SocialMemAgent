@@ -1,7 +1,8 @@
 import { PaperAirplaneIcon, ChevronRightIcon, ChevronDownIcon, PhotoIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { useState, useRef, useEffect } from 'react';
 import { sendMessageToAgentSSE, extractTextFromResponse } from '../api';
-import type { Base, SocialMediaAgentOutput } from '../base';
+import type { Base, SocialMediaAgentOutput, OrchestratorChannelOutput } from '../base';
+import { channelsToBase } from '../base';
 import type { Dispatch, SetStateAction } from 'react';
 import ReactMarkdown, { type Components } from 'react-markdown';
 
@@ -106,7 +107,7 @@ export default function ChatInterface({ userId, sessionId, base, setBase, should
     setIsLoading(true);
     formattedBaseContent.current = ''; // Reset for new message
 
-    // Send message to agent
+    // Send message to agent (pass attached image if present)
     const cleanup = sendMessageToAgentSSE(
       messageText,
       base,      // Use prop
@@ -115,14 +116,41 @@ export default function ChatInterface({ userId, sessionId, base, setBase, should
       {
         // callbacks below
         onMemoryToolCall: (toolName) => {
+          // Show memory tool calls as both memory_ref chip AND reasoning step
           setMessages(prev => {
-            const lastMessage = prev[prev.length - 1];
+            const newMessages = [...prev];
+            // Add to memory ref chip
+            const lastMessage = newMessages[newMessages.length - 1];
             if (lastMessage?.role === 'memory_ref') {
               const updatedMemRef = { ...lastMessage, content: lastMessage.content + ', ' + toolName };
-              return [...prev.slice(0, -1), updatedMemRef];
+              newMessages[newMessages.length - 1] = updatedMemRef;
+            } else {
+              newMessages.push({ role: 'memory_ref', content: toolName, isComplete: true });
             }
-            const newMemRefMessage: Message = { role: 'memory_ref', content: toolName, isComplete: true };
-            return [...prev, newMemRefMessage];
+            // Also add to reasoning
+            const lastReasoning = newMessages.findLastIndex(m => m.role === 'reasoning');
+            if (lastReasoning >= 0 && !newMessages[lastReasoning].isComplete) {
+              const updated = { ...newMessages[lastReasoning] };
+              const displayName = toolName.replace(/^memory_/, '').replace(/_/g, ' ');
+              updated.content += `\n🔍 **메모리 조회**: ${displayName}`;
+              newMessages[lastReasoning] = updated;
+            }
+            return newMessages;
+          });
+        },
+        onToolCall: (toolName, author) => {
+          // Show all tool calls (strategists, generators, etc.) in reasoning
+          setMessages(prev => {
+            const newMessages = [...prev];
+            const lastReasoning = newMessages.findLastIndex(m => m.role === 'reasoning');
+            if (lastReasoning >= 0 && !newMessages[lastReasoning].isComplete) {
+              const updated = { ...newMessages[lastReasoning] };
+              const displayName = toolName.replace(/_/g, ' ');
+              const agentLabel = author?.replace(/_/g, ' ').replace(/agent/gi, '').trim() || '';
+              updated.content += `\n⚡ **${agentLabel ? agentLabel + ' → ' : ''}${displayName}**`;
+              newMessages[lastReasoning] = updated;
+            }
+            return newMessages;
           });
         },
         onData: (response) => {
@@ -133,66 +161,42 @@ export default function ChatInterface({ userId, sessionId, base, setBase, should
           if (!text || lastChunkId.current === chunkId) return;
           lastChunkId.current = chunkId;
 
-          if (author === "social_media_branding_content_agent") {
+          // Determine if this is a "final" agent response or intermediate reasoning
+          const isFinalAgent = author === "general_chat_agent" || author === "content_orchestrator";
+          const isReasoning = author?.endsWith("_strategist") ||
+                              author === "idea_generation_agent" ||
+                              author === "image_generation_agent" ||
+                              author === "video_generation_agent" ||
+                              author === "audio_generation_agent" ||
+                              author === "format_agent" ||
+                              author === "response_agent";
+
+          if (isFinalAgent) {
             setMessages(prev => {
               const lastMessage = prev[prev.length - 1];
-              if (lastMessage?.role === 'reasoning' && !lastMessage.isComplete) {
-                const updatedLastMessage = { ...lastMessage, content: lastMessage.content + text };
-                return [...prev.slice(0, -1), updatedLastMessage];
-              }
-              return prev;
-            });
-          } else if (author === "format_agent") {
-            // The format_agent streams the final JSON state.
-            // We accumulate it in the 'base_content' message.
-            formattedBaseContent.current += text;
-            setMessages(prev => {
-              const lastMessage = prev[prev.length - 1];
-
-              if (lastMessage?.role === 'reasoning' && !lastMessage.isComplete) {
-                const updatedReasoningMessage = { ...lastMessage, isComplete: true };
-                const newBaseContentMessage: Message = { role: 'base_content', content: text, isComplete: false };
-                return [...prev.slice(0, -1), updatedReasoningMessage, newBaseContentMessage];
-
-              } else if (lastMessage?.role === 'base_content' && !lastMessage.isComplete) {
-                const updatedBaseContentMessage = { ...lastMessage, content: lastMessage.content + text };
-                return [...prev.slice(0, -1), updatedBaseContentMessage];
-              }
-              
-              return prev;
-            });
-          } else if (author === "response_agent") {
-            if (formattedBaseContent.current) {
-              const jsonString = formattedBaseContent.current.replace(/^```json/, "").replace(/```$/, "");
-              try {
-                const agent_output: SocialMediaAgentOutput = JSON.parse(jsonString);
-                if (agent_output.is_updated) {
-                  console.log("Setting base to: ", agent_output.updated_base);
-                  setBase(agent_output.updated_base);
-                }
-              } catch (e) {
-                console.error("Failed to parse base_content from format_agent", e);
-              }
-              // Reset for the next response in the same session.
-              formattedBaseContent.current = '';
-            }
-
-            setMessages(prev => {
-              const lastMessage = prev[prev.length - 1];
-
-              if (lastMessage?.role === 'base_content' && !lastMessage.isComplete) {
-                const updatedBaseContentMessage = { ...lastMessage, isComplete: true };
-                const newAgentMessage: Message = { role: 'agent', content: text, isComplete: false };
-                
-                return [...prev.slice(0, -1), updatedBaseContentMessage, newAgentMessage];
-              } else if (lastMessage?.role === 'agent' && !lastMessage.isComplete) {
+              if (lastMessage?.role === 'agent' && !lastMessage.isComplete) {
                 const updatedAgentMessage = { ...lastMessage, content: lastMessage.content + text };
                 return [...prev.slice(0, -1), updatedAgentMessage];
               }
-              
+              const newAgentMessage: Message = { role: 'agent', content: text, isComplete: false };
+              return [...prev, newAgentMessage];
+            });
+          } else if (isReasoning && text.trim()) {
+            // Show intermediate agent steps as reasoning
+            const stepLabel = author?.replace(/_/g, ' ').replace(/agent|strategist/gi, '').trim() || 'processing';
+            setMessages(prev => {
+              // Find the reasoning placeholder or last reasoning message
+              const lastReasoning = prev.findLastIndex(m => m.role === 'reasoning');
+              if (lastReasoning >= 0 && !prev[lastReasoning].isComplete) {
+                const updated = { ...prev[lastReasoning] };
+                updated.content += `\n**[${stepLabel}]** ${text.substring(0, 200)}${text.length > 200 ? '...' : ''}`;
+                const newMessages = [...prev];
+                newMessages[lastReasoning] = updated;
+                return newMessages;
+              }
               return prev;
             });
-          } 
+          }
         },
         onError: (error) => {
           console.error('Error from agent:', error);
@@ -205,9 +209,65 @@ export default function ChatInterface({ userId, sessionId, base, setBase, should
         onComplete: () => {
           setMessages(prev => {
             const newMessages = [...prev];
+
+            // Mark all reasoning as complete
+            for (const msg of newMessages) {
+              if (msg.role === 'reasoning' && !msg.isComplete) {
+                msg.isComplete = true;
+              }
+            }
+
             const lastMessage = newMessages[newMessages.length - 1];
             if (lastMessage.role === 'agent') {
               lastMessage.isComplete = true;
+
+              // Try to parse orchestrator channels JSON from agent message
+              try {
+                const content = lastMessage.content.trim();
+                // Try direct JSON parse first (entire content is JSON)
+                let parsed: OrchestratorChannelOutput | null = null;
+
+                // Strip markdown code fences if present
+                let jsonStr = content;
+                if (jsonStr.startsWith('```json')) {
+                  jsonStr = jsonStr.replace(/^```json\s*/, '').replace(/\s*```$/, '');
+                } else if (jsonStr.startsWith('```')) {
+                  jsonStr = jsonStr.replace(/^```\s*/, '').replace(/\s*```$/, '');
+                }
+
+                // Try parsing the whole content
+                try {
+                  const obj = JSON.parse(jsonStr);
+                  if (obj.channels && typeof obj.channels === 'object') {
+                    parsed = obj;
+                  }
+                } catch {
+                  // Try finding JSON within mixed content
+                  const braceStart = content.indexOf('{');
+                  const braceEnd = content.lastIndexOf('}');
+                  if (braceStart >= 0 && braceEnd > braceStart) {
+                    try {
+                      const obj = JSON.parse(content.substring(braceStart, braceEnd + 1));
+                      if (obj.channels && typeof obj.channels === 'object') {
+                        parsed = obj;
+                      }
+                    } catch { /* not valid JSON */ }
+                  }
+                }
+
+                if (parsed) {
+                  // Schedule base update outside of setMessages
+                  setTimeout(() => {
+                    setBase(prevBase => channelsToBase(parsed!, prevBase));
+                  }, 0);
+                  // Replace raw JSON with agent_response text only
+                  if (parsed.agent_response) {
+                    lastMessage.content = parsed.agent_response;
+                  }
+                }
+              } catch {
+                // Not a channels JSON — normal text response, do nothing
+              }
             }
             return newMessages;
           });
@@ -235,7 +295,8 @@ export default function ChatInterface({ userId, sessionId, base, setBase, should
       <div className="flex-grow overflow-y-auto p-4 space-y-4 bg-gray-50">
         {messages.map((message, index) => {
           if (message.role === 'reasoning') {
-            const isCollapsed = reasoningCollapsed[index] ?? false;
+            if (!message.content.trim()) return null; // Don't render empty reasoning
+            const isCollapsed = reasoningCollapsed[index] ?? true;
             return (
               <div key={index} className="w-full my-2 text-gray-500">
                 <button
@@ -252,10 +313,13 @@ export default function ChatInterface({ userId, sessionId, base, setBase, should
                   ) : (
                     <ChevronDownIcon className="h-4 w-4 mr-1" />
                   )}
-                  <span>Agent Reasoning</span>
+                  <span>✨ 사고 과정</span>
+                  {!message.isComplete && (
+                    <span className="ml-2 text-xs text-indigo-500 animate-pulse">처리 중...</span>
+                  )}
                 </button>
                 {!isCollapsed && (
-                  <div className="mt-1 p-2 text-sm text-gray-600 border-l-2 border-gray-200 ml-2 pl-2 whitespace-pre-wrap">
+                  <div className="mt-1 p-3 text-sm text-gray-600 border-l-2 border-indigo-200 ml-2 pl-3 whitespace-pre-wrap bg-gray-50 rounded-r-lg">
                     <ReactMarkdown components={markdownComponents}>{message.content}</ReactMarkdown>
                     {!message.isComplete && (
                       <span className="inline-block animate-pulse">▋</span>
