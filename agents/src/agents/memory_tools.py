@@ -1289,15 +1289,53 @@ def memory_collect_performance(
         logger.warning("[PERFORMANCE] 🔴 Failed to re-embed campaign '%s': %s", campaign_id, e)
     logger.info("[PERFORMANCE] ⚡ Qdrant re-embed: %s", "success" if _reembed_ok else "fail")
 
+    # ── [Phase 2] Performance Impact Score — propagate to referenced memories ──
+    _LEVEL_IMPACT = {"low": 0.5, "medium": 1.0, "high": 2.0, "viral": 3.0, "": 0.0}
+    _impact_delta = _LEVEL_IMPACT.get(engagement_level, 0.0)
+    if _impact_delta > 0 and target_record.referenced_memories:
+        ref_map = {c.campaign_id: c for c in memory.campaign_archive}
+        for ref_id in target_record.referenced_memories:
+            ref_campaign = ref_map.get(ref_id)
+            if ref_campaign:
+                ref_campaign.impact_score = getattr(ref_campaign, 'impact_score', 0.0) + _impact_delta
+                logger.info("[IMPACT] ⚡ Campaign %s impact_score += %.1f (from %s performance)", ref_id, _impact_delta, campaign_id)
+
+    # ── [Phase 2] Temporal Intelligence — update monthly_performance ──
+    _month = getattr(target_record, 'month', 0) or 0
+    if _month > 0:
+        mp = memory.monthly_performance
+        month_key = str(_month)
+        if month_key not in mp:
+            mp[month_key] = {"count": 0, "high": 0, "medium": 0, "low": 0}
+        mp[month_key]["count"] = mp[month_key].get("count", 0) + 1
+        mp[month_key][engagement_level] = mp[month_key].get(engagement_level, 0) + 1
+
+    # ── [Phase 2] Product Intelligence — update product_archive if product linked ──
+    _product_name = target_record.goal  # goal often contains product name
+    if memory.product_archive:
+        for prod in memory.product_archive:
+            if prod.name and prod.name.lower() in _product_name.lower():
+                if campaign_id not in prod.related_campaigns:
+                    prod.related_campaigns.append(campaign_id)
+                prod.total_campaigns = len(prod.related_campaigns)
+                if engagement_level in ("high", "viral"):
+                    for plat in target_record.platforms_used:
+                        prod.best_platform = plat  # latest high-performing platform
+                prod.avg_engagement = engagement_level
+                prod.last_updated = _now_iso()
+                logger.info("[PRODUCT] ⚡ Updated product '%s' with campaign %s", prod.name, campaign_id)
+                break
+
     _save_memory(tool_context, memory)
     logger.info(
-        "[PERFORMANCE] 🟢 Performance recorded | best_platform=%s, graph_updated=true",
-        best_platform or "N/A",
+        "[PERFORMANCE] 🟢 Performance recorded | best_platform=%s, graph_updated=true, impact_propagated=%d",
+        best_platform or "N/A", len(target_record.referenced_memories),
     )
     return (
         f"[Performance Recorded] Campaign '{campaign_id}': "
         f"engagement={engagement_level}, best_platform={best_platform or 'N/A'}. "
-        f"Behavior graph updated. Embedding refreshed."
+        f"Behavior graph updated. Embedding refreshed. "
+        f"Impact score propagated to {len(target_record.referenced_memories)} referenced memories."
     )
 
 
@@ -1487,6 +1525,23 @@ def memory_archive_campaign(
     """
     memory = _load_memory(tool_context)
 
+    # [Phase 2] Auto-extract month/season from current timestamp
+    from datetime import datetime as _dt
+    _now = _dt.utcnow()
+    _month = _now.month
+    _season_map = {1: "winter", 2: "winter", 3: "spring", 4: "spring", 5: "spring",
+                   6: "summer", 7: "summer", 8: "summer", 9: "fall", 10: "fall",
+                   11: "fall", 12: "winter"}
+
+    # [Phase 2] Collect referenced campaign IDs from state (set by orchestrator during search)
+    _referenced = []
+    try:
+        _refs = tool_context.state.get("_referenced_campaign_ids", [])
+        if isinstance(_refs, list):
+            _referenced = [str(r) for r in _refs[:10]]
+    except Exception:
+        pass
+
     record = CampaignRecord(
         campaign_id=str(uuid.uuid4())[:8],
         timestamp=_now_iso(),
@@ -1497,6 +1552,9 @@ def memory_archive_campaign(
         guideline_summary=guideline_summary,
         platforms_used=platforms_used or [],
         performance_notes=performance_notes,
+        month=_month,
+        season=_season_map.get(_month, ""),
+        referenced_memories=_referenced,
     )
     logger.info(
         "[CAMPAIGN] 🔵 Archiving campaign | id=%s, goal=\"%s\", platforms=%s",
@@ -1633,6 +1691,13 @@ def memory_search_campaigns(
     if not matches:
         return json.dumps({"message": "No relevant past campaigns found.", "results": []})
 
+    # [Phase 2] Store referenced campaign IDs in state for Performance Impact Score tracking
+    try:
+        tool_context.state["_referenced_campaign_ids"] = [m["campaign_id"] for m in matches]
+    except Exception:
+        pass
+
+    _save_memory(tool_context, memory)  # Save access_count updates
     return json.dumps({"results": matches, "count": len(matches)}, ensure_ascii=False)
 
 
@@ -2415,6 +2480,50 @@ def build_memory_context_block(memory: MemoryState, user_query: str = "") -> str
                 proactive_lines.append(f"      성공요인: {worked}")
             proactive_lines.append("  → 위 캠페인의 성공 요소를 활용한 변형 캠페인을 사용자에게 제안하세요")
 
+    # ── [Phase 2] Temporal Intelligence — 월별 성과 요약 ──────────────
+    temporal_lines: list[str] = []
+    if memory.monthly_performance:
+        from datetime import datetime as _dt_now
+        current_month = _dt_now.utcnow().month
+        _season_map = {1: "winter", 2: "winter", 3: "spring", 4: "spring", 5: "spring",
+                       6: "summer", 7: "summer", 8: "summer", 9: "fall", 10: "fall",
+                       11: "fall", 12: "winter"}
+        current_season = _season_map.get(current_month, "")
+        temporal_lines.append(f"  현재: {current_month}월 ({current_season})")
+
+        # Find best performing months
+        best_month = max(memory.monthly_performance.items(),
+                         key=lambda x: x[1].get("high", 0), default=None)
+        if best_month and best_month[1].get("high", 0) > 0:
+            temporal_lines.append(f"  최고 성과 월: {best_month[0]}월 (high: {best_month[1]['high']}건)")
+
+        # Current month stats
+        cm_data = memory.monthly_performance.get(str(current_month), {})
+        if cm_data.get("count", 0) > 0:
+            temporal_lines.append(f"  이번 달: {cm_data['count']}건 캠페인")
+
+        # Same season past campaigns
+        season_campaigns = [c for c in memory.campaign_archive
+                           if getattr(c, 'season', '') == current_season and c.performance]
+        if season_campaigns:
+            temporal_lines.append(f"  같은 시즌 과거 캠페인: {len(season_campaigns)}건 (성과 데이터 있음)")
+            temporal_lines.append("  → 현재 시즌에 맞는 과거 성공 전략을 우선 적용하세요.")
+
+    # ── [Phase 2] Product Intelligence — 제품별 성과 요약 ──────────────
+    product_lines: list[str] = []
+    if memory.product_archive:
+        product_lines.append(f"  등록 제품: {len(memory.product_archive)}개")
+        for prod in memory.product_archive[:5]:
+            line = f"    • {prod.name}"
+            if prod.best_platform:
+                line += f" | 최적 채널: {prod.best_platform}"
+            if prod.avg_engagement:
+                line += f" | 참여도: {prod.avg_engagement}"
+            if prod.total_campaigns > 0:
+                line += f" | 캠페인 {prod.total_campaigns}건"
+            product_lines.append(line)
+        product_lines.append("  → 제품별 과거 성과를 참조하여 채널/콘텐츠 전략을 최적화하세요.")
+
     # ── Performance pending (session-start trigger) ───────────────────
     pending = [p for p in memory.performance_pending if p.ask_count < 2]
     pending_lines = []
@@ -2518,10 +2627,16 @@ def build_memory_context_block(memory: MemoryState, user_query: str = "") -> str
     # --- Apply budget to trimmable sections (trim lowest priority first) ---
     # Order: recall (highest) → behavior → trend → pending → archival (lowest)
     # We allocate greedily: measure each section, trim if over budget.
+    # [Phase 2] Build temporal and product sections
+    sec_temporal = "\n▶ TEMPORAL INTELLIGENCE (Season & Timing)\n" + "\n".join(temporal_lines) if temporal_lines else ""
+    sec_product = "\n▶ PRODUCT INTELLIGENCE (Per-Product Performance)\n" + "\n".join(product_lines) if product_lines else ""
+
     trimmable_sections = [
         ("recall", sec_recall),
         ("behavior", sec_behavior),
         ("trend", sec_trend),
+        ("temporal", sec_temporal),
+        ("product", sec_product),
         ("proactive", sec_proactive),
         ("pending", sec_pending),
         ("archival", sec_archival),
@@ -2558,10 +2673,18 @@ def build_memory_context_block(memory: MemoryState, user_query: str = "") -> str
         ]
 
     # --- Assemble final output in display order ---
+    # Temporal/Product sections are strings, need to split into lines for assembly
+    def _sec_to_lines(sec):
+        if isinstance(sec, str):
+            return sec.split("\n") if sec.strip() else []
+        return sec or []
+
     lines = [
         *core_lines,
         *trimmed.get("behavior", []),
         *trimmed.get("trend", []),
+        *_sec_to_lines(trimmed.get("temporal", "")),
+        *_sec_to_lines(trimmed.get("product", "")),
         *trimmed.get("recall", []),
         *trimmed.get("archival", []),
         *trimmed.get("proactive", []),

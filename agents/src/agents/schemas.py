@@ -350,6 +350,24 @@ class CampaignRecord(BaseModel):
         default=None,
         description="Structured performance data collected via periodic user prompts."
     )
+    # [Phase 2] Performance Impact Score — 이 캠페인 생성 시 참조된 메모리 ID 목록
+    referenced_memories: List[str] = Field(
+        default_factory=list,
+        description="IDs of campaigns/conversations referenced when creating this campaign. Used to compute impact_score."
+    )
+    impact_score: float = Field(
+        default=0.0,
+        description="Performance Impact Score — how much this campaign's referenced memories contributed to high performance. Auto-computed from feedback."
+    )
+    # [Phase 2] Temporal Relevance — 캠페인의 월/시즌 정보
+    month: int = Field(
+        default=0,
+        description="Month (1-12) when this campaign was created. Auto-extracted from timestamp."
+    )
+    season: str = Field(
+        default="",
+        description="Season tag: 'spring'/'summer'/'fall'/'winter'. Auto-set from month."
+    )
 
 
 class GeneratedAsset(BaseModel):
@@ -369,6 +387,23 @@ class GeneratedAsset(BaseModel):
         default=None,
         description="Structured performance data for this asset."
     )
+
+
+class ProductRecord(BaseModel):
+    """[Phase 2] Product Intelligence — 제품/서비스별 마케팅 성과 축적."""
+    product_id: str = Field(description="Unique product identifier (auto-generated).")
+    name: str = Field(description="Product name (e.g., '두바이 쫀득 쿠키').")
+    category: str = Field(default="", description="Product category (e.g., '디저트', '빵').")
+    price: str = Field(default="", description="Price info if known.")
+    features: List[str] = Field(default_factory=list, description="Key features (e.g., ['쫀득한 식감', '프리미엄']).")
+    related_campaigns: List[str] = Field(default_factory=list, description="Campaign IDs that promoted this product.")
+    best_platform: str = Field(default="", description="Most effective platform for this product.")
+    best_content_type: str = Field(default="", description="Most effective content type (image/video/text).")
+    total_campaigns: int = Field(default=0, description="Number of campaigns for this product.")
+    avg_engagement: str = Field(default="", description="Average engagement level across campaigns.")
+    seasonal_peak: str = Field(default="", description="Best performing season for this product.")
+    created_at: str = Field(default="", description="ISO-8601 first mention timestamp.")
+    last_updated: str = Field(default="", description="ISO-8601 last update timestamp.")
 
 
 class RecallEntry(BaseModel):
@@ -537,6 +572,15 @@ class MemoryState(BaseModel):
     performance_pending: List[PerformancePendingRequest] = Field(
         default_factory=list,
         description="[Performance Queue] Campaigns awaiting performance data collection. Agent asks user at session start or periodically."
+    )
+    product_archive: List[ProductRecord] = Field(
+        default_factory=list,
+        description="[Phase 2 / Product Intelligence] Product/service catalog with per-product marketing performance."
+    )
+    # [Phase 2] Temporal Intelligence — 월별 성과 집계
+    monthly_performance: dict = Field(
+        default_factory=dict,
+        description="Monthly campaign performance aggregates: {'3': {'count': 5, 'avg_engagement': 'high', 'top_product': '쿠키'}}."
     )
     total_campaigns: int = Field(default=0, description="Total number of campaigns generated.")
     last_updated: str = Field(
