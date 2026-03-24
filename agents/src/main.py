@@ -120,6 +120,24 @@ class MemoryStatePatch(BaseModel):
     last_updated: Optional[str] = None
 
 
+# ─── Debug: Log SSE state_delta from frontend ─────────────────────────────
+_SSE_LOG_PATH = str(Path(__file__).parent.parent / "sse_delta_debug.log")
+
+@app.post("/debug/log_delta")
+async def debug_log_delta(request: Request):
+    """Frontend sends state_delta here for debugging."""
+    import datetime as _dt
+    body = await request.json()
+    try:
+        with open(_SSE_LOG_PATH, "a", encoding="utf-8") as f:
+            f.write(f"\n[{_dt.datetime.now().isoformat()}] FRONTEND state_delta:\n")
+            f.write(json.dumps(body, ensure_ascii=False, indent=2)[:500])
+            f.write("\n")
+    except Exception:
+        pass
+    return {"ok": True}
+
+
 @app.post("/auth/signup")
 async def auth_signup(req: SignupRequest):
     """Register a new user. Returns the user profile on success."""
@@ -141,13 +159,12 @@ async def auth_signup(req: SignupRequest):
     created_at = datetime.now(timezone.utc).isoformat()
 
     try:
-        conn = sqlite3.connect(AUTH_DB_PATH)
-        conn.execute(
-            "INSERT INTO users (user_id, username, email, password_hash, display_name, avatar_url, created_at) VALUES (?,?,?,?,?,?,?)",
-            (user_id, username, email, _hash_password(req.password), display_name, avatar_url, created_at),
-        )
-        conn.commit()
-        conn.close()
+        with sqlite3.connect(AUTH_DB_PATH, timeout=10) as conn:
+            conn.execute(
+                "INSERT INTO users (user_id, username, email, password_hash, display_name, avatar_url, created_at) VALUES (?,?,?,?,?,?,?)",
+                (user_id, username, email, _hash_password(req.password), display_name, avatar_url, created_at),
+            )
+            conn.commit()
     except sqlite3.IntegrityError:
         raise HTTPException(status_code=409, detail="이미 사용 중인 아이디 또는 이메일입니다.")
 

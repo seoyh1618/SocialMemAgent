@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import type { Base, SocialMediaAgentOutput, OrchestratorChannelOutput } from '../base';
 import { channelsToBase } from '../base';
-import { startNewSession, sendMessageToAgentSSE, extractTextFromResponse, loadUserMemory, saveUserMemory, syncSessionMemory, fetchUserAssets } from '../api';
+import { startNewSession, sendMessageToAgentSSE, extractTextFromResponse, loadUserMemory, saveUserMemory, syncSessionMemory, fetchUserAssets, TOOL_DISPLAY_NAMES } from '../api';
 import {
   PaperAirplaneIcon,
   ChevronRightIcon,
@@ -213,6 +213,88 @@ const LandingPage = () => {
   const makeTimestamp = () =>
     new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
 
+  // ── Summarize tool response for rich reasoning display ──
+  const summarizeToolResponse = (toolName: string, response: unknown): string | null => {
+    try {
+      // response can be a string (JSON) or object
+      const resp = typeof response === 'string' ? JSON.parse(response) : response;
+      if (!resp || typeof resp !== 'object') return null;
+      const r = resp as Record<string, unknown>;
+
+      switch (toolName) {
+        case 'memory_get_core_profile': {
+          const parts: string[] = [];
+          if (r.display_name) parts.push(`브랜드: ${r.display_name}`);
+          if (r.industry) parts.push(`업종: ${r.industry}`);
+          if (r.tone) parts.push(`톤: ${r.tone}`);
+          const domain = r.domain_block as Record<string, unknown> | undefined;
+          if (domain?.usp) parts.push(`USP: ${String(domain.usp).slice(0, 50)}`);
+          if (domain?.business_location) parts.push(`위치: ${domain.business_location}`);
+          return parts.length > 0 ? parts.join(' | ') : '프로필 정보를 확인했습니다.';
+        }
+        case 'memory_search_campaigns': {
+          const results = r.results as Array<Record<string, unknown>> | undefined;
+          if (!results || !Array.isArray(results)) return '검색 결과 없음';
+          if (results.length === 0) return '유사 캠페인 없음 → 새로운 전략으로 접근합니다.';
+          const summaries = results.slice(0, 2).map((c, i) => {
+            const goal = String(c.goal || '').slice(0, 40);
+            const perf = c.performance as Record<string, unknown> | undefined;
+            const worked = (perf?.what_worked as string[])?.slice(0, 2)?.join(', ') || '';
+            const failed = (perf?.what_failed as string[])?.slice(0, 2)?.join(', ') || '';
+            let s = `[${i + 1}] ${goal}`;
+            if (worked) s += ` ✓ ${worked}`;
+            if (failed) s += ` ✗ ${failed}`;
+            return s;
+          });
+          return `${results.length}건 검색됨\n    ${summaries.join('\n    ')}`;
+        }
+        case 'memory_get_behavior_insights': {
+          const parts: string[] = [];
+          if (r.overall_best_platform) parts.push(`최고 플랫폼: ${r.overall_best_platform}`);
+          const worked = r.top_what_worked as string[] | undefined;
+          const failed = r.top_what_failed as string[] | undefined;
+          if (worked?.length) parts.push(`효과적: ${worked.slice(0, 3).join(', ')}`);
+          if (failed?.length) parts.push(`개선필요: ${failed.slice(0, 3).join(', ')}`);
+          if (parts.length === 0) return '성과 데이터 축적 중 — 첫 캠페인 이후 분석됩니다.';
+          return parts.join(' | ') + '\n  → 이 인사이트를 콘텐츠에 반영합니다.';
+        }
+        case 'memory_get_assets': {
+          const assets = r.assets as Array<Record<string, unknown>> | undefined;
+          if (!assets?.length) return '등록된 에셋 없음';
+          const userUploaded = assets.filter(a => a.is_user_uploaded).length;
+          return `에셋 ${assets.length}개 (사용자 업로드: ${userUploaded}개)`;
+        }
+        case 'memory_archive_campaign': {
+          const cid = r.campaign_id || '';
+          return `캠페인이 Archival Memory에 저장됨 (ID: ${String(cid).slice(0, 8)})`;
+        }
+        case 'memory_record_generated_asset': {
+          const atype = r.asset_type || 'image';
+          const platform = r.platform || '';
+          return `${atype} 에셋 저장 완료${platform ? ` (${platform})` : ''}`;
+        }
+        case 'memory_collect_performance': {
+          return 'Behavior Graph 자동 갱신 완료';
+        }
+        default: {
+          // Strategist results
+          if (toolName.endsWith('_strategist')) {
+            const channel = toolName.replace('_strategist', '').replace(/_/g, ' ');
+            // response is usually a string for AgentTool
+            if (typeof response === 'string' && response.length > 20) {
+              const preview = response.slice(0, 120).replace(/\n/g, ' ');
+              return `${channel} 채널 콘텐츠 생성 완료: ${preview}...`;
+            }
+            return `${channel} 채널 콘텐츠 생성 완료`;
+          }
+          return null;
+        }
+      }
+    } catch {
+      return null;
+    }
+  };
+
   const sendMessage = (messageText: string, currentBase: Base, addUserBubble = true) => {
     if (!messageText.trim() || isLoading || !sessionId) return;
 
@@ -223,44 +305,72 @@ const LandingPage = () => {
     setMessages(prev => [
       ...prev,
       ...(addUserBubble ? [{ role: 'user' as const, content: messageText, isComplete: true, timestamp: ts }] : []),
+      { role: 'agent' as const, content: '__TYPING__', isComplete: false },
     ]);
     setIsLoading(true);
 
     finalTextRef.current = null;
 
+    // Track tools seen in this turn to avoid duplicates
+    const seenToolsRef = new Set<string>();
+
     sendMessageToAgentSSE(messageText, currentBase, userId, sessionId, {
       onStateDelta: (delta) => {
         const ctxPct = delta['_ctx_usage_pct'];
         if (typeof ctxPct === 'number') setCtxUsagePct(ctxPct);
-
-        // _last_tool_detail has richer info, fallback to _last_tool
-        const toolDetail = delta['_last_tool_detail'];
+        // _last_tool from real state_delta (if ADK sends it)
         const tool = delta['_last_tool'];
-        const stepText = typeof toolDetail === 'string' ? toolDetail
-                       : typeof tool === 'string' ? tool : null;
-
         if (typeof tool === 'string') {
           setLastTool(tool);
-          isToolActiveRef.current = true;
         }
+      },
+      onToolCall: (toolName: string) => {
+        if (toolName === 'transfer_to_agent') return;
+        if (seenToolsRef.has(toolName)) return;
+        seenToolsRef.add(toolName);
 
-        if (stepText) {
-          setMessages(prev => {
-            const last = prev[prev.length - 1];
-            // Append to existing reasoning
-            if (last?.role === 'reasoning' && !last.isComplete) {
-              const updated = [...prev];
-              const msg = { ...updated[updated.length - 1] };
-              const stepNum = (msg.content.match(/\[Step \d+\]/g) || []).length + 1;
-              msg.content += (msg.content ? '\n' : '') + `[Step ${stepNum}]: ${stepText}`;
-              updated[updated.length - 1] = msg;
-              return updated;
-            }
-            // Create new reasoning (don't block over active agent message)
-            if (last?.role === 'agent' && !last.isComplete) return prev;
-            return [...prev, { role: 'reasoning' as const, content: `[Step 1]: ${stepText}`, isComplete: false }];
-          });
-        }
+        const displayName = TOOL_DISPLAY_NAMES[toolName] || toolName.replace(/_/g, ' ');
+        setLastTool(displayName);
+        isToolActiveRef.current = true;
+
+        setMessages(prev => {
+          const last = prev[prev.length - 1];
+
+          // Replace __TYPING__ with reasoning
+          if (last?.role === 'agent' && last.content === '__TYPING__') {
+            return [...prev.slice(0, -1),
+                    { role: 'reasoning' as const, content: `[Step 1]: ${displayName}`, isComplete: false }];
+          }
+
+          if (last?.role === 'reasoning' && !last.isComplete) {
+            const updated = [...prev];
+            const msg = { ...updated[updated.length - 1] };
+            const stepNum = (msg.content.match(/\[Step \d+\]/g) || []).length + 1;
+            msg.content += (msg.content ? '\n\n' : '') + `[Step ${stepNum}]: ${displayName}`;
+            updated[updated.length - 1] = msg;
+            return updated;
+          }
+          if (last?.role === 'agent' && !last.isComplete) return prev;
+          return [...prev, { role: 'reasoning' as const, content: `[Step 1]: ${displayName}`, isComplete: false }];
+        });
+      },
+      onToolResponse: (toolName: string, response: unknown) => {
+        // Append tool result summary to the last reasoning step
+        if (toolName === 'transfer_to_agent' || toolName === 'memory_append_recall') return;
+        const summary = summarizeToolResponse(toolName, response);
+        if (!summary) return;
+
+        setMessages(prev => {
+          const last = prev[prev.length - 1];
+          if (last?.role === 'reasoning' && !last.isComplete) {
+            const updated = [...prev];
+            const msg = { ...updated[updated.length - 1] };
+            msg.content += `\n  → ${summary}`;
+            updated[updated.length - 1] = msg;
+            return updated;
+          }
+          return prev;
+        });
       },
       onFinalText: (text, _author) => {
         finalTextRef.current = text;
@@ -277,11 +387,16 @@ const LandingPage = () => {
         setMessages(prev => {
           const last = prev[prev.length - 1];
 
-          // If reasoning is active and tools were running → close reasoning, start agent message
+          // If reasoning is active → close reasoning, start agent message
           if (last?.role === 'reasoning' && !last.isComplete) {
             isToolActiveRef.current = false;
             return [...prev.slice(0, -1), { ...last, isComplete: true },
                     { role: 'agent' as const, content: text, isComplete: false }];
+          }
+
+          // Replace typing indicator with actual text
+          if (last?.role === 'agent' && last.content === '__TYPING__') {
+            return [...prev.slice(0, -1), { ...last, content: text }];
           }
 
           // Append to existing agent message
@@ -872,6 +987,25 @@ const LandingPage = () => {
                           <ReactMarkdown components={markdownComponents}>{msg.content}</ReactMarkdown>
                         </div>
                         {msg.timestamp && <span className="text-[10px] text-gray-400 mt-1">{msg.timestamp}</span>}
+                      </div>
+                    );
+                  }
+
+                  // Typing indicator
+                  if (msg.content === '__TYPING__') {
+                    return (
+                      <div key={idx} className="my-4">
+                        <div className="flex items-start gap-3">
+                          <div className="shrink-0 w-7 h-7 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center mt-0.5">
+                            <SparklesIcon className="w-4 h-4 text-white" />
+                          </div>
+                          <div className="flex items-center gap-2 text-sm text-gray-400 py-2">
+                            <span className="flex space-x-1">
+                              {[0, 150, 300].map(d => <span key={d} className="w-2 h-2 bg-indigo-400 rounded-full animate-bounce" style={{ animationDelay: `${d}ms` }} />)}
+                            </span>
+                            <span>에이전트가 응답을 준비하고 있습니다...</span>
+                          </div>
+                        </div>
                       </div>
                     );
                   }

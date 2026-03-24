@@ -62,13 +62,14 @@ interface SSECallbacks {
   onStateDelta?: (delta: Record<string, unknown>) => void;
   onMemoryToolCall?: (toolName: string) => void;
   onToolCall?: (toolName: string, author: string) => void;
+  onToolResponse?: (toolName: string, response: unknown) => void;
   onFinalText?: (text: string, author: string) => void;
   onError?: (error: Error) => void;
   onComplete?: () => void;
 }
 
 // Display names for tools — mirrors backend _TOOL_DISPLAY_NAMES
-const TOOL_DISPLAY_NAMES: Record<string, string> = {
+export const TOOL_DISPLAY_NAMES: Record<string, string> = {
   advanced_search: 'Twitter 검색 중',
   get_trends: '트렌드 조회 중',
   generate_image: '이미지 생성 중',
@@ -181,8 +182,16 @@ export const sendMessageToAgentSSE = (
           // Extract state_delta from ALL events (partial and non-partial)
           // This is critical for real-time reasoning step display
           const anyDelta = data.actions?.state_delta;
-          if (anyDelta && Object.keys(anyDelta).length > 0 && callbacks.onStateDelta) {
-            callbacks.onStateDelta(anyDelta as Record<string, unknown>);
+          if (anyDelta && Object.keys(anyDelta).length > 0) {
+            console.log('[SSE state_delta]', JSON.stringify(anyDelta));
+            // Debug: send to server for file logging
+            fetch(`${API_BASE_URL}/debug/log_delta`, {
+              method: 'POST', headers: {'Content-Type': 'application/json'},
+              body: JSON.stringify({ delta: anyDelta, author: data.author, partial: data.partial, ts: Date.now() }),
+            }).catch(() => {});
+            if (callbacks.onStateDelta) {
+              callbacks.onStateDelta(anyDelta as Record<string, unknown>);
+            }
           }
 
           if (data.partial == true) {
@@ -192,31 +201,30 @@ export const sendMessageToAgentSSE = (
             // Non-partial = final event. Do NOT send to onData (would duplicate streamed text).
             // Instead, store final text for onComplete to use for JSON parsing.
             const hasText = data.content?.parts?.some(p => p.text);
-            const author = data.author;
-            const isFinalAgent = author === "general_chat_agent" || author === "content_orchestrator";
-            if (hasText && isFinalAgent) {
-              // Store the final complete text for JSON extraction in onComplete
+            const author = data.author || '';
+            if (hasText) {
+              // ADK 1.20+: author is always "agents", so store all final texts for JSON parsing
               const finalText = data.content.parts.map(p => p.text || '').join('');
               if (callbacks.onFinalText) {
-                callbacks.onFinalText(finalText, author || '');
+                callbacks.onFinalText(finalText, author);
               }
             }
 
-            // Handle tool calls — also synthesize _last_tool for reasoning display
+            // Handle tool calls — notify for reasoning display
             const fnCall = data.content?.parts?.[0]?.functionCall;
             if (fnCall) {
               if (callbacks.onMemoryToolCall && MEMORY_TOOLS.has(fnCall.name)) {
                 callbacks.onMemoryToolCall(fnCall.name);
               }
-              // Notify all tool calls for reasoning display
               if (callbacks.onToolCall) {
                 callbacks.onToolCall(fnCall.name, author || '');
               }
-              // Synthesize _last_tool state_delta so reasoning steps update in real-time
-              if (callbacks.onStateDelta) {
-                const displayName = TOOL_DISPLAY_NAMES[fnCall.name] || fnCall.name.replace(/_/g, ' ');
-                callbacks.onStateDelta({ '_last_tool': displayName } as Record<string, unknown>);
-              }
+            }
+
+            // Handle tool RESPONSES — extract result summaries for rich reasoning
+            const fnResponse = data.content?.parts?.[0]?.functionResponse;
+            if (fnResponse && callbacks.onToolResponse) {
+              callbacks.onToolResponse(fnResponse.name, fnResponse.response);
             }
           }
         } catch (error) {

@@ -540,6 +540,18 @@ Ask exactly ONE natural follow-up question per turn (priority order):
     When user responds with results, call `memory_collect_performance` to record them.
     Do NOT skip this step — it is required every turn, not just once per session.
 
+    ⚠️ CRITICAL — UNPROMPTED PERFORMANCE FEEDBACK:
+    If the user VOLUNTARILY mentions campaign results (e.g., "좋아요 300개", "반응 좋았어요",
+    "해시태그가 약했어요", "댓글이 많았어"), you MUST:
+    1. Identify which campaign they're referring to (search with memory_search_campaigns if needed)
+    2. Call `memory_collect_performance` with the extracted data:
+       - engagement_level: "high"/"medium"/"low" based on their description
+       - what_worked: extract positive elements they mentioned
+       - what_failed: extract negative elements they mentioned
+       - likes/comments/impressions: extract numbers if mentioned
+    3. This updates the Behavior Graph automatically
+    NEVER just acknowledge feedback with text only — ALWAYS call the tool.
+
 Only ask if the field is genuinely missing — do NOT ask again if it's already in memory.
 Keep the question casual and conversational, woven naturally into your response.
 

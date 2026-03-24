@@ -423,6 +423,327 @@ _TOOL_DISPLAY_NAMES: dict[str, str] = {
 _HEARTBEAT_MEMORY_SEARCH_TOOLS = {"memory_search_campaigns", "memory_search_conversations"}
 
 
+def _build_rich_step_detail(tool_name: str, display: str, args: dict, tool_response) -> str:
+    """도구별 풍부한 사고 과정 설명을 생성합니다."""
+    lines = [display]
+
+    try:
+        resp = tool_response if isinstance(tool_response, dict) else {}
+        resp_str = tool_response if isinstance(tool_response, str) else ""
+
+        # ── 메모리: 프로필 조회 ──
+        if tool_name == "memory_get_core_profile":
+            name = resp.get("display_name", "")
+            industry = resp.get("industry", "")
+            tone = resp.get("tone", "")
+            platforms = resp.get("target_platforms", [])
+            if name:
+                lines.append(f"  브랜드: {name}")
+            if industry:
+                lines.append(f"  업종: {industry}")
+            if tone:
+                lines.append(f"  브랜드 톤: {tone}")
+            if platforms:
+                lines.append(f"  활성 채널: {', '.join(platforms)}")
+            domain_type = resp.get("domain_type", "")
+            usp = resp.get("usp", "")
+            if domain_type:
+                lines.append(f"  도메인: {domain_type}")
+            if usp:
+                lines.append(f"  USP: {usp[:80]}")
+            if len(lines) == 1:
+                lines.append("  프로필 데이터가 아직 없습니다. 대화를 통해 수집합니다.")
+
+        # ── 메모리: 캠페인 검색 ──
+        elif tool_name == "memory_search_campaigns":
+            query = args.get("query", "")
+            results = resp.get("results", [])
+            if query:
+                lines.append(f"  검색 키워드: \"{query}\"")
+            if isinstance(results, list):
+                lines.append(f"  검색 결과: {len(results)}건")
+                for i, r in enumerate(results[:3]):
+                    if isinstance(r, dict):
+                        goal = r.get("goal", "")
+                        perf = r.get("performance", {})
+                        worked = perf.get("what_worked", []) if isinstance(perf, dict) else []
+                        failed = perf.get("what_failed", []) if isinstance(perf, dict) else []
+                        line = f"    [{i+1}] {goal[:50]}"
+                        if worked:
+                            line += f" | 효과적: {', '.join(str(w)[:30] for w in worked[:2])}"
+                        if failed:
+                            line += f" | 개선필요: {', '.join(str(f)[:30] for f in failed[:2])}"
+                        lines.append(line)
+                if not results:
+                    lines.append("  이전 유사 캠페인이 없습니다. 새로운 전략으로 접근합니다.")
+
+        # ── 메모리: 행동 인사이트 ──
+        elif tool_name == "memory_get_behavior_insights":
+            bp = resp.get("overall_best_platform", "")
+            worked = resp.get("worked_freq", [])
+            failed = resp.get("failed_freq", [])
+            if bp:
+                lines.append(f"  최고 성과 플랫폼: {bp}")
+            if worked:
+                lines.append(f"  효과적 요소: {', '.join(str(w) for w in worked[:3])}")
+            if failed:
+                lines.append(f"  개선 필요 요소: {', '.join(str(f) for f in failed[:3])}")
+            if not bp and not worked:
+                lines.append("  성과 데이터가 아직 없습니다. 첫 캠페인 이후 축적됩니다.")
+            else:
+                lines.append("  → 이 인사이트를 반영하여 콘텐츠를 최적화합니다.")
+
+        # ── 메모리: 에셋 조회 ──
+        elif tool_name == "memory_get_assets":
+            assets = resp.get("assets", [])
+            if isinstance(assets, list) and assets:
+                user_uploaded = [a for a in assets if isinstance(a, dict) and a.get("is_user_uploaded")]
+                generated = [a for a in assets if isinstance(a, dict) and not a.get("is_user_uploaded")]
+                lines.append(f"  총 {len(assets)}개 에셋 (사용자 업로드: {len(user_uploaded)}, 생성: {len(generated)})")
+                if user_uploaded:
+                    lines.append("  → 사용자 업로드 에셋을 우선 참조합니다.")
+            else:
+                lines.append("  등록된 에셋이 없습니다.")
+
+        # ── 채널 Strategist ──
+        elif tool_name.endswith("_strategist"):
+            channel = tool_name.replace("_strategist", "").replace("_", " ").title()
+            goal = args.get("goal", args.get("request", ""))
+            if goal:
+                lines.append(f"  요청: {str(goal)[:80]}")
+            if resp_str:
+                # AgentTool은 문자열로 결과 반환
+                preview = resp_str[:200].replace("\n", " ").strip()
+                lines.append(f"  결과: {preview}")
+                if len(resp_str) > 200:
+                    lines[-1] += "..."
+            lines.append(f"  → {channel} 채널 특성에 맞춰 콘텐츠 생성 완료")
+
+        # ── 아이디어 생성 ──
+        elif tool_name == "idea_generation_agent":
+            goal = args.get("goal", args.get("request", ""))
+            if goal:
+                lines.append(f"  주제: {str(goal)[:80]}")
+            if resp_str:
+                preview = resp_str[:150].replace("\n", " ").strip()
+                lines.append(f"  생성된 아이디어: {preview}...")
+            lines.append("  → 텍스트/이미지 프롬프트 생성 완료")
+
+        # ── 이미지 생성 ──
+        elif tool_name in ("generate_image", "image_generation_agent"):
+            prompt = args.get("img_prompt", args.get("prompt", args.get("request", "")))
+            channel = args.get("channel", "")
+            if channel:
+                lines.append(f"  채널: {channel}")
+            if prompt:
+                lines.append(f"  프롬프트: {str(prompt)[:100]}...")
+            if resp_str and "http" in resp_str:
+                lines.append("  → 이미지 생성 및 업로드 완료")
+            elif isinstance(resp, dict) and resp.get("url"):
+                lines.append("  → 이미지 생성 및 업로드 완료")
+
+        # ── 캠페인 저장 ──
+        elif tool_name == "memory_archive_campaign":
+            goal = args.get("goal", "")
+            platforms = args.get("platforms_used", [])
+            cid = resp.get("campaign_id", "")
+            if goal:
+                lines.append(f"  캠페인 목표: {str(goal)[:60]}")
+            if platforms:
+                lines.append(f"  대상 플랫폼: {', '.join(platforms)}")
+            if cid:
+                lines.append(f"  캠페인 ID: {cid}")
+            lines.append("  → 캠페인이 Archival Memory에 저장되었습니다.")
+
+        # ── 에셋 저장 ──
+        elif tool_name == "memory_record_generated_asset":
+            atype = args.get("asset_type", "")
+            platform = args.get("platform", "")
+            if atype:
+                lines.append(f"  에셋 유형: {atype}")
+            if platform:
+                lines.append(f"  플랫폼: {platform}")
+            lines.append("  → 에셋이 Asset Archive에 저장되었습니다.")
+
+        # ── 성과 수집 ──
+        elif tool_name == "memory_collect_performance":
+            cid = args.get("campaign_id", "")
+            engagement = args.get("engagement_level", "")
+            worked = args.get("what_worked", [])
+            failed = args.get("what_failed", [])
+            if cid:
+                lines.append(f"  캠페인: {cid}")
+            if engagement:
+                lines.append(f"  참여도: {engagement}")
+            if worked:
+                lines.append(f"  효과적: {', '.join(str(w) for w in worked)}")
+            if failed:
+                lines.append(f"  개선필요: {', '.join(str(f) for f in failed)}")
+            lines.append("  → Behavior Graph 자동 갱신 완료")
+
+        # ── 대화 검색 ──
+        elif tool_name == "memory_search_conversations":
+            query = args.get("query", "")
+            results = resp.get("results", [])
+            if query:
+                lines.append(f"  검색 키워드: \"{query}\"")
+            if isinstance(results, list):
+                lines.append(f"  관련 대화: {len(results)}건")
+                for i, r in enumerate(results[:3]):
+                    if isinstance(r, dict):
+                        content = r.get("content", "")[:60]
+                        role = r.get("role", "")
+                        lines.append(f"    [{i+1}] ({role}) {content}")
+                if results:
+                    lines.append("  → 이전 대화 맥락을 참조하여 콘텐츠에 반영합니다.")
+                else:
+                    lines.append("  관련 대화 기록이 없습니다.")
+
+        # ── 최근 캠페인 조회 ──
+        elif tool_name == "memory_get_recent_campaigns":
+            campaigns = resp.get("campaigns", resp.get("results", []))
+            if isinstance(campaigns, list):
+                lines.append(f"  최근 캠페인: {len(campaigns)}건")
+                for i, c in enumerate(campaigns[:3]):
+                    if isinstance(c, dict):
+                        goal = c.get("goal", "")[:40]
+                        plats = c.get("platforms_used", [])
+                        lines.append(f"    [{i+1}] {goal} ({', '.join(plats) if plats else ''})")
+            else:
+                lines.append("  캠페인 기록이 없습니다.")
+
+        # ── Recall 로그 조회 ──
+        elif tool_name == "memory_get_recall_log":
+            entries = resp.get("recall_log", resp.get("entries", []))
+            summary = resp.get("working_summary", "")
+            if isinstance(entries, list):
+                lines.append(f"  최근 대화: {len(entries)}턴")
+                for e in entries[-3:]:
+                    if isinstance(e, dict):
+                        role = e.get("role", "")
+                        content = str(e.get("user_query", e.get("content", "")))[:50]
+                        lines.append(f"    ({role}) {content}")
+            if summary:
+                lines.append(f"  대화 요약: {summary[:80]}...")
+            lines.append("  → 현재 대화 맥락을 확인했습니다.")
+
+        # ── 도메인 프로필 업데이트 ──
+        elif tool_name == "memory_update_domain_profile":
+            updated_fields = [k for k, v in args.items() if v and k != "tool_context"]
+            if updated_fields:
+                lines.append(f"  업데이트 필드: {', '.join(updated_fields)}")
+                for f in updated_fields[:5]:
+                    val = str(args[f])[:60]
+                    lines.append(f"    {f}: {val}")
+            lines.append("  → Domain Profile이 갱신되었습니다.")
+
+        # ── 사용자 프로필 업데이트 ──
+        elif tool_name == "memory_update_user_profile":
+            updated_fields = [k for k, v in args.items() if v and k != "tool_context"]
+            if updated_fields:
+                lines.append(f"  업데이트 필드: {', '.join(updated_fields)}")
+                for f in updated_fields[:5]:
+                    val = str(args[f])[:60]
+                    lines.append(f"    {f}: {val}")
+            lines.append("  → Human Block이 갱신되었습니다.")
+
+        # ── 브랜드 보이스 업데이트 ──
+        elif tool_name == "memory_update_brand_voice":
+            updated_fields = [k for k, v in args.items() if v and k != "tool_context"]
+            if updated_fields:
+                for f in updated_fields[:5]:
+                    val = str(args[f])[:60]
+                    lines.append(f"  {f}: {val}")
+            lines.append("  → Persona Block(브랜드 보이스)이 갱신되었습니다.")
+
+        # ── 도메인 지식 추가 ──
+        elif tool_name == "memory_add_domain_knowledge":
+            key = args.get("key", "")
+            value = args.get("value", "")
+            if key:
+                lines.append(f"  카테고리: {key}")
+            if value:
+                lines.append(f"  내용: {str(value)[:80]}")
+            lines.append("  → 도메인 지식이 학습되었습니다.")
+
+        # ── 첨부 이미지 분석 ──
+        elif tool_name == "analyze_user_image":
+            image_url = args.get("image_url", "")
+            if image_url:
+                lines.append(f"  이미지: {image_url[:60]}...")
+            if resp and isinstance(resp, dict):
+                analysis = resp.get("analysis", resp.get("description", ""))
+                if analysis:
+                    lines.append(f"  분석 결과: {str(analysis)[:120]}")
+            lines.append("  → 사용자 이미지를 분석하여 콘텐츠에 반영합니다.")
+
+        # ── 트렌드 조회 ──
+        elif tool_name in ("get_trends", "advanced_search", "get_youtube_trends",
+                           "get_tiktok_trends", "get_facebook_trends",
+                           "get_linkedin_trends", "get_pinterest_trends",
+                           "get_kakao_trends", "get_threads_trends"):
+            query = args.get("query", args.get("keyword", ""))
+            if query:
+                lines.append(f"  검색어: \"{query}\"")
+            if isinstance(resp, dict):
+                trends = resp.get("trends", resp.get("results", []))
+                if isinstance(trends, list) and trends:
+                    lines.append(f"  트렌드: {len(trends)}건")
+                    for t in trends[:3]:
+                        lines.append(f"    • {str(t)[:60]}")
+                    lines.append("  → 현재 트렌드를 반영하여 콘텐츠를 최적화합니다.")
+                else:
+                    lines.append("  관련 트렌드가 없습니다. 브랜드 고유 전략으로 접근합니다.")
+
+        # ── 컨텍스트 압축 ──
+        elif tool_name == "memory_compress_context":
+            lines.append("  → 컨텍스트 윈도우를 최적화하여 메모리를 효율적으로 관리합니다.")
+
+        # ── Working Summary 업데이트 ──
+        elif tool_name == "memory_update_working_summary":
+            summary = args.get("summary", "")
+            if summary:
+                lines.append(f"  요약: {str(summary)[:100]}...")
+            lines.append("  → 대화 요약이 갱신되었습니다.")
+
+        # ── 오디언스 관련 ──
+        elif tool_name == "memory_update_audience_segment":
+            segment = args.get("segment_name", args.get("name", ""))
+            if segment:
+                lines.append(f"  세그먼트: {segment}")
+            lines.append("  → 타겟 오디언스 정보가 업데이트되었습니다.")
+
+        elif tool_name == "memory_get_audience_segments":
+            segments = resp.get("segments", [])
+            if isinstance(segments, list):
+                lines.append(f"  등록된 세그먼트: {len(segments)}개")
+                for s in segments[:3]:
+                    if isinstance(s, dict):
+                        lines.append(f"    • {s.get('name', s.get('segment_name', ''))}")
+
+        # ── 동영상/오디오 생성 ──
+        elif tool_name in ("generate_video", "video_generation_agent"):
+            lines.append("  → 동영상 콘텐츠를 생성 중입니다.")
+        elif tool_name in ("generate_audio", "audio_generation_agent"):
+            lines.append("  → 오디오/나레이션을 생성 중입니다.")
+        elif tool_name == "assemble_video_with_audio":
+            lines.append("  → 동영상과 오디오를 합성 중입니다.")
+
+        # ── 기타 도구: 간단한 결과 요약 ──
+        else:
+            if resp and isinstance(resp, dict):
+                status_msg = resp.get("status", resp.get("message", ""))
+                if status_msg:
+                    lines.append(f"  결과: {str(status_msg)[:100]}")
+            elif resp_str and len(resp_str) > 5:
+                lines.append(f"  결과: {resp_str[:100]}")
+
+    except Exception as e:
+        logger.debug(f"[_build_rich_step_detail] error: {e}")
+
+    return "\n".join(lines)
+
+
 def _tool_heartbeat(
     tool: BaseTool,
     args: dict,
@@ -449,50 +770,33 @@ def _tool_heartbeat(
     _args_summary = ", ".join(f"{k}={str(v)[:40]}" for k, v in list(args.items())[:3]) if args else "none"
     logger.info("[TOOL] ⚡ %s | status=%s | args_summary=%s", display, status, _args_summary)
 
-    # Provide detailed reasoning step for frontend display
-    result_preview = ""
-    if isinstance(tool_response, dict):
-        if "display_name" in tool_response:
-            extras = []
-            if tool_response.get("industry"): extras.append(f"업종: {tool_response['industry']}")
-            if tool_response.get("tone"): extras.append(f"톤: {tool_response['tone']}")
-            result_preview = f"브랜드: {tool_response['display_name']}"
-            if extras: result_preview += f" ({', '.join(extras)})"
-        elif "results" in tool_response:
-            r = tool_response["results"]
-            if isinstance(r, list):
-                result_preview = f"{len(r)}건 검색됨"
-                if r:
-                    first = r[0]
-                    if isinstance(first, dict):
-                        goal = first.get("goal", first.get("content", ""))
-                        if goal: result_preview += f" — 최근: {str(goal)[:60]}"
-            else:
-                result_preview = str(r)[:100]
-        elif "overall_best_platform" in tool_response:
-            bp = tool_response["overall_best_platform"]
-            worked = tool_response.get("worked_freq", [])[:2]
-            result_preview = f"최고 플랫폼: {bp}"
-            if worked: result_preview += f", 효과적: {', '.join(str(w) for w in worked)}"
-        elif "campaign_id" in tool_response:
-            goal = tool_response.get("goal", "")
-            result_preview = f"캠페인 저장 완료 ({goal[:40]})" if goal else f"캠페인 ID: {tool_response['campaign_id']}"
-        elif "asset_id" in tool_response:
-            atype = tool_response.get("asset_type", "")
-            result_preview = f"에셋 저장 완료 ({atype})" if atype else "에셋 저장 완료"
-        elif "status" in tool_response:
-            result_preview = str(tool_response.get("message", tool_response["status"]))[:100]
-    elif isinstance(tool_response, str):
-        # Strategist AgentTool returns string result — extract first 150 chars
-        clean = tool_response.strip()
-        if len(clean) > 10:
-            result_preview = clean[:150].replace("\n", " ")
-            if len(clean) > 150: result_preview += "..."
-
-    step_detail = f"{display}"
-    if result_preview:
-        step_detail += f" → {result_preview}"
+    # Build rich reasoning step detail for frontend display
+    step_detail = _build_rich_step_detail(tool_name, display, args, tool_response)
     tool_context.state["_last_tool_detail"] = step_detail
+    # Use unique key per tool call to prevent state_delta batching from losing steps
+    import time as _time_mod
+    _step_key = f"_step_{int(_time_mod.time()*1000)}_{tool_name[:20]}"
+    tool_context.state[_step_key] = step_detail
+
+    # ── File logging for debugging SSE/state_delta issues ──
+    import datetime as _dt, os as _os
+    _log_path = _os.path.join(_os.path.dirname(__file__), "..", "..", "heartbeat_debug.log")
+    try:
+        with open(_log_path, "a", encoding="utf-8") as _f:
+            _f.write(f"\n{'='*60}\n")
+            _f.write(f"[{_dt.datetime.now().isoformat()}] TOOL HEARTBEAT\n")
+            _f.write(f"tool_name: {tool_name}\n")
+            _f.write(f"display: {display}\n")
+            _f.write(f"status: {status}\n")
+            _f.write(f"args_keys: {list(args.keys()) if args else 'none'}\n")
+            _f.write(f"response_type: {type(tool_response).__name__}\n")
+            _resp_preview = str(tool_response)[:300] if tool_response else "None"
+            _f.write(f"response_preview: {_resp_preview}\n")
+            _f.write(f"step_detail:\n{step_detail}\n")
+            _f.write(f"state._last_tool: {tool_context.state.get('_last_tool', 'N/A')}\n")
+            _f.write(f"state._last_tool_detail set: YES\n")
+    except Exception:
+        pass
 
     # Accumulate reasoning log — each tool completion adds a step
     # Frontend reads this via state_delta to display progressive reasoning
@@ -608,6 +912,9 @@ Important rules:
             future = pool.submit(_call_nlu)
             response = future.result(timeout=10)  # 10초 타임아웃
 
+        if response is None or not hasattr(response, 'text') or response.text is None:
+            logger.warning("[NLU] Empty response from Gemini")
+            return {}
         raw = response.text.strip()
         # Strip markdown code fences if present
         if raw.startswith("```"):
