@@ -219,15 +219,22 @@ def _inject_core_memory(callback_context: CallbackContext) -> None:
                     len(relevant),
                 )
                 if relevant:
+                    # [MemGPT Usage Frequency] Increment access_count for retrieved conversations
+                    conv_map = {r.conversation_id: r for r in memory.conversation_archive}
+                    for cid, score, payload in relevant[:3]:
+                        if cid in conv_map:
+                            conv_map[cid].access_count = getattr(conv_map[cid], 'access_count', 0) + 1
+
                     lines = ["▶ RELEVANT PAST CONVERSATIONS (auto-retrieved):"]
                     for cid, score, payload in relevant[:3]:
                         role = payload.get("role", "?")
                         content = payload.get("content", "")[:200]
                         ts = payload.get("timestamp", "")[:10]
-                        lines.append(f"  [{ts}] {role}: {content} (relevance: {score:.2f})")
+                        ac = conv_map[cid].access_count if cid in conv_map else 0
+                        lines.append(f"  [{ts}] {role}: {content} (relevance: {score:.2f}, refs: {ac})")
                     lines.append("  ⚡ Use these past interactions to personalize your response.")
                     _past_conv_block = "\n".join(lines)
-                    logger.info("[CORE_INJECT] 📝 Injected %d past conversations into context", len(relevant))
+                    logger.info("[CORE_INJECT] 📝 Injected %d past conversations into context (with access_count)", len(relevant))
         except Exception as e:
             logger.debug("Past conversation retrieval skipped: %s", e)
 

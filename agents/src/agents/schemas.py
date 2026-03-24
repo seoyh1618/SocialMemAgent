@@ -332,6 +332,10 @@ class CampaignRecord(BaseModel):
     campaign_id: str = Field(description="Unique campaign identifier.")
     timestamp: str = Field(description="ISO-8601 creation timestamp.")
     goal: str = Field(description="The campaign goal.")
+    access_count: int = Field(
+        default=0,
+        description="MemGPT Usage Frequency — how many times this campaign was retrieved via search. Higher = more relevant to user's brand."
+    )
     selected_trend: str = Field(default="", description="Trend used in this campaign.")
     target_audiences: List[str] = Field(default_factory=list, description="Audience group names that were targeted.")
     selected_styles: List[str] = Field(default_factory=list, description="Style names used.")
@@ -380,6 +384,10 @@ class RecallEntry(BaseModel):
         default="",
         description="Optional short annotation (e.g., 'User confirmed brand voice update')."
     )
+    access_count: int = Field(
+        default=0,
+        description="MemGPT Usage Frequency — how many times this entry was retrieved/referenced. Higher = more important, preserved during compression."
+    )
 
 
 class ConversationRecord(BaseModel):
@@ -387,6 +395,10 @@ class ConversationRecord(BaseModel):
     conversation_id: str = Field(description="Unique conversation turn identifier.")
     timestamp: str = Field(description="ISO-8601 creation timestamp.")
     role: str = Field(description="'user' or 'agent'.")
+    access_count: int = Field(
+        default=0,
+        description="MemGPT Usage Frequency — retrieval count via semantic search."
+    )
     content: str = Field(description="Message content (up to 1000 chars).")
     session_id: str = Field(default="", description="ADK session ID in which this turn occurred.")
     summary: str = Field(default="", description="Optional short summary annotation of this turn.")

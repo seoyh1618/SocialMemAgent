@@ -209,7 +209,8 @@ def _compact_recall_to_summary(memory: "MemoryState", force: bool = False) -> No
     if not force and total_tokens <= _RECALL_SUMMARISE_TOKEN_THRESHOLD:
         return
 
-    # Select the keep window: newest turns that fit within _RECALL_WINDOW_TOKEN_BUDGET
+    # [MemGPT Usage Frequency] Select keep window with access_count priority.
+    # Two-pass: first keep recent turns (Recency), then rescue high-access overflow (Frequency).
     keep: list = []
     budget = _RECALL_WINDOW_TOKEN_BUDGET
     for entry in reversed(memory.recall_log):
@@ -220,6 +221,27 @@ def _compact_recall_to_summary(memory: "MemoryState", force: bool = False) -> No
         budget -= entry_tokens
 
     overflow = memory.recall_log[: len(memory.recall_log) - len(keep)]
+
+    # Rescue high-frequency entries from overflow (access_count >= 3)
+    # These are entries the user/agent frequently referenced — important for personalization
+    rescued = []
+    remaining_overflow = []
+    for entry in overflow:
+        ac = getattr(entry, 'access_count', 0)
+        if ac >= 3 and budget > 0:
+            entry_tokens = _estimate_tokens(entry.content) + _estimate_tokens(entry.role)
+            if budget - entry_tokens >= 0:
+                rescued.append(entry)
+                budget -= entry_tokens
+                _logger.info("[COMPACT] 🔄 Rescued high-frequency entry (access_count=%d): %s", ac, entry.content[:50])
+                continue
+        remaining_overflow.append(entry)
+
+    # Merge rescued entries back into keep (sorted by timestamp)
+    if rescued:
+        keep = sorted(keep + rescued, key=lambda e: e.timestamp)
+
+    overflow = remaining_overflow
     memory.recall_log = keep
 
     if overflow:
@@ -1578,6 +1600,11 @@ def memory_search_campaigns(
             if any(kw in searchable for kw in query_lower.split()):
                 scored.append((1.0, record))
 
+    # ── [MemGPT Usage Frequency] Increment access_count for retrieved campaigns ──
+    filtered = [(score, r) for score, r in scored[:limit] if score > 0.1]
+    for _score, r in filtered:
+        r.access_count = getattr(r, 'access_count', 0) + 1
+
     matches = [
         {
             "campaign_id": r.campaign_id,
@@ -1589,12 +1616,11 @@ def memory_search_campaigns(
             "guideline_summary": r.guideline_summary,
             "platforms": r.platforms_used,
             "performance_notes": r.performance_notes,
-            # 구조화 성과 데이터 포함 — 에이전트 리즈닝에 활용
             "performance": r.performance.model_dump() if r.performance else None,
             "relevance_score": round(score, 3),
+            "access_count": r.access_count,
         }
-        for score, r in scored[:limit]
-        if score > 0.1  # filter out near-zero similarity
+        for score, r in filtered
     ]
 
     _top_score = round(scored[0][0], 3) if scored else 0.0
@@ -1730,6 +1756,8 @@ def memory_search_conversations(
             for cid, sim, payload in qdrant_results:
                 record = conv_map.get(cid)
                 if record and sim > 0.1:
+                    # [MemGPT Usage Frequency] Increment access_count
+                    record.access_count = getattr(record, 'access_count', 0) + 1
                     results.append({
                         "conversation_id": record.conversation_id,
                         "timestamp": record.timestamp,
@@ -1738,6 +1766,7 @@ def memory_search_conversations(
                         "session_id": record.session_id,
                         "summary": record.summary,
                         "score": round(sim, 4),
+                        "access_count": record.access_count,
                     })
             if results:
                 search_type = "qdrant"
