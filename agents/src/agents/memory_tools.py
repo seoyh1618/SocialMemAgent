@@ -1528,16 +1528,19 @@ def memory_search_campaigns(
     limit: int = 5,
 ) -> str:
     """
-    [MemGPT: Archival Memory READ — Semantic Search]
-    Search past campaigns using Qdrant ANN similarity (text-embedding-004).
-    Language-agnostic: Korean query finds English-stored campaigns and vice versa.
-    Falls back to keyword search if Qdrant is unavailable.
+    [MemGPT: Archival Memory READ — Semantic Similarity Search]
+    Find campaigns SIMILAR TO a specific topic/keyword using vector similarity.
 
-    Use this to leverage past successes, avoid repeated mistakes, and maintain brand consistency.
+    USE THIS TOOL WHEN the user asks:
+    - "봄 시즌 관련 캠페인 찾아줘" (topic-based search)
+    - "비슷한 캠페인 있어?" (similarity search)
+    - "이전에 쿠키 홍보한 적 있어?" (specific product search)
+
+    DO NOT use this for listing ALL campaigns — use memory_get_recent_campaigns instead.
 
     Args:
-        query: Natural language search query (any language).
-               e.g., 'SaaS 제품 런칭', 'fitness video campaign', '인스타그램 패션 홍보'
+        query: Specific topic/keyword to search for (any language).
+               e.g., '두바이 쫀득 쿠키', '봄 시즌 프로모션', '인스타그램 패션 홍보'
         limit: Maximum number of results to return (default 5).
 
     Returns:
@@ -1609,15 +1612,21 @@ def memory_search_campaigns(
 
 def memory_get_recent_campaigns(tool_context: ToolContext, limit: int) -> str:
     """
-    [MemGPT: Recall Memory READ]
-    Retrieve the most recent campaigns to understand recent content patterns.
-    Use this at session start to provide continuity from the last interaction.
+    [MemGPT: Campaign LIST — Time-ordered]
+    List ALL recent campaigns in chronological order with their performance data.
+
+    USE THIS TOOL WHEN the user asks:
+    - "캠페인 보여줘", "이전 캠페인", "캠페인 목록", "성과 보여줘"
+    - "어떤 캠페인 했었지?", "지난번 캠페인"
+    - ANY request to VIEW, LIST, or SHOW campaigns
+
+    DO NOT use memory_search_campaigns for listing — that is for semantic similarity search only.
 
     Args:
-        limit: Number of recent campaigns to retrieve (default 3).
+        limit: Number of recent campaigns to retrieve (default 5).
 
     Returns:
-        JSON list of the most recent campaign records.
+        JSON list of campaign records with goal, platforms, performance data.
     """
     memory = _load_memory(tool_context)
     recent = memory.campaign_archive[-limit:] if memory.campaign_archive else []

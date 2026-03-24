@@ -231,6 +231,22 @@ def _inject_core_memory(callback_context: CallbackContext) -> None:
         except Exception as e:
             logger.debug("Past conversation retrieval skipped: %s", e)
 
+    # ── Debug: Log recall_log contents for context verification ──
+    import datetime as _dt_debug
+    from pathlib import Path as _Path_debug
+    _debug_log_path = str(_Path_debug(__file__).parent / ".." / ".." / "context_debug.log")
+    try:
+        with open(_debug_log_path, "a", encoding="utf-8") as _df:
+            _df.write(f"\n{'='*60}\n")
+            _df.write(f"[{_dt_debug.datetime.now().isoformat()}] INJECT for agent={_agent_name}\n")
+            _df.write(f"user_query: {user_query[:100] if user_query else 'None'}\n")
+            _df.write(f"recall_log entries: {len(memory.recall_log)}\n")
+            for i, entry in enumerate(memory.recall_log[-5:]):
+                _df.write(f"  recall[{i}] ({entry.role}): {entry.user_query[:80] if entry.user_query else entry.agent_response[:80] if entry.agent_response else '?'}\n")
+            _df.write(f"working_summary: {(memory.working_summary or '')[:100]}\n")
+    except Exception:
+        pass
+
     # Core Memory 블록을 state에 기록 — 프롬프트에서 읽어감
     # user_query 전달 → semantic archival hint가 자동 포함됨
     memory_block = build_memory_context_block(memory, user_query=user_query)
@@ -290,6 +306,40 @@ def _inject_core_memory(callback_context: CallbackContext) -> None:
             memory_block = memory_block[:idx] + alert_block + "\n" + memory_block[idx:]
         else:
             memory_block += alert_block
+
+    # ── [Structural Fix] Inject conversation context for agent transitions ──
+    conv_ctx = callback_context.state.get("_conversation_context", "")
+    if conv_ctx:
+        ctx_block = (
+            "\n▶ RECENT CONVERSATION CONTEXT (for continuity across agent transitions)\n"
+            + conv_ctx
+            + "\n  ⚡ Use this context to maintain conversation flow and apply previous feedback."
+        )
+        footer = "════════════════════════════════════════"
+        if footer in memory_block:
+            idx = memory_block.rfind(footer)
+            memory_block = memory_block[:idx] + ctx_block + "\n" + memory_block[idx:]
+        else:
+            memory_block += ctx_block
+
+    # ── [Structural Fix] Auto-performance collection notification ──
+    auto_perf = callback_context.state.get("_auto_performance_collected")
+    if auto_perf:
+        callback_context.state["_auto_performance_collected"] = None
+        perf_block = (
+            f"\n▶ PERFORMANCE AUTO-COLLECTED (previous turn)\n"
+            f"  Campaign: {auto_perf.get('campaign_id', '?')}\n"
+            f"  Engagement: {auto_perf.get('engagement', '?')}\n"
+            f"  What worked: {auto_perf.get('worked', [])}\n"
+            f"  What failed: {auto_perf.get('failed', [])}\n"
+            f"  ⚡ Behavior Graph has been updated. Apply these insights to future content."
+        )
+        footer = "════════════════════════════════════════"
+        if footer in memory_block:
+            idx = memory_block.rfind(footer)
+            memory_block = memory_block[:idx] + perf_block + "\n" + memory_block[idx:]
+        else:
+            memory_block += perf_block
 
     callback_context.state["_memory_block"] = memory_block
     callback_context.state["_last_tool"] = "🧠 메모리 블록 로드 완료"
@@ -887,10 +937,20 @@ Extract the following signals and return ONLY valid JSON (no markdown, no explan
 {{
   "emotions": [list of detected emotional tones — possible values: "positive", "negative", "neutral", "frustrated", "excited", "confused", "satisfied", "disappointed"],
   "decisions": [list of detected user decisions/intent shifts — possible values: "user_decision_detected", "direction_change", "preference_stated", "rejection_stated"],
-  "domains": [list of detected domain signals — possible values: "location_mentioned", "competitor_mentioned", "usp_mentioned", "pricing_mentioned", "target_audience_mentioned", "brand_mentioned"]
+  "domains": [list of detected domain signals — possible values: "location_mentioned", "competitor_mentioned", "usp_mentioned", "pricing_mentioned", "target_audience_mentioned", "brand_mentioned"],
+  "performance_feedback": {{
+    "detected": true/false,
+    "sentiment": "positive"/"negative"/"mixed"/"null",
+    "metrics": {{"likes": number_or_null, "comments": number_or_null, "impressions": number_or_null}},
+    "what_worked": [list of things user said worked well, e.g., "쫀득한 식감 사진"],
+    "what_failed": [list of things user said didn't work, e.g., "해시태그"]
+  }}
 }}
 
 Important rules:
+- PERFORMANCE FEEDBACK detection: If user mentions campaign results like "좋아요 300개",
+  "반응 좋았어", "해시태그가 약했어", "댓글 많았어", "성과가 좋았어", "별로였어" →
+  set performance_feedback.detected = true and extract all relevant info.
 - Handle negation carefully: "별로 좋지 않아" means NEGATIVE (not positive), "not bad" means mildly positive
 - "별로" alone is negative; "좋지 않아" is negative; combinations reinforce negativity
 - Context reversal: "처음엔 좋았는데 지금은 별로야" → negative (current state matters more)
@@ -924,10 +984,12 @@ Important rules:
         import json
         signals = json.loads(raw.strip())
         # Validate structure
+        perf_raw = signals.get("performance_feedback", {})
         result = {
             "emotions": [str(e) for e in signals.get("emotions", [])],
             "decisions": [str(d) for d in signals.get("decisions", [])],
             "domains": [str(d) for d in signals.get("domains", [])],
+            "performance_feedback": perf_raw if isinstance(perf_raw, dict) and perf_raw.get("detected") else None,
         }
         return result
     except concurrent.futures.TimeoutError:
@@ -1001,9 +1063,96 @@ def _auto_save_working_summary(callback_context: CallbackContext) -> None:
             if nlu["domains"]:
                 parts.append(f"domain:{','.join(nlu['domains'])}")
                 callback_context.state["_pending_domain_signals"] = nlu["domains"]
+
+            # ── [Structural Fix] Auto-collect performance feedback ──
+            # If NLU detects performance feedback, automatically call memory_collect_performance
+            # This does NOT rely on LLM tool selection — it's guaranteed at code level.
+            perf_fb = nlu.get("performance_feedback")
+            if perf_fb and perf_fb.get("detected"):
+                logger.info("[RECALL_SAVE] 🎯 Performance feedback detected! Auto-collecting...")
+                parts.append("performance_feedback_detected")
+                try:
+                    # Find the most recent campaign to associate feedback with
+                    recent_campaigns = memory.campaign_archive[-5:] if memory.campaign_archive else []
+                    if recent_campaigns:
+                        target_campaign = recent_campaigns[-1]  # Most recent
+                        cid = target_campaign.campaign_id
+                        # Determine engagement level
+                        sentiment = perf_fb.get("sentiment", "neutral")
+                        eng_map = {"positive": "high", "mixed": "medium", "negative": "low"}
+                        engagement = eng_map.get(sentiment, "medium")
+                        worked = perf_fb.get("what_worked", [])
+                        failed = perf_fb.get("what_failed", [])
+                        metrics = perf_fb.get("metrics", {})
+
+                        # Import and call memory_collect_performance directly
+                        from .memory_tools import _load_memory, _save_memory
+                        _perf_data = {
+                            "engagement_level": engagement,
+                            "what_worked": worked,
+                            "what_failed": failed,
+                        }
+                        if metrics.get("likes"): _perf_data["likes"] = metrics["likes"]
+                        if metrics.get("comments"): _perf_data["comments"] = metrics["comments"]
+
+                        # Update campaign performance directly
+                        from .schemas import PerformanceData
+                        if target_campaign.performance is None:
+                            target_campaign.performance = PerformanceData()
+                        target_campaign.performance.engagement_level = engagement
+                        if worked: target_campaign.performance.what_worked = worked
+                        if failed: target_campaign.performance.what_failed = failed
+                        if metrics.get("likes"): target_campaign.performance.likes = metrics["likes"]
+                        if metrics.get("comments"): target_campaign.performance.comments = metrics["comments"]
+
+                        # Remove from performance_pending
+                        memory.performance_pending = [
+                            p for p in memory.performance_pending if p.campaign_id != cid
+                        ]
+
+                        # Update Behavior Graph
+                        from .memory_tools import _recompute_graph_insights
+                        from .schemas import ContentNode, PerformanceEdge
+                        graph = memory.behavior_graph
+                        for platform in (target_campaign.platforms_used or ["unknown"]):
+                            node_id = f"{platform}_auto"
+                            existing_node = next((n for n in graph.nodes if n.node_id == node_id), None)
+                            if not existing_node:
+                                graph.nodes.append(ContentNode(
+                                    node_id=node_id, platform=platform,
+                                    content_type="image", topic="auto-collected",
+                                ))
+                            graph.edges.append(PerformanceEdge(
+                                edge_id=f"{cid}_{platform}_auto",
+                                node_id=node_id, campaign_id=cid,
+                                engagement_level=engagement,
+                                what_worked=worked, what_failed=failed,
+                                timestamp=datetime.now(timezone.utc).isoformat(),
+                            ))
+                        _recompute_graph_insights(graph)
+
+                        # Save memory
+                        callback_context.state[_MEMORY_STATE_KEY] = memory.model_dump(mode="json")
+                        logger.info(
+                            "[RECALL_SAVE] ✅ Auto-collected performance for campaign %s: engagement=%s, worked=%s, failed=%s",
+                            cid, engagement, worked, failed,
+                        )
+                        # Store for next turn's domain signal alert
+                        callback_context.state["_auto_performance_collected"] = {
+                            "campaign_id": cid,
+                            "engagement": engagement,
+                            "worked": worked,
+                            "failed": failed,
+                        }
+                    else:
+                        logger.info("[RECALL_SAVE] ⚠️ Performance feedback detected but no campaigns to associate with")
+                except Exception as e:
+                    logger.warning("[RECALL_SAVE] ⚠️ Auto performance collection failed: %s", e)
+
             logger.info(
-                "[RECALL_SAVE] 📝 NLU signals (len=%d): emotions=%s, decisions=%s, domains=%s",
+                "[RECALL_SAVE] 📝 NLU signals (len=%d): emotions=%s, decisions=%s, domains=%s, perf=%s",
                 len(user_text), nlu["emotions"], nlu["decisions"], nlu["domains"],
+                bool(perf_fb and perf_fb.get("detected")),
             )
         else:
             logger.info("[RECALL_SAVE] 📝 NLU skipped — short message (%d chars)", len(user_text))
@@ -1022,6 +1171,16 @@ def _auto_save_working_summary(callback_context: CallbackContext) -> None:
 
         memory.last_updated = datetime.now(timezone.utc).isoformat()
         callback_context.state[_MEMORY_STATE_KEY] = memory.model_dump(mode="json")
+
+        # ── [Structural Fix] Store conversation context summary in state ──
+        # This ensures agent transitions (transfer_to_agent) preserve context.
+        # The next agent's _inject_core_memory reads this from state if recall_log is stale.
+        recent_turns = memory.recall_log[-6:]  # Last 3 user + 3 agent turns
+        ctx_summary = "\n".join(
+            f"[{e.role}] {e.content[:150]}" for e in recent_turns
+        )
+        callback_context.state["_conversation_context"] = ctx_summary
+
         logger.info(
             "[RECALL_SAVE] 📝 Recall log size: %d entries, working_summary: %d chars",
             len(memory.recall_log), len(memory.working_summary or ""),
