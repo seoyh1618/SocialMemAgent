@@ -83,6 +83,10 @@ class PersonaBlock(BaseModel):
     avoid_topics: List[str] = Field(default_factory=list)
     signature_hashtags: List[str] = Field(default_factory=list)
     content_pillars: List[str] = Field(default_factory=list)
+    extra: dict = Field(
+        default_factory=dict,
+        description="Flexible key-value store for brand attributes not covered by fixed fields (e.g., slogan, brand_story, visual_identity)."
+    )
 
 
 # Backward compatibility alias
@@ -188,6 +192,10 @@ class AudienceBlock(BaseModel):
     segments: List[AudienceSegment] = Field(default_factory=list, description="Product/service-specific audience segments (max 20)")
     seasonal_peaks: List[str] = Field(default_factory=list)
     offline_channels: List[str] = Field(default_factory=list)
+    extra: dict = Field(
+        default_factory=dict,
+        description="Flexible key-value store for audience attributes not covered by fixed fields (e.g., purchase_cycle, loyalty_program, referral_pattern)."
+    )
 
 
 class UserProfile(BaseModel):
