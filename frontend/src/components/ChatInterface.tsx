@@ -294,7 +294,7 @@ export default function ChatInterface({ userId, sessionId, base, setBase, should
     <div className="flex h-full flex-col">
       {/* Conversation History */}
       <div className="flex-grow overflow-y-auto p-4 space-y-4 bg-gray-50/50">
-        <AnimatePresence mode="popLayout">
+        <AnimatePresence>
         {messages.map((message, index) => {
           if (message.role === 'reasoning') {
             if (!message.content.trim()) return null;

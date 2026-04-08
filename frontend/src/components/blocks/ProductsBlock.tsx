@@ -73,7 +73,7 @@ export default function ProductsBlock({ userId }: ProductsBlockProps) {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: idx * 0.06, duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
-            whileHover={{ y: -3, boxShadow: '0 8px 24px rgba(0,0,0,0.06)' }}
+            whileHover={{ y: -3 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => setSelectedProduct(product)}
             className="text-left p-4 bg-white rounded-xl border border-gray-100 transition-colors group"

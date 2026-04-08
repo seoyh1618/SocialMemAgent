@@ -165,11 +165,7 @@ export default function AppSidebar({
                     }`}
                   >
                     {activeSection === id && (
-                      <motion.div
-                        layoutId="sidebar-active"
-                        className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-4 rounded-full bg-current opacity-60"
-                        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                      />
+                      <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-4 rounded-full bg-current opacity-60" />
                     )}
                     <Icon className="w-4 h-4 shrink-0" />
                     <span className="flex-1 text-left truncate">{label}</span>

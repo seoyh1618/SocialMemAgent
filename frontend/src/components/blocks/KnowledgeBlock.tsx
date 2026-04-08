@@ -135,7 +135,7 @@ export default function KnowledgeBlock({ userId }: KnowledgeBlockProps) {
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.04, duration: 0.3 }}
-              whileHover={{ y: -2, boxShadow: '0 6px 20px rgba(0,0,0,0.05)' }}
+              whileHover={{ y: -2 }}
               onClick={() => setSelectedItem(item)}
               className="w-full text-left p-3 bg-white rounded-xl border border-gray-100 transition-colors"
             >

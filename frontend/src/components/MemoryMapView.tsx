@@ -57,10 +57,8 @@ function MemoryCard({
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
-      whileHover={{ y: -2, boxShadow: '0 8px 24px rgba(0,0,0,0.08)' }}
-      className="rounded-2xl border border-gray-100 bg-white overflow-hidden"
-      style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}
+      transition={{ duration: 0.4 }}
+      className="rounded-2xl border border-gray-100 bg-white overflow-hidden shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
     >
       <div className={`flex items-center gap-2 px-4 py-2.5 ${accentColor}`}>
         <Icon className="w-4 h-4 text-white/90" />
