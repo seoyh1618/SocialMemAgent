@@ -5,7 +5,7 @@
  */
 
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+// framer-motion 제거 — React 19 호환성 문제로 CSS 애니메이션 사용
 import { useAuth } from '../AuthContext';
 import {
   SparklesIcon,
@@ -94,13 +94,11 @@ export default function AppSidebar({
 
         {/* Logo */}
         <div className="flex items-center gap-3 px-5 py-5 border-b border-white/[0.06]">
-          <motion.div
-            whileHover={{ rotate: 12, scale: 1.05 }}
-            transition={{ type: 'spring', stiffness: 400 }}
-            className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shrink-0 shadow-lg shadow-indigo-500/20"
+          <div
+            className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shrink-0 shadow-lg shadow-indigo-500/20 hover:scale-105 hover:rotate-6 transition-transform duration-200"
           >
             <SparklesIcon className="w-5 h-5 text-white" />
-          </motion.div>
+          </div>
           <div className="min-w-0">
             <p className="text-[15px] font-bold text-white tracking-tight">Social Agent</p>
             <p className="text-[10px] text-gray-500 font-medium tracking-wider">5-BLOCK MEMORY</p>
@@ -153,12 +151,10 @@ export default function AppSidebar({
               <p className="px-2 mb-1.5 text-[9px] font-semibold text-gray-600 uppercase tracking-[0.15em]">{group.title}</p>
               <div className="space-y-0.5">
                 {group.items.map(({ id, icon: Icon, label, accent }) => (
-                  <motion.button
+                  <button
                     key={id}
                     onClick={() => onSectionChange(id)}
-                    whileHover={{ x: 2 }}
-                    whileTap={{ scale: 0.98 }}
-                    className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-[13px] transition-colors relative ${
+                    className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-[13px] transition-all duration-150 relative hover:translate-x-0.5 active:scale-[0.98] ${
                       activeSection === id
                         ? `${accentColors[accent]} font-medium`
                         : 'text-gray-500 hover:text-gray-300 hover:bg-white/[0.03]'
@@ -169,7 +165,7 @@ export default function AppSidebar({
                     )}
                     <Icon className="w-4 h-4 shrink-0" />
                     <span className="flex-1 text-left truncate">{label}</span>
-                  </motion.button>
+                  </button>
                 ))}
               </div>
             </div>
@@ -188,17 +184,14 @@ export default function AppSidebar({
                 { label: 'Audience', value: `${memory.audience_block?.segments?.length || 0}개`, color: 'text-teal-400', dot: 'bg-teal-500' },
                 { label: 'Campaign', value: `${memory.total_campaigns || 0}건`, color: 'text-rose-400', dot: 'bg-rose-500' },
               ].map(({ label, value, color, dot }, i) => (
-                <motion.div
+                <div
                   key={label}
-                  initial={{ opacity: 0, x: -8 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.05, duration: 0.3 }}
-                  className="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-white/[0.02] transition-colors"
+                  className="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-white/[0.02] transition-all duration-200 animate-fade-in"
                 >
                   <span className={`w-1.5 h-1.5 rounded-full ${dot} shrink-0 ${value !== '미설정' && value !== '0개' && value !== '0건' ? 'animate-pulse' : 'opacity-30'}`} />
                   <span className="text-[10px] text-gray-600 w-14 shrink-0">{label}</span>
                   <span className={`text-[11px] ${color} truncate`}>{value}</span>
-                </motion.div>
+                </div>
               ))}
             </div>
           </div>

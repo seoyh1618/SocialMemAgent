@@ -4,7 +4,7 @@
  * + Archival + Recall Memory
  */
 
-import { motion } from 'framer-motion';
+// CSS animations for React 19 compat
 import type { MemoryState } from '../memory';
 import {
   UserCircleIcon,
@@ -54,10 +54,7 @@ function MemoryCard({
   children: React.ReactNode;
 }) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
+    <div
       className="rounded-2xl border border-gray-100 bg-white overflow-hidden shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
     >
       <div className={`flex items-center gap-2 px-4 py-2.5 ${accentColor}`}>
@@ -65,7 +62,7 @@ function MemoryCard({
         <span className="text-[13px] font-semibold text-white tracking-tight">{title}</span>
       </div>
       <div className="px-4 py-3 space-y-2 text-sm">{children}</div>
-    </motion.div>
+    </div>
   );
 }
 

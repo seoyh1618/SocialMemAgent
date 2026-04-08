@@ -5,7 +5,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+// CSS animations for React 19 compat
 import {
   CubeIcon,
   ChevronRightIcon,
@@ -68,13 +68,8 @@ export default function ProductsBlock({ userId }: ProductsBlockProps) {
       {/* 제품 그리드 */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {products.map((product, idx) => (
-          <motion.button
+          <button
             key={product.product_id}
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: idx * 0.06, duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
-            whileHover={{ y: -3 }}
-            whileTap={{ scale: 0.98 }}
             onClick={() => setSelectedProduct(product)}
             className="text-left p-4 bg-white rounded-xl border border-gray-100 transition-colors group"
           >
@@ -113,22 +108,16 @@ export default function ProductsBlock({ userId }: ProductsBlockProps) {
                 </span>
               )}
             </div>
-          </motion.button>
+          </button>
         ))}
       </div>
 
       {/* 상세 모달 */}
       {selectedProduct && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+        <div
           className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setSelectedProduct(null)}>
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 10 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
-            className="bg-white rounded-2xl max-w-lg w-full max-h-[80vh] overflow-y-auto shadow-2xl" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="bg-white rounded-2xl max-w-lg w-full max-h-[80vh] overflow-y-auto shadow-2xl animate-scale-in" onClick={(e) => e.stopPropagation()}>
             {/* 모달 헤더 */}
             <div className="flex items-center justify-between p-5 border-b border-gray-100">
               <div>
@@ -223,8 +212,8 @@ export default function ProductsBlock({ userId }: ProductsBlockProps) {
                 </div>
               )}
             </div>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       )}
     </div>
   );

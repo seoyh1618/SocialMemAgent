@@ -5,7 +5,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+// CSS animations for React 19 compat
 import {
   BookOpenIcon,
   FunnelIcon,
@@ -130,12 +130,8 @@ export default function KnowledgeBlock({ userId }: KnowledgeBlockProps) {
           const cat = item.category || item.key || 'other';
           const info = CATEGORY_LABELS[cat] || { label: cat, color: 'bg-gray-50 text-gray-700 border-gray-100' };
           return (
-            <motion.button
+            <button
               key={item.knowledge_id || idx}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: idx * 0.04, duration: 0.3 }}
-              whileHover={{ y: -2 }}
               onClick={() => setSelectedItem(item)}
               className="w-full text-left p-3 bg-white rounded-xl border border-gray-100 transition-colors"
             >
@@ -153,7 +149,7 @@ export default function KnowledgeBlock({ userId }: KnowledgeBlockProps) {
                 </div>
                 <span className="text-[10px] text-gray-300 shrink-0">{item.knowledge_id}</span>
               </div>
-            </motion.button>
+            </button>
           );
         })}
       </div>

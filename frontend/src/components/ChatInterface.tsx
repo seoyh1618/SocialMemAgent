@@ -1,6 +1,6 @@
 import { PaperAirplaneIcon, ChevronRightIcon, ChevronDownIcon, PhotoIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+// CSS animations used instead of framer-motion for React 19 compat
 import { sendMessageToAgentSSE, extractTextFromResponse } from '../api';
 import type { Base, SocialMediaAgentOutput, OrchestratorChannelOutput } from '../base';
 import { channelsToBase } from '../base';
@@ -294,17 +294,14 @@ export default function ChatInterface({ userId, sessionId, base, setBase, should
     <div className="flex h-full flex-col">
       {/* Conversation History */}
       <div className="flex-grow overflow-y-auto p-4 space-y-4 bg-gray-50/50">
-        <AnimatePresence>
+        
         {messages.map((message, index) => {
           if (message.role === 'reasoning') {
             if (!message.content.trim()) return null;
             const isCollapsed = reasoningCollapsed[index] ?? true;
             return (
-              <motion.div
+              <div
                 key={`r-${index}`}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.25 }}
                 className="w-full my-2 text-gray-500">
                 <button
                   onClick={() =>
@@ -333,23 +330,20 @@ export default function ChatInterface({ userId, sessionId, base, setBase, should
                     )}
                   </div>
                 )}
-              </motion.div>
+              </div>
             );
           }
           if (message.role === 'memory_ref') {
             return (
-              <motion.div
+              <div
                 key={`ref-${index}`}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.2 }}
                 className="w-full my-1 flex justify-start"
               >
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-indigo-50 text-indigo-600 rounded-full text-[11px] font-medium border border-indigo-100">
                   <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
                   {message.content}
                 </span>
-              </motion.div>
+              </div>
             );
           }
           if (message.role === 'base_content') {
@@ -379,11 +373,8 @@ export default function ChatInterface({ userId, sessionId, base, setBase, should
             );
           }
           return (
-            <motion.div
+            <div
               key={`m-${index}`}
-              initial={{ opacity: 0, y: 10, scale: 0.97 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
               className={`flex ${
                 message.role === 'user' ? 'justify-end' : 'justify-start'
               }`}
@@ -400,10 +391,10 @@ export default function ChatInterface({ userId, sessionId, base, setBase, should
                   <span className="inline-block animate-pulse text-indigo-300">▋</span>
                 )}
               </div>
-            </motion.div>
+            </div>
           );
         })}
-        </AnimatePresence>
+        
         <div ref={messagesEndRef} />
       </div>
 

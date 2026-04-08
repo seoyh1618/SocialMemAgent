@@ -11,7 +11,7 @@
  */
 
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+// CSS animations for React 19 compat
 import type {
   MemoryState,
   HumanBlock,
@@ -627,15 +627,11 @@ export default function ProfileBlock({ memory, onSave, userId, initialTab = 'own
       </div>
 
       <div className="px-5 py-4">
-        <AnimatePresence mode="wait">
+        
         {/* ── Owner Profile Tab (Human Block — 23필드) ── */}
         {activeTab === 'owner' && (
-          <motion.div
+          <div
             key="tab-owner"
-            initial={{ opacity: 0, x: -8 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 8 }}
-            transition={{ duration: 0.2 }}
             className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -802,7 +798,7 @@ export default function ProfileBlock({ memory, onSave, userId, initialTab = 'own
                 <p className="text-xs text-gray-600">{memory.working_summary}</p>
               </div>
             )}
-          </motion.div>
+          </div>
         )}
 
         {/* ── 브랜드 보이스 Tab (Persona Block) ── */}
@@ -1185,7 +1181,7 @@ export default function ProfileBlock({ memory, onSave, userId, initialTab = 'own
           </div>
         )}
 
-      </AnimatePresence>
+      
       </div>
     </li>
   );
