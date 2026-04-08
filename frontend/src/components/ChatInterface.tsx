@@ -333,7 +333,7 @@ export default function ChatInterface({ userId, sessionId, base, setBase, should
                     )}
                   </div>
                 )}
-              </div>
+              </motion.div>
             );
           }
           if (message.role === 'memory_ref') {
