@@ -210,21 +210,31 @@ export default function MemoryMapView({ memory, onEditClick }: MemoryMapViewProp
         </div>
       )}
 
-      {/* 2x2 그리드: 4-Block Core Memory */}
+      {/* 5-Block Core Memory */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {/* Human Block */}
-        <MemoryCard title="Human Block" icon={UserCircleIcon} accentColor="bg-indigo-500">
+        {/* Human Block (OwnerProfile) */}
+        <MemoryCard title="Owner Profile" icon={UserCircleIcon} accentColor="bg-indigo-500">
           <FieldRow label="브랜드명" value={human.display_name} />
-          <FieldRow label="트위터" value={human.twitter_handle ? `@${human.twitter_handle}` : null} />
-          <FieldRow label="인스타" value={human.instagram_handle ? `@${human.instagram_handle}` : null} />
+          <FieldRow label="대표자" value={(human as any).owner_name} />
+          <FieldRow label="위치" value={(human as any).business_location} />
+          <FieldRow label="업종" value={(human as any).industry} />
+          <FieldRow label="목표" value={(human as any).primary_goal} />
+          <FieldRow label="단계" value={(human as any).business_stage} />
+          {Object.entries((human as any).social_handles || {}).map(([k, v]) => (
+            <FieldRow key={k} label={k} value={String(v)} />
+          ))}
           {!human.display_name && (
             <p className="text-[12px] text-gray-400 italic">설정된 프로필 정보가 없습니다</p>
           )}
         </MemoryCard>
 
-        {/* Persona Block */}
-        <MemoryCard title="Persona Block" icon={SparklesIcon} accentColor="bg-purple-500">
-          <FieldRow label="톤앤매너" value={persona.tone} />
+        {/* Persona Block (BrandVoice) */}
+        <MemoryCard title="Brand Voice" icon={SparklesIcon} accentColor="bg-purple-500">
+          <FieldRow label="톤앤매너" value={(persona as any).tone_primary || persona.tone} />
+          <FieldRow label="격식" value={(persona as any).tone_formality} />
+          <FieldRow label="글쓰기" value={(persona as any).writing_style} />
+          <FieldRow label="이모지" value={(persona as any).emoji_usage} />
+          <FieldRow label="슬로건" value={(persona as any).slogan} />
           {persona.content_pillars?.length > 0 && (
             <TagRow label="콘텐츠" tags={persona.content_pillars} color="purple" />
           )}
@@ -311,6 +321,21 @@ export default function MemoryMapView({ memory, onEditClick }: MemoryMapViewProp
               </p>
             )}
           </div>
+        </MemoryCard>
+      )}
+
+      {/* Campaign Block (BehaviorGraph 요약) — 5번째 블록 */}
+      {memory.behavior_graph && (memory.behavior_graph.edges?.length > 0 || (memory.behavior_graph as any).proven_tactics?.length > 0) && (
+        <MemoryCard title="Campaign Block (학습된 전략)" icon={CalendarDaysIcon} accentColor="bg-rose-500">
+          {(memory.behavior_graph as any).proven_tactics?.length > 0 && (
+            <TagRow label="효과적" tags={(memory.behavior_graph as any).proven_tactics} color="green" />
+          )}
+          {(memory.behavior_graph as any).failed_tactics?.length > 0 && (
+            <TagRow label="피해야 할" tags={(memory.behavior_graph as any).failed_tactics} color="rose" />
+          )}
+          <FieldRow label="최적 채널" value={memory.behavior_graph.overall_best_platform} />
+          <FieldRow label="신뢰도" value={(memory.behavior_graph as any).confidence_level} />
+          <FieldRow label="데이터" value={`${(memory.behavior_graph as any).total_data_points || memory.behavior_graph.edges?.length || 0}건`} />
         </MemoryCard>
       )}
 

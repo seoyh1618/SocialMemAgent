@@ -361,16 +361,16 @@ function buildTree(memory: MemoryState, prevMemory: MemoryState | null): MindNod
     label: human.display_name || '내 브랜드',
     color: 'root',
     children: [
-      { id: 'human', label: 'Human Block', icon: '👤', color: 'human', children: humanChildren },
-      { id: 'persona', label: 'Persona Block', icon: '🎨', color: 'persona', children: personaChildren },
+      { id: 'human', label: 'Owner Profile', icon: '👤', color: 'human', children: humanChildren },
+      { id: 'persona', label: 'Brand Voice', icon: '🎨', color: 'persona', children: personaChildren },
       ...(domainChildren.length ? [{
-        id: 'domain', label: 'Domain Block', icon: '🏪', color: 'domain' as NodeColor, children: domainChildren,
+        id: 'domain', label: 'Business Block', icon: '🏪', color: 'domain' as NodeColor, children: domainChildren,
       }] : []),
       ...(audienceChildren.length ? [{
         id: 'audience', label: 'Audience Block', icon: '🎯', color: 'extra' as NodeColor, children: audienceChildren,
       }] : []),
       ...(behaviorChildren.length ? [{
-        id: 'behavior', label: 'Behavior Graph', icon: '📊', color: 'behavior' as NodeColor, children: behaviorChildren,
+        id: 'behavior', label: 'Campaign Block', icon: '📊', color: 'behavior' as NodeColor, children: behaviorChildren,
       }] : []),
       ...(perfChildren.length ? [{
         id: 'performance', label: 'Performance', icon: '📈', color: 'performance' as NodeColor, children: perfChildren,

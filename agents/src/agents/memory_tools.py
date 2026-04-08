@@ -43,6 +43,7 @@ from .schemas import (
     CampaignRecord,
     ContentNode,
     ConversationRecord,
+    DomainKnowledge,
     DomainProfileBlock,
     GeneratedAsset,
     HumanBlock,
@@ -51,6 +52,7 @@ from .schemas import (
     PerformanceEdge,
     PerformancePendingRequest,
     PersonaBlock,
+    ProductRecord,
     RecallEntry,
     UserProfile,
 )
@@ -880,22 +882,34 @@ def memory_add_domain_knowledge(
     memory = _load_memory(tool_context)
     dp = memory.domain_block
 
-    # Update existing key or add new
+    # Update existing (by key or knowledge_id) or add new
     existing = None
     for k in dp.knowledge:
-        if k.key == key:
+        k_key = getattr(k, 'category', '') or getattr(k, 'key', '')
+        if k_key == key or (hasattr(k, 'knowledge_id') and getattr(k, 'knowledge_id', '') and getattr(k, 'knowledge_id', '') == key):
             existing = k
             break
 
     if existing:
         existing.value = value
+        if hasattr(existing, 'detail'):
+            existing.detail = value
+        if hasattr(existing, 'title') and not existing.title:
+            existing.title = value[:80]
         existing.confidence = confidence
         existing.source_turn = _now_iso()
         action = "Updated"
+        kid = getattr(existing, 'knowledge_id', '')
     else:
+        # Auto-generate knowledge_id
+        kid = f"dk_{len(dp.knowledge) + 1:03d}"
         dp.knowledge.append(DomainKnowledge(
+            knowledge_id=kid,
             key=key,
+            category=key,
+            title=value[:80],
             value=value,
+            detail=value,
             confidence=confidence,
             source_turn=_now_iso(),
         ))
@@ -907,6 +921,265 @@ def memory_add_domain_knowledge(
     _save_memory(tool_context, memory)
     total = len(dp.knowledge)
     return f"[Domain Knowledge {action}] key='{key}'. Total knowledge items: {total}"
+
+
+# ─── Product CRUD Tools ───────────────────────────────────────────────────────
+
+_PRODUCT_ARCHIVE_CAP = 50
+
+
+def memory_add_product(
+    tool_context: ToolContext,
+    name: str,
+    price: str = "",
+    category: str = "",
+    product_type: str = "product",
+    description: str = "",
+    key_features: str = "",
+    unique_selling_point: str = "",
+    target_segments: str = "",
+    seasonal_relevance: str = "",
+    availability: str = "available",
+) -> str:
+    """
+    [Product WRITE] 새 제품/서비스를 등록합니다.
+    Core에는 ID+이름만 주입되고, 상세는 memory_get_product(id)로 조회합니다.
+
+    Args:
+        name: 제품명 (필수)
+        price: 가격 (e.g., "6,500원")
+        category: 제품 카테고리 (e.g., "라떼", "빵")
+        product_type: product / service / package / subscription
+        description: 마케팅용 설명
+        key_features: 핵심 특성 (쉼표 구분)
+        unique_selling_point: 차별점
+        target_segments: 타겟 세그먼트 ID (쉼표 구분, e.g., "seg_001,seg_002")
+        seasonal_relevance: 시즌 (쉼표 구분, e.g., "spring,summer")
+        availability: available / seasonal_only / limited_edition
+    """
+    memory = _load_memory(tool_context)
+
+    # 중복 체크 (이름 기반)
+    for p in memory.product_archive:
+        if p.name.lower() == name.lower():
+            return f"[Product] '{name}' already exists (ID: {p.product_id}). Use memory_update_product to modify."
+
+    product_id = f"prod_{len(memory.product_archive) + 1:03d}"
+    features_list = [f.strip() for f in key_features.split(",") if f.strip()] if key_features else []
+    segments_list = [s.strip() for s in target_segments.split(",") if s.strip()] if target_segments else []
+    season_list = [s.strip() for s in seasonal_relevance.split(",") if s.strip()] if seasonal_relevance else []
+
+    record = ProductRecord(
+        product_id=product_id,
+        name=name,
+        best_platform="",
+        avg_engagement="",
+        total_campaigns=0,
+    )
+    # Set optional fields via dict update (ProductRecord may have extra fields)
+    extra_data = {}
+    if price:
+        extra_data['price'] = price
+    if category:
+        extra_data['category'] = category
+    if product_type:
+        extra_data['product_type'] = product_type
+    if description:
+        extra_data['description'] = description
+    if features_list:
+        extra_data['features'] = features_list
+    if unique_selling_point:
+        extra_data['unique_selling_point'] = unique_selling_point
+    if segments_list:
+        extra_data['target_segments'] = segments_list
+    if season_list:
+        extra_data['seasonal_relevance'] = season_list
+    if availability:
+        extra_data['availability'] = availability
+
+    # Store extra data in the record's extra dict if fields don't exist on model
+    for k, v in extra_data.items():
+        if hasattr(record, k):
+            setattr(record, k, v)
+
+    memory.product_archive.append(record)
+
+    # Cap
+    if len(memory.product_archive) > _PRODUCT_ARCHIVE_CAP:
+        memory.product_archive = memory.product_archive[-_PRODUCT_ARCHIVE_CAP:]
+
+    _save_memory(tool_context, memory)
+    return f"[Product] Created '{name}' (ID: {product_id}). Core에 카탈로그 반영됨."
+
+
+def memory_get_product(
+    tool_context: ToolContext,
+    product_id: str,
+) -> str:
+    """
+    [Product READ] 제품 상세를 ID로 조회합니다. Core에는 ID+이름만 보이므로, 상세가 필요할 때 호출하세요.
+
+    Args:
+        product_id: 제품 ID (e.g., "prod_001")
+
+    Returns:
+        제품 전체 필드 JSON. 없으면 에러 메시지.
+    """
+    memory = _load_memory(tool_context)
+    for p in memory.product_archive:
+        if p.product_id == product_id:
+            return json.dumps(p.model_dump(), ensure_ascii=False, default=str)
+    return f"[Product] ID '{product_id}' not found."
+
+
+def memory_update_product(
+    tool_context: ToolContext,
+    product_id: str,
+    name: str = "",
+    price: str = "",
+    category: str = "",
+    description: str = "",
+    key_features: str = "",
+    unique_selling_point: str = "",
+    target_segments: str = "",
+    availability: str = "",
+) -> str:
+    """
+    [Product UPDATE] 기존 제품 정보를 업데이트합니다. Core에서 ID를 확인한 후 호출하세요.
+    빈 문자열("")인 파라미터는 변경하지 않습니다.
+
+    Args:
+        product_id: 제품 ID (필수)
+        name: 새 제품명
+        price: 새 가격
+        category: 새 카테고리
+        description: 새 설명
+        key_features: 새 핵심 특성 (쉼표 구분)
+        unique_selling_point: 새 차별점
+        target_segments: 새 타겟 세그먼트 (쉼표 구분)
+        availability: 새 가용성
+    """
+    memory = _load_memory(tool_context)
+    target = None
+    for p in memory.product_archive:
+        if p.product_id == product_id:
+            target = p
+            break
+
+    if not target:
+        return f"[Product] ID '{product_id}' not found."
+
+    if name:
+        target.name = name
+    if price and hasattr(target, 'price'):
+        target.price = price
+    if category and hasattr(target, 'category'):
+        target.category = category
+    if description and hasattr(target, 'description'):
+        target.description = description
+    if key_features:
+        features_list = [f.strip() for f in key_features.split(",") if f.strip()]
+        if hasattr(target, 'features'):
+            target.features = features_list
+    if unique_selling_point and hasattr(target, 'unique_selling_point'):
+        target.unique_selling_point = unique_selling_point
+    if target_segments:
+        segments_list = [s.strip() for s in target_segments.split(",") if s.strip()]
+        if hasattr(target, 'target_segments'):
+            target.target_segments = segments_list
+    if availability and hasattr(target, 'availability'):
+        target.availability = availability
+
+    _save_memory(tool_context, memory)
+    return f"[Product] Updated '{target.name}' (ID: {product_id})."
+
+
+# ─── Knowledge READ Tool ─────────────────────────────────────────────────────
+
+
+def memory_get_knowledge(
+    tool_context: ToolContext,
+    knowledge_id: str = "",
+    category: str = "",
+) -> str:
+    """
+    [Knowledge READ] 도메인 지식을 조회합니다. Core에는 카탈로그(ID+category+title)만 보이므로, 상세가 필요할 때 호출하세요.
+
+    Args:
+        knowledge_id: 특정 ID로 조회 (e.g., "dk_001") → 해당 Knowledge 상세 반환
+        category: 카테고리로 조회 (e.g., "sourcing") → 해당 카테고리 전체 목록 반환
+        둘 다 비어있으면 전체 카탈로그 반환.
+    """
+    memory = _load_memory(tool_context)
+    dp = memory.domain_block
+    knowledge_list = dp.knowledge if hasattr(dp, 'knowledge') else []
+
+    if knowledge_id:
+        for k in knowledge_list:
+            kid = getattr(k, 'knowledge_id', '') or ''
+            if kid == knowledge_id:
+                return json.dumps(k.model_dump(), ensure_ascii=False, default=str)
+        return f"[Knowledge] ID '{knowledge_id}' not found."
+
+    if category:
+        results = []
+        for k in knowledge_list:
+            cat = getattr(k, 'category', '') or getattr(k, 'key', '')
+            if cat.lower() == category.lower():
+                results.append(k.model_dump())
+        return json.dumps({"category": category, "count": len(results), "items": results}, ensure_ascii=False, default=str)
+
+    # 전체 카탈로그 (ID+category+title만)
+    catalog = []
+    for k in knowledge_list:
+        catalog.append({
+            "knowledge_id": getattr(k, 'knowledge_id', ''),
+            "category": getattr(k, 'category', '') or getattr(k, 'key', ''),
+            "title": getattr(k, 'title', '') or getattr(k, 'value', '')[:80],
+        })
+    return json.dumps({"total": len(catalog), "catalog": catalog}, ensure_ascii=False)
+
+
+# ─── Skill MD Reference Tool ─────────────────────────────────────────────────
+
+_SKILL_MD_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "..", "..", "..", "skills")
+_ALLOWED_SKILL_MDS = {
+    "owner_profile.md", "brand_voice.md", "business_domain.md",
+    "product_service.md", "audience_segment.md", "campaign_performance.md",
+}
+
+
+def read_skill_md(
+    tool_context: ToolContext,
+    filename: str,
+) -> str:
+    """
+    [Skill MD READ] 스킬 MD 파일을 읽어서 스키마, 저장 규칙, 경계 구분을 확인합니다.
+    저장/조회 실행 전에 반드시 해당 md를 읽고 규칙을 확인하세요.
+
+    Args:
+        filename: MD 파일명 (e.g., "product_service.md", "business_domain.md")
+                  허용: owner_profile.md, brand_voice.md, business_domain.md,
+                        product_service.md, audience_segment.md, campaign_performance.md
+    """
+    if filename not in _ALLOWED_SKILL_MDS:
+        return f"[Skill MD] '{filename}' is not allowed. Allowed: {', '.join(sorted(_ALLOWED_SKILL_MDS))}"
+
+    filepath = os.path.join(_SKILL_MD_DIR, filename)
+    # Try alternative path if relative doesn't work
+    if not os.path.exists(filepath):
+        alt_path = os.path.join(os.getcwd(), "skills", filename)
+        if os.path.exists(alt_path):
+            filepath = alt_path
+        else:
+            return f"[Skill MD] File '{filename}' not found at {filepath}"
+
+    try:
+        with open(filepath, "r", encoding="utf-8") as f:
+            content = f.read()
+        return content[:8000]  # 8K char limit to prevent token explosion
+    except Exception as e:
+        return f"[Skill MD] Error reading '{filename}': {e}"
 
 
 # ─── Audience Segment Management Tools ────────────────────────────────────────
@@ -1340,10 +1613,10 @@ def memory_collect_performance(
 
 
 def _recompute_graph_insights(graph: AudienceBehaviorGraph) -> None:
-    """Recompute platform_best_content_type, topic_performance_summary, overall_best_platform."""
+    """Recompute all BehaviorGraph aggregates including proven/failed tactics, seasonal, segment trends."""
     _LEVEL_SCORE = {"low": 1, "medium": 2, "high": 3, "viral": 4, "": 0}
 
-    # Platform → list of engagement scores
+    # ── Platform scores & content types ──
     platform_scores: dict[str, list[int]] = {}
     platform_types: dict[str, dict[str, int]] = {}
 
@@ -1356,20 +1629,18 @@ def _recompute_graph_insights(graph: AudienceBehaviorGraph) -> None:
         platform_types.setdefault(node.platform, {}).setdefault(node.content_type, 0)
         platform_types[node.platform][node.content_type] += score
 
-    # Best content type per platform
     graph.platform_best_content_type = {
         p: max(types, key=types.get)
         for p, types in platform_types.items()
         if types
     }
 
-    # Overall best platform
     if platform_scores:
         graph.overall_best_platform = max(
             platform_scores, key=lambda p: sum(platform_scores[p]) / len(platform_scores[p])
         )
 
-    # Topic performance — based on edge what_worked tags
+    # ── Topic performance ──
     topic_counts: dict[str, dict[str, int]] = {}
     for edge in graph.edges:
         node = next((n for n in graph.nodes if n.node_id == edge.node_id), None)
@@ -1386,6 +1657,113 @@ def _recompute_graph_insights(graph: AudienceBehaviorGraph) -> None:
         for topic, counts in topic_counts.items()
         if counts
     }
+
+    # ── Proven / Failed tactics (Phase 3) ──
+    worked_freq: dict[str, int] = {}
+    failed_freq: dict[str, int] = {}
+    for edge in graph.edges:
+        for tag in edge.what_worked:
+            worked_freq[tag] = worked_freq.get(tag, 0) + 1
+        for tag in edge.what_failed:
+            failed_freq[tag] = failed_freq.get(tag, 0) + 1
+
+    # proven = 2회 이상 효과적이었던 것
+    graph.proven_tactics = sorted(
+        [k for k, v in worked_freq.items() if v >= 2],
+        key=lambda k: worked_freq[k], reverse=True
+    )[:10]
+    graph.failed_tactics = sorted(
+        [k for k, v in failed_freq.items() if v >= 2],
+        key=lambda k: failed_freq[k], reverse=True
+    )[:10]
+
+    # ── Confidence level ──
+    graph.total_data_points = len(graph.edges)
+    if graph.total_data_points < 5:
+        graph.confidence_level = "insufficient"
+    elif graph.total_data_points < 15:
+        graph.confidence_level = "moderate"
+    else:
+        graph.confidence_level = "reliable"
+
+    # ── Segment-Channel Matrix (Phase 3) ──
+    seg_plat_scores: dict[str, dict[str, list[int]]] = {}
+    for edge in graph.edges:
+        if not edge.segment_id:
+            continue
+        node = next((n for n in graph.nodes if n.node_id == edge.node_id), None)
+        if not node:
+            continue
+        seg_plat_scores.setdefault(edge.segment_id, {}).setdefault(node.platform, []).append(
+            _LEVEL_SCORE.get(edge.engagement_level, 0)
+        )
+
+    graph.segment_channel_matrix = {}
+    for seg_id, plat_data in seg_plat_scores.items():
+        if plat_data:
+            graph.segment_channel_matrix[seg_id] = max(
+                plat_data, key=lambda p: sum(plat_data[p]) / len(plat_data[p])
+            )
+
+    # ── Segment-Channel Trend (Phase 3 — 시계열) ──
+    seg_chan_trend: dict[str, dict[str, list[dict]]] = {}
+    for edge in graph.edges:
+        if not edge.segment_id or not edge.timestamp:
+            continue
+        node = next((n for n in graph.nodes if n.node_id == edge.node_id), None)
+        if not node:
+            continue
+        month = edge.timestamp[:7]  # "2026-04"
+        seg_chan_trend.setdefault(edge.segment_id, {}).setdefault(node.platform, [])
+        month_entries = seg_chan_trend[edge.segment_id][node.platform]
+        existing = next((m for m in month_entries if m["month"] == month), None)
+        if existing:
+            existing["count"] += 1
+            existing["total_score"] += _LEVEL_SCORE.get(edge.engagement_level, 0)
+        else:
+            month_entries.append({
+                "month": month,
+                "count": 1,
+                "total_score": _LEVEL_SCORE.get(edge.engagement_level, 0),
+            })
+
+    # avg_engagement 계산
+    _SCORE_LABEL = {1: "low", 2: "medium", 3: "high", 4: "viral"}
+    for seg_id, plat_data in seg_chan_trend.items():
+        for plat, months in plat_data.items():
+            for m in months:
+                avg = m["total_score"] / m["count"] if m["count"] > 0 else 0
+                m["avg_engagement"] = _SCORE_LABEL.get(round(avg), "low")
+                del m["total_score"]  # 내부용 제거
+
+    graph.segment_channel_trend = seg_chan_trend
+
+    # ── Seasonal Patterns (Phase 3) ──
+    _MONTH_SEASON = {1: "winter", 2: "winter", 3: "spring", 4: "spring", 5: "spring",
+                     6: "summer", 7: "summer", 8: "summer", 9: "fall", 10: "fall",
+                     11: "fall", 12: "winter"}
+    season_data: dict[str, dict[str, int]] = {}
+    for edge in graph.edges:
+        if not edge.timestamp:
+            continue
+        try:
+            month_num = int(edge.timestamp[5:7])
+        except (ValueError, IndexError):
+            continue
+        season = _MONTH_SEASON.get(month_num, "")
+        if not season:
+            continue
+        season_data.setdefault(season, {"count": 0, "total_score": 0})
+        season_data[season]["count"] += 1
+        season_data[season]["total_score"] += _LEVEL_SCORE.get(edge.engagement_level, 0)
+
+    graph.seasonal_patterns = {}
+    for season, data in season_data.items():
+        avg = data["total_score"] / data["count"] if data["count"] > 0 else 0
+        graph.seasonal_patterns[season] = {
+            "campaigns": data["count"],
+            "avg_engagement": _SCORE_LABEL.get(round(avg), "low"),
+        }
 
 
 def memory_get_performance_pending(tool_context: ToolContext) -> str:
@@ -2255,46 +2633,34 @@ def build_memory_context_block(memory: MemoryState, user_query: str = "") -> str
         domain_lines.append(f"  Hours        : {dp.operating_hours}")
     for k, v in (dp.domain_extra or {}).items():
         domain_lines.append(f"  {k.replace('_',' ').title():<12}: {v}")
-    # Domain Knowledge (flexible key-value store)
+    # Domain Knowledge — 카탈로그만 (ID+category+title). 상세는 memory_get_knowledge() 호출.
     if hasattr(dp, 'knowledge') and dp.knowledge:
-        domain_lines.append("  ── Domain Knowledge ──")
-        for dk in dp.knowledge[:15]:  # Show top 15
-            conf = "✓" if dk.confidence == "confirmed" else "?"
-            domain_lines.append(f"  {conf} {dk.key.replace('_',' ').title()}: {dk.value[:80]}")
+        domain_lines.append(f"  ── Knowledge Catalog ({len(dp.knowledge)}건) ──")
+        for dk in dp.knowledge:
+            kid = getattr(dk, 'knowledge_id', '') or ''
+            cat = getattr(dk, 'category', '') or getattr(dk, 'key', '')
+            title = getattr(dk, 'title', '') or getattr(dk, 'value', '')[:60]
+            domain_lines.append(f"  {kid}: {cat} — {title}")
+        domain_lines.append("  → 상세는 memory_get_knowledge(id) 호출")
     if not domain_lines:
         domain_lines = ["  (not configured — use memory_update_domain_profile to fill)"]
 
-    # ── Audience Block ────────────────────────────────────────────────
+    # ── Audience Block — 카탈로그만 (ID+이름+연령+채널). 상세는 도구 호출. ──
     audience_lines = []
     if audience.target_platforms:
         audience_lines.append(f"  Platforms    : {', '.join(audience.target_platforms)}")
-    if audience.default_age_range:
-        audience_lines.append(f"  Default Age  : {audience.default_age_range}")
     if audience.segments:
-        audience_lines.append(f"  Segments ({len(audience.segments)}):")
-        for seg in audience.segments[:5]:  # Show first 5 to save context budget
-            seg_info = f"    [{seg.name}]"
+        audience_lines.append(f"  ── Segment Catalog ({len(audience.segments)}개) ──")
+        for seg in audience.segments:
+            seg_info = f"  {seg.segment_id}: {seg.name}"
             if seg.age_range:
-                seg_info += f" age={seg.age_range}"
-            if seg.gender:
-                seg_info += f" gender={seg.gender}"
-            if seg.products:
-                seg_info += f" products={', '.join(seg.products[:3])}"
+                seg_info += f" | {seg.age_range}"
             if seg.platforms:
-                seg_info += f" channels={', '.join(seg.platforms[:3])}"
+                seg_info += f" | {', '.join(seg.platforms[:2])}"
             audience_lines.append(seg_info)
-            # Show top 3 traits per segment
-            for trait in seg.traits[:3]:
-                conf = "✓" if trait.confidence == "confirmed" else "?" if trait.confidence == "inferred" else "★"
-                audience_lines.append(f"      {conf} {trait.key}: {trait.value[:60]}")
-        if len(audience.segments) > 5:
-            audience_lines.append(f"    … (+{len(audience.segments) - 5} more segments)")
-    if audience.seasonal_peaks:
-        audience_lines.append(f"  Seasonal     : {', '.join(audience.seasonal_peaks)}")
-    if audience.offline_channels:
-        audience_lines.append(f"  Offline Ch.  : {', '.join(audience.offline_channels)}")
+        audience_lines.append("  → 상세는 memory_get_audience_segments() 호출")
     if not audience_lines:
-        audience_lines = ["  (not configured — use memory_update_domain_profile or memory_update_audience_segment to fill)"]
+        audience_lines = ["  (not configured — use memory_update_audience_segment to fill)"]
 
     # ── Recall log: token-budget window ──────────────────────────────
     recall_lines = []
@@ -2509,20 +2875,13 @@ def build_memory_context_block(memory: MemoryState, user_query: str = "") -> str
             temporal_lines.append(f"  같은 시즌 과거 캠페인: {len(season_campaigns)}건 (성과 데이터 있음)")
             temporal_lines.append("  → 현재 시즌에 맞는 과거 성공 전략을 우선 적용하세요.")
 
-    # ── [Phase 2] Product Intelligence — 제품별 성과 요약 ──────────────
+    # ── [Phase 2] Product Catalog — ID+이름만 Core에 주입 ──────────────
     product_lines: list[str] = []
     if memory.product_archive:
-        product_lines.append(f"  등록 제품: {len(memory.product_archive)}개")
-        for prod in memory.product_archive[:5]:
-            line = f"    • {prod.name}"
-            if prod.best_platform:
-                line += f" | 최적 채널: {prod.best_platform}"
-            if prod.avg_engagement:
-                line += f" | 참여도: {prod.avg_engagement}"
-            if prod.total_campaigns > 0:
-                line += f" | 캠페인 {prod.total_campaigns}건"
-            product_lines.append(line)
-        product_lines.append("  → 제품별 과거 성과를 참조하여 채널/콘텐츠 전략을 최적화하세요.")
+        product_lines.append(f"  ── Product Catalog ({len(memory.product_archive)}개) ──")
+        for prod in memory.product_archive:
+            product_lines.append(f"  {prod.product_id}: {prod.name}")
+        product_lines.append("  → 상세는 memory_get_product(id) 호출")
 
     # ── Performance pending (session-start trigger) ───────────────────
     pending = [p for p in memory.performance_pending if p.ask_count < 2]
@@ -2565,12 +2924,22 @@ def build_memory_context_block(memory: MemoryState, user_query: str = "") -> str
     ]
 
     # --- Trimmable sections (lowest priority first) ---
+    # Campaign 카탈로그 (ID+goal+채널+성과, 최근 10건)
+    campaign_catalog_lines = []
+    if memory.campaign_archive:
+        for c in memory.campaign_archive[-10:]:
+            plats = ','.join(c.platforms_used[:2]) if c.platforms_used else ''
+            eng = c.performance.engagement_level if c.performance else 'N/A'
+            goal_short = c.goal[:40] if c.goal else ''
+            campaign_catalog_lines.append(f"  {c.campaign_id}: {goal_short} | {plats} | {eng}")
+
     sec_archival = [
         "",
-        "▶ ARCHIVAL MEMORY (search-based only — use tools to retrieve)",
-        f"  Campaigns stored : {n_campaigns}",
+        "▶ ARCHIVAL MEMORY (search-based — use tools to retrieve details)",
+        f"  ── Campaign Catalog ({n_campaigns}건) ──",
+        *campaign_catalog_lines,
         f"  Conversations    : {n_conversations}",
-        "  → Use memory_search_campaigns / memory_search_conversations tools",
+        "  → 상세는 memory_search_campaigns() / memory_get_product() 호출",
     ]
 
     sec_behavior = [

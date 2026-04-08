@@ -837,6 +837,71 @@ async def update_asset_performance(user_id: str, asset_id: str, request: Request
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
+@app.get("/memory/{user_id}/products")
+async def get_products(user_id: str):
+    """List all products from product_archive."""
+    try:
+        svc = _get_session_service()
+        session_id = _memory_session_id(user_id)
+        session = await svc.get_session(
+            app_name=_APP_NAME, user_id=user_id, session_id=session_id
+        )
+        if session is None:
+            return JSONResponse(content={"products": [], "total": 0})
+        raw_memory = session.state.get(_MEMORY_KEY, {})
+        products = raw_memory.get("product_archive", [])
+        return JSONResponse(content={"products": products, "total": len(products)})
+    except Exception:
+        logger.exception("get_products failed for user_id=%s", user_id)
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+
+@app.get("/memory/{user_id}/products/{product_id}")
+async def get_product_detail(user_id: str, product_id: str):
+    """Get a single product by ID."""
+    try:
+        svc = _get_session_service()
+        session_id = _memory_session_id(user_id)
+        session = await svc.get_session(
+            app_name=_APP_NAME, user_id=user_id, session_id=session_id
+        )
+        if session is None:
+            raise HTTPException(status_code=404, detail="User memory not found")
+        raw_memory = session.state.get(_MEMORY_KEY, {})
+        products = raw_memory.get("product_archive", [])
+        for p in products:
+            if isinstance(p, dict) and p.get("product_id") == product_id:
+                return JSONResponse(content=p)
+        raise HTTPException(status_code=404, detail=f"Product '{product_id}' not found")
+    except HTTPException:
+        raise
+    except Exception:
+        logger.exception("get_product_detail failed for user_id=%s, product_id=%s", user_id, product_id)
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+
+@app.get("/memory/{user_id}/knowledge")
+async def get_knowledge_list(user_id: str, category: str = ""):
+    """List knowledge items, optionally filtered by category."""
+    try:
+        svc = _get_session_service()
+        session_id = _memory_session_id(user_id)
+        session = await svc.get_session(
+            app_name=_APP_NAME, user_id=user_id, session_id=session_id
+        )
+        if session is None:
+            return JSONResponse(content={"knowledge": [], "total": 0})
+        raw_memory = session.state.get(_MEMORY_KEY, {})
+        domain_block = raw_memory.get("domain_block", {})
+        knowledge = domain_block.get("knowledge", [])
+        if category:
+            knowledge = [k for k in knowledge if isinstance(k, dict) and (k.get("category", "") == category or k.get("key", "") == category)]
+        return JSONResponse(content={"knowledge": knowledge, "total": len(knowledge), "category_filter": category or "all"})
+    except Exception:
+        logger.exception("get_knowledge_list failed for user_id=%s", user_id)
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+
 @app.put("/memory/{user_id}/campaigns/{campaign_id}/performance")
 async def update_campaign_performance(user_id: str, campaign_id: str, request: Request):
     """

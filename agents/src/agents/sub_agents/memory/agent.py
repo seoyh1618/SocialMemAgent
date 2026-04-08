@@ -1,5 +1,6 @@
 """
 MemGPT Memory Agent — manages persistent user memory across sessions.
+Skill MD 참조 기반 구조화 저장/조회 전담.
 """
 
 from google.adk.agents import Agent
@@ -10,6 +11,10 @@ from ...memory_tools import (
     memory_update_brand_voice,
     memory_update_domain_profile,
     memory_add_domain_knowledge,
+    memory_get_knowledge,
+    memory_add_product,
+    memory_get_product,
+    memory_update_product,
     memory_update_audience_segment,
     memory_add_audience_trait,
     memory_get_audience_segments,
@@ -30,6 +35,7 @@ from ...memory_tools import (
     memory_get_assets,
     memory_compress_context,
     memory_get_context_status,
+    read_skill_md,
 )
 from . import prompt
 
@@ -39,12 +45,19 @@ memory_agent = Agent(
     description=prompt.MEMORY_AGENT_DESCRIPTION,
     instruction=prompt.MEMORY_AGENT_INSTRUCTIONS,
     tools=[
+        # Skill MD 참조
+        read_skill_md,
         # Core Memory — profile, voice, domain
         memory_get_core_profile,
         memory_update_user_profile,
         memory_update_brand_voice,
         memory_update_domain_profile,
         memory_add_domain_knowledge,
+        memory_get_knowledge,
+        # Product CRUD
+        memory_add_product,
+        memory_get_product,
+        memory_update_product,
         # Audience
         memory_update_audience_segment,
         memory_add_audience_trait,

@@ -77,16 +77,39 @@ class SocialMediaAgentOutput(BaseModel):
 # ─── MemGPT Memory Schemas ────────────────────────────────────────────────────
 
 class PersonaBlock(BaseModel):
-    """MemGPT Core Memory: Persona Block — brand voice and style identity."""
-    tone: str = Field(default="", description="Brand tone")
-    preferred_styles: List[str] = Field(default_factory=list)
-    avoid_topics: List[str] = Field(default_factory=list)
-    signature_hashtags: List[str] = Field(default_factory=list)
-    content_pillars: List[str] = Field(default_factory=list)
-    extra: dict = Field(
-        default_factory=dict,
-        description="Flexible key-value store for brand attributes not covered by fixed fields (e.g., slogan, brand_story, visual_identity)."
-    )
+    """
+    MemGPT Core Memory: Persona Block (BrandVoice) — 브랜드 톤, 스타일, 표현 규칙.
+    Core에 전체 주입 (1매장=1레코드, 고정). 채널별 톤 오버라이드 지원.
+    """
+    # 식별
+    voice_id: str = Field(default="", description="식별 ID")
+    # 톤
+    tone: str = Field(default="", description="[레거시] Brand tone — tone_primary 사용 권장")
+    tone_primary: str = Field(default="", description="기본 톤 (e.g., '따뜻하고 친근한')")
+    tone_formality: str = Field(default="", description="formal / semi-formal / casual / playful")
+    # 성격/스타일
+    personality_traits: List[str] = Field(default_factory=list, description="브랜드 성격 (e.g., ['caring', 'approachable'])")
+    writing_style: str = Field(default="", description="short_punchy / narrative / informative")
+    preferred_styles: List[str] = Field(default_factory=list, description="비주얼 스타일")
+    color_palette: List[str] = Field(default_factory=list, description="브랜드 컬러")
+    photography_style: str = Field(default="", description="overhead / lifestyle / product_closeup")
+    # 이모지
+    emoji_usage: str = Field(default="", description="none / minimal / moderate / heavy")
+    emoji_set: List[str] = Field(default_factory=list, description="브랜드 이모지 (e.g., ['☕', '🍞'])")
+    # 콘텐츠
+    content_pillars: List[str] = Field(default_factory=list, description="콘텐츠 핵심 주제 (3~5개)")
+    signature_hashtags: List[str] = Field(default_factory=list, description="매 포스트에 자동 추가")
+    # 금지
+    avoid_topics: List[str] = Field(default_factory=list, description="절대 언급 금지")
+    avoid_words: List[str] = Field(default_factory=list, description="사용 금지 단어")
+    # CTA/스토리
+    preferred_cta_style: str = Field(default="", description="direct / soft_invitation / question")
+    brand_story_snippet: str = Field(default="", description="브랜드 스토리 (2~3문장)")
+    slogan: str = Field(default="", description="슬로건")
+    # 채널별 오버라이드
+    platform_voice_overrides: dict = Field(default_factory=dict, description="채널별 톤 오버라이드 (e.g., {'tiktok': {'tone': 'playful'}})")
+    # 동적 확장
+    extra: dict = Field(default_factory=dict, description="기존 스키마에 없는 추가 속성")
 
 
 # Backward compatibility alias
@@ -95,13 +118,22 @@ BrandVoice = PersonaBlock
 
 class DomainKnowledge(BaseModel):
     """
-    도메인 지식 항목 — LLM이 대화 중 수집한 비즈니스 정보를 자유롭게 저장.
-    고정 스키마 없이 key-value로 어떤 산업이든 유연하게 대응.
+    도메인 지식 항목 — LLM이 대화 중 수집한 비즈니스 정보를 구조화하여 저장.
+    17종 category + marketing_angle로 마케팅 활용 가능한 형태로 관리.
+    Core에는 카탈로그(ID+category+title)만 주입, 상세는 도구 호출로 조회.
     """
-    key: str = Field(description="정보 카테고리 (e.g., 'flagship_product', 'menu_item', 'service', 'material', 'certification', 'partnership')")
-    value: str = Field(description="정보 내용 (e.g., '시그니처 딸기라떼 - 신선한 딸기 사용, 6,500원')")
-    confidence: str = Field(default="confirmed", description="정보 신뢰도: 'confirmed' (사용자 직접 언급), 'inferred' (대화에서 추론)")
-    source_turn: str = Field(default="", description="수집 시점 (ISO timestamp 또는 대화 요약)")
+    knowledge_id: str = Field(default="", description="고유 식별 ID (자동 생성, e.g., 'dk_001')")
+    key: str = Field(default="", description="[레거시] 정보 카테고리 — category 사용 권장")
+    category: str = Field(default="", description="지식 카테고리 (17종: sourcing, certification, partnership, facility, process, policy, event, competitive_advantage, local_context, customer_insight, sales_channel, regulation, review_highlight, seasonal_pattern, pricing_strategy, community, competitor_intel)")
+    title: str = Field(default="", description="제목 (1줄 요약, Core 카탈로그에 표시)")
+    value: str = Field(default="", description="[레거시] 정보 내용 — detail 사용 권장")
+    detail: str = Field(default="", description="상세 내용 (도구 호출 시 반환)")
+    marketing_angle: str = Field(default="", description="콘텐츠에서 어떻게 활용할지 (e.g., '신선함+안심 강조')")
+    confidence: str = Field(default="confirmed", description="정보 신뢰도: 'confirmed' / 'inferred'")
+    expiry_hint: str = Field(default="permanent", description="유효 기간: 'permanent' / 'seasonal' / 'needs_refresh'")
+    related_products: List[str] = Field(default_factory=list, description="관련 제품 ID (e.g., ['prod_001'])")
+    priority: str = Field(default="medium", description="우선순위: 'high' / 'medium' / 'low'")
+    source_turn: str = Field(default="", description="수집 시점 (ISO timestamp)")
 
 
 class DomainProfileBlock(BaseModel):
@@ -154,11 +186,43 @@ class DomainProfileBlock(BaseModel):
 
 
 class HumanBlock(BaseModel):
-    """MemGPT Core Memory: Human Block — user identity and contact."""
-    display_name: str = Field(default="")
-    twitter_handle: Optional[str] = Field(default=None)
-    instagram_handle: Optional[str] = Field(default=None)
-    extra_fields: dict = Field(default_factory=dict)
+    """
+    MemGPT Core Memory: Human Block (OwnerProfile) — 매장 고유 속성.
+    다른 매장은 이 값을 가질 수 없는 것들. Core에 전체 주입 (1매장=1레코드, 고정).
+    """
+    # 기본 식별
+    profile_id: str = Field(default="", description="내부 식별 ID")
+    display_name: str = Field(default="", description="브랜드명 (콘텐츠에 삽입)")
+    owner_name: str = Field(default="", description="대표자명")
+    # 레거시 핸들 (social_handles로 이전 권장)
+    twitter_handle: Optional[str] = Field(default=None, description="[레거시] Twitter 핸들")
+    instagram_handle: Optional[str] = Field(default=None, description="[레거시] Instagram 핸들")
+    social_handles: dict = Field(default_factory=dict, description="SNS 계정 통합 (e.g., {'instagram': '@cafe_bom'})")
+    # 사업 정보
+    business_type: str = Field(default="", description="B2C_retail / B2C_service / B2B")
+    industry: str = Field(default="", description="업종 (e.g., 'cafe', 'bakery')")
+    industry_subcategory: str = Field(default="", description="세부 업종 (e.g., 'specialty_coffee')")
+    founding_date: str = Field(default="", description="설립일 (N년 경력 메시지용)")
+    business_stage: str = Field(default="", description="startup / growth / established")
+    team_size: int = Field(default=0, description="인원 (콘텐츠 제작 역량 판단)")
+    monthly_marketing_budget: str = Field(default="", description="마케팅 예산 (유료/무료 전략 결정)")
+    # 위치/운영
+    business_location: str = Field(default="", description="사업 위치 (지역 타겟팅)")
+    service_area: str = Field(default="", description="서비스 범위")
+    operating_hours: str = Field(default="", description="영업시간 (포스팅 타이밍)")
+    # 목표
+    primary_goal: str = Field(default="", description="핵심 마케팅 목표 (e.g., 'increase_foot_traffic')")
+    secondary_goals: List[str] = Field(default_factory=list, description="보조 목표")
+    # 추가 정보
+    website_url: str = Field(default="", description="웹사이트 URL")
+    owner_role_in_content: str = Field(default="", description="face_of_brand / behind_scenes / not_visible")
+    languages: List[str] = Field(default_factory=list, description="콘텐츠 언어")
+    payment_methods: List[str] = Field(default_factory=list, description="결제 수단")
+    reservation_system: str = Field(default="", description="예약 시스템 유무")
+    delivery_available: bool = Field(default=False, description="배달 가능 여부")
+    online_store_url: str = Field(default="", description="온라인 판매 URL")
+    # 동적 확장
+    extra_fields: dict = Field(default_factory=dict, description="기존 스키마에 없는 추가 속성")
 
 
 class AudienceTrait(BaseModel):
@@ -315,11 +379,11 @@ class AudienceBehaviorGraph(BaseModel):
     """
     Audience-level User Behavior Graph.
     콘텐츠-채널-주제 간 관계와 집계된 사용자 행동 데이터 기반.
-    전체 사용자 집단의 선호 패턴 분석에 사용.
+    Core에는 요약(proven/failed/best_platform)만 주입, 상세는 도구 호출.
     """
     nodes: List[ContentNode] = Field(default_factory=list)
     edges: List[PerformanceEdge] = Field(default_factory=list)
-    # 집계 인사이트 — build_memory_context_block에서 직접 주입
+    # ── 집계 인사이트 (Core에 요약 주입) ──
     platform_best_content_type: dict = Field(
         default_factory=dict,
         description="Per-platform best content type: {'instagram': 'image', 'tiktok': 'video'}"
@@ -332,6 +396,40 @@ class AudienceBehaviorGraph(BaseModel):
         default="",
         description="Platform with highest average engagement across all campaigns"
     )
+    proven_tactics: List[str] = Field(
+        default_factory=list,
+        description="일관적으로 효과적인 전략 (e.g., ['감성사진', '12시포스팅'])"
+    )
+    failed_tactics: List[str] = Field(
+        default_factory=list,
+        description="일관적으로 실패하는 전략 (e.g., ['가격비교', '긴캡션'])"
+    )
+    confidence_level: str = Field(
+        default="insufficient",
+        description="데이터 신뢰도: insufficient(<5) / moderate(5-15) / reliable(>15)"
+    )
+    total_data_points: int = Field(
+        default=0,
+        description="총 성과 관측 수"
+    )
+    # ── 시계열 추적 (Phase 3 — 주도적 파트너 기능) ──
+    segment_channel_trend: dict = Field(
+        default_factory=dict,
+        description="세그먼트별 채널 성과 추이: {'seg_001': {'instagram': [{'month': '2026-03', 'engagement': 'high', 'count': 5}]}}"
+    )
+    seasonal_patterns: dict = Field(
+        default_factory=dict,
+        description="시즌별 성과 패턴: {'spring': {'best_topics': ['봄카페'], 'avg_engagement': 'high'}}"
+    )
+    trend_performance: dict = Field(
+        default_factory=dict,
+        description="트렌드별 성과: {'봄카페': [{'month': '2026-03', 'campaigns': 2, 'avg_engagement': 'high'}]}"
+    )
+    segment_channel_matrix: dict = Field(
+        default_factory=dict,
+        description="세그먼트별 최적 채널: {'seg_001': 'instagram', 'seg_002': 'kakao'}"
+    )
+    # ── 메타 ──
     last_updated: str = Field(default="")
 
 
@@ -398,18 +496,38 @@ class GeneratedAsset(BaseModel):
 
 
 class ProductRecord(BaseModel):
-    """[Phase 2] Product Intelligence — 제품/서비스별 마케팅 성과 축적."""
-    product_id: str = Field(description="Unique product identifier (auto-generated).")
-    name: str = Field(description="Product name (e.g., '두바이 쫀득 쿠키').")
-    category: str = Field(default="", description="Product category (e.g., '디저트', '빵').")
-    price: str = Field(default="", description="Price info if known.")
-    features: List[str] = Field(default_factory=list, description="Key features (e.g., ['쫀득한 식감', '프리미엄']).")
+    """
+    Product Intelligence — 제품/서비스별 마케팅 정보 + 성과 축적.
+    Core에는 ID+이름만 주입, 상세는 memory_get_product(id)로 조회.
+    """
+    product_id: str = Field(description="Unique product identifier (auto-generated, e.g., 'prod_001').")
+    name: str = Field(description="Product name (e.g., '소세지빵').")
+    category: str = Field(default="", description="Product category (e.g., '빵', '라떼').")
+    product_type: str = Field(default="product", description="product / service / package / subscription")
+    price: str = Field(default="", description="Price (e.g., '3,000원').")
+    description: str = Field(default="", description="마케팅용 설명.")
+    price_positioning: str = Field(default="", description="budget / value / premium_justified / luxury")
+    features: List[str] = Field(default_factory=list, description="핵심 특성.")
+    unique_selling_point: str = Field(default="", description="차별점.")
+    target_segments: List[str] = Field(default_factory=list, description="타겟 세그먼트 ID (e.g., ['seg_001']).")
+    seasonal_relevance: List[str] = Field(default_factory=list, description="시즌 (e.g., ['spring', 'summer']).")
+    availability: str = Field(default="available", description="available / seasonal_only / limited_edition")
+    visual_description: str = Field(default="", description="이미지 생성 가이드.")
+    messaging_hooks: List[str] = Field(default_factory=list, description="사전 승인된 마케팅 문구.")
+    customer_objections: List[str] = Field(default_factory=list, description="예상 반론 + 대응.")
+    # 성과 (학습됨)
     related_campaigns: List[str] = Field(default_factory=list, description="Campaign IDs that promoted this product.")
-    best_platform: str = Field(default="", description="Most effective platform for this product.")
-    best_content_type: str = Field(default="", description="Most effective content type (image/video/text).")
-    total_campaigns: int = Field(default=0, description="Number of campaigns for this product.")
-    avg_engagement: str = Field(default="", description="Average engagement level across campaigns.")
-    seasonal_peak: str = Field(default="", description="Best performing season for this product.")
+    best_platform: str = Field(default="", description="성과 기반 최적 채널.")
+    best_content_type: str = Field(default="", description="성과 기반 최적 포맷.")
+    total_campaigns: int = Field(default=0, description="총 캠페인 수.")
+    avg_engagement: str = Field(default="", description="평균 참여도.")
+    seasonal_peak: str = Field(default="", description="Best performing season.")
+    # 가격 이력 (Phase 3)
+    price_history: List[dict] = Field(
+        default_factory=list,
+        description="가격 변경 이력: [{'date': '2026-03-01', 'price': '3000원', 'avg_engagement': 'high'}]"
+    )
+    # 메타
     created_at: str = Field(default="", description="ISO-8601 first mention timestamp.")
     last_updated: str = Field(default="", description="ISO-8601 last update timestamp.")
 
@@ -526,6 +644,55 @@ class MemoryState(BaseModel):
                         ]
                     else:
                         ab['segments'] = []
+
+        # ── Migrate HumanBlock: twitter/instagram handles → social_handles ──
+        if isinstance(data, dict) and 'human_block' in data:
+            hb = data['human_block']
+            if isinstance(hb, dict):
+                sh = hb.setdefault('social_handles', {})
+                if hb.get('twitter_handle') and 'twitter' not in sh:
+                    sh['twitter'] = hb['twitter_handle']
+                if hb.get('instagram_handle') and 'instagram' not in sh:
+                    sh['instagram'] = hb['instagram_handle']
+                # Promote extra_fields to first-class fields
+                ef = hb.get('extra_fields', {})
+                if isinstance(ef, dict):
+                    for key_map in [('location', 'business_location'), ('industry', 'industry'),
+                                    ('goal', 'primary_goal'), ('budget', 'monthly_marketing_budget')]:
+                        old_key, new_key = key_map
+                        if old_key in ef and not hb.get(new_key):
+                            hb[new_key] = ef.pop(old_key)
+
+        # ── Migrate PersonaBlock: tone → tone_primary ──
+        if isinstance(data, dict) and 'persona_block' in data:
+            pb = data['persona_block']
+            if isinstance(pb, dict):
+                if pb.get('tone') and not pb.get('tone_primary'):
+                    pb['tone_primary'] = pb['tone']
+                # Promote extra to first-class fields
+                ex = pb.get('extra', {})
+                if isinstance(ex, dict):
+                    for key_map in [('slogan', 'slogan'), ('brand_story', 'brand_story_snippet')]:
+                        old_key, new_key = key_map
+                        if old_key in ex and not pb.get(new_key):
+                            pb[new_key] = ex.pop(old_key)
+
+        # ── Migrate DomainKnowledge: auto-assign knowledge_id ──
+        if isinstance(data, dict) and 'domain_block' in data:
+            db = data['domain_block']
+            if isinstance(db, dict) and 'knowledge' in db:
+                kl = db['knowledge']
+                if isinstance(kl, list):
+                    for i, k in enumerate(kl):
+                        if isinstance(k, dict):
+                            if not k.get('knowledge_id'):
+                                k['knowledge_id'] = f"dk_{i+1:03d}"
+                            if k.get('key') and not k.get('category'):
+                                k['category'] = k['key']
+                            if k.get('value') and not k.get('title'):
+                                k['title'] = k['value'][:80]
+                            if k.get('value') and not k.get('detail'):
+                                k['detail'] = k['value']
 
         return data
 

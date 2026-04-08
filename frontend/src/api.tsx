@@ -80,6 +80,16 @@ export const TOOL_DISPLAY_NAMES: Record<string, string> = {
   memory_update_user_profile: '사용자 프로필 업데이트 중',
   memory_update_brand_voice: '브랜드 보이스 업데이트 중',
   memory_update_domain_profile: '도메인 프로파일 업데이트 중',
+  memory_add_domain_knowledge: '도메인 지식 저장 중',
+  memory_get_knowledge: '도메인 지식 조회 중',
+  memory_add_product: '제품 등록 중',
+  memory_get_product: '제품 상세 조회 중',
+  memory_update_product: '제품 정보 수정 중',
+  memory_update_audience_segment: '타겟 고객 업데이트 중',
+  memory_add_audience_trait: '고객 특성 추가 중',
+  memory_get_audience_segments: '타겟 세그먼트 조회 중',
+  memory_mark_performance_asked: '성과 질문 마킹 중',
+  read_skill_md: '📋 스킬 MD 참조 중',
   memory_archive_campaign: '캠페인 저장 중',
   memory_search_campaigns: '캠페인 검색 중',
   memory_get_recent_campaigns: '최근 캠페인 조회 중',
@@ -551,6 +561,54 @@ export const fetchUserAssets = async (
   }
 };
 
+
+/**
+ * Fetch all products from product_archive.
+ */
+export const fetchProducts = async (
+  userId: string
+): Promise<{ products: any[]; total: number }> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/memory/${userId}/products`);
+    if (!response.ok) return { products: [], total: 0 };
+    return await response.json();
+  } catch {
+    return { products: [], total: 0 };
+  }
+};
+
+/**
+ * Fetch a single product by ID.
+ */
+export const fetchProductDetail = async (
+  userId: string,
+  productId: string
+): Promise<any | null> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/memory/${userId}/products/${productId}`);
+    if (!response.ok) return null;
+    return await response.json();
+  } catch {
+    return null;
+  }
+};
+
+/**
+ * Fetch knowledge items, optionally filtered by category.
+ */
+export const fetchKnowledge = async (
+  userId: string,
+  category?: string
+): Promise<{ knowledge: any[]; total: number }> => {
+  try {
+    const params = category ? `?category=${encodeURIComponent(category)}` : '';
+    const response = await fetch(`${API_BASE_URL}/memory/${userId}/knowledge${params}`);
+    if (!response.ok) return { knowledge: [], total: 0 };
+    return await response.json();
+  } catch {
+    return { knowledge: [], total: 0 };
+  }
+};
 
 // interface ParsedChatResponse {
 //     text?: string;

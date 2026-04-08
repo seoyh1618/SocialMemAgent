@@ -16,6 +16,11 @@ from .memory_tools import (
     memory_update_user_profile,
     memory_update_brand_voice,
     memory_update_domain_profile,
+    memory_add_domain_knowledge,
+    memory_get_knowledge,
+    memory_add_product,
+    memory_get_product,
+    memory_update_product,
     memory_archive_campaign,
     memory_search_campaigns,
     memory_get_recent_campaigns,
@@ -33,10 +38,10 @@ from .memory_tools import (
     memory_get_recall_log,
     memory_archive_conversation,
     memory_search_conversations,
-    memory_add_domain_knowledge,
     memory_update_audience_segment,
     memory_add_audience_trait,
     memory_get_audience_segments,
+    read_skill_md,
     build_memory_context_block,
     _compact_recall_to_summary,
     _embed,
@@ -1280,29 +1285,43 @@ general_chat_agent = Agent(
     tools=[
         get_trends,
         advanced_search,
+        # Core Memory 조회/수정
         memory_get_core_profile,
         memory_update_user_profile,
         memory_update_brand_voice,
-        memory_update_domain_profile,      # ← 도메인 프로파일 블록 업데이트
-        memory_add_domain_knowledge,      # ← 도메인 지식 자유형 수집
-        memory_update_audience_segment,   # ← 오디언스 세그먼트 생성/업데이트
-        memory_add_audience_trait,        # ← 오디언스 특성 추가
-        memory_get_audience_segments,     # ← 오디언스 세그먼트 조회
+        memory_update_domain_profile,
+        memory_add_domain_knowledge,
+        memory_get_knowledge,              # ← Knowledge ID/category 기반 조회
+        # Product CRUD
+        memory_add_product,                # ← 제품 생성
+        memory_get_product,                # ← 제품 ID 기반 상세 조회
+        memory_update_product,             # ← 제품 업데이트
+        # Audience
+        memory_update_audience_segment,
+        memory_add_audience_trait,
+        memory_get_audience_segments,
+        # Campaign / Archival
         memory_get_recent_campaigns,
-        memory_search_campaigns,           # ← Semantic search (Vector Search 우선)
-        memory_archive_conversation,       # ← Archive conversation turns to archival memory
-        memory_search_conversations,       # ← Semantic search over conversation history
+        memory_search_campaigns,
+        memory_archive_conversation,
+        memory_search_conversations,
+        # Recall & Working Memory
         memory_update_working_summary,
         memory_add_performance_notes,
-        memory_collect_performance,        # ← 구조화 성과 데이터 수집 + 행동 그래프 업데이트
-        memory_get_performance_pending,    # ← 성과 수집 대기 캠페인 목록
-        memory_mark_performance_asked,     # ← 성과 질문 완료 마킹
-        memory_get_behavior_insights,      # ← 집계 행동 그래프 인사이트 조회
-        memory_append_recall,              # ← Rolling conversation log write
-        memory_get_recall_log,             # ← Recall log read
+        memory_append_recall,
+        memory_get_recall_log,
+        # Performance & Behavior
+        memory_collect_performance,
+        memory_get_performance_pending,
+        memory_mark_performance_asked,
+        memory_get_behavior_insights,
+        # Context Management
         memory_get_context_status,
         memory_compress_context,
-        AgentTool(agent=memory_agent),     # [Fix 3] delegate complex memory ops to dedicated agent
+        # Skill MD 참조
+        read_skill_md,                     # ← 스킬 MD 파일 읽기
+        # Memory Agent 위임
+        AgentTool(agent=memory_agent),
     ],
 )
 
