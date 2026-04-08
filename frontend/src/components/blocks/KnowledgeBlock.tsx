@@ -5,6 +5,7 @@
  */
 
 import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import {
   BookOpenIcon,
   FunnelIcon,
@@ -129,10 +130,14 @@ export default function KnowledgeBlock({ userId }: KnowledgeBlockProps) {
           const cat = item.category || item.key || 'other';
           const info = CATEGORY_LABELS[cat] || { label: cat, color: 'bg-gray-50 text-gray-700 border-gray-100' };
           return (
-            <button
+            <motion.button
               key={item.knowledge_id || idx}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: idx * 0.04, duration: 0.3 }}
+              whileHover={{ y: -2, boxShadow: '0 6px 20px rgba(0,0,0,0.05)' }}
               onClick={() => setSelectedItem(item)}
-              className="w-full text-left p-3 bg-white rounded-xl border border-gray-100 hover:border-indigo-200 hover:shadow-sm transition-all"
+              className="w-full text-left p-3 bg-white rounded-xl border border-gray-100 transition-colors"
             >
               <div className="flex items-start gap-2">
                 <span className={`text-[10px] px-1.5 py-0.5 rounded border shrink-0 mt-0.5 ${info.color}`}>
@@ -148,7 +153,7 @@ export default function KnowledgeBlock({ userId }: KnowledgeBlockProps) {
                 </div>
                 <span className="text-[10px] text-gray-300 shrink-0">{item.knowledge_id}</span>
               </div>
-            </button>
+            </motion.button>
           );
         })}
       </div>

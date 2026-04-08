@@ -5,6 +5,7 @@
  */
 
 import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../AuthContext';
 import {
   SparklesIcon,
@@ -92,13 +93,17 @@ export default function AppSidebar({
       <aside className="flex h-full w-64 flex-col bg-gray-950 text-white">
 
         {/* Logo */}
-        <div className="flex items-center gap-2.5 px-5 py-5 border-b border-white/10">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shrink-0">
-            <SparklesIcon className="w-4.5 h-4.5 text-white" />
-          </div>
+        <div className="flex items-center gap-3 px-5 py-5 border-b border-white/[0.06]">
+          <motion.div
+            whileHover={{ rotate: 12, scale: 1.05 }}
+            transition={{ type: 'spring', stiffness: 400 }}
+            className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shrink-0 shadow-lg shadow-indigo-500/20"
+          >
+            <SparklesIcon className="w-5 h-5 text-white" />
+          </motion.div>
           <div className="min-w-0">
-            <p className="text-sm font-bold text-white truncate">Social Agent</p>
-            <p className="text-[10px] text-indigo-400 font-medium">MemGPT Powered</p>
+            <p className="text-[15px] font-bold text-white tracking-tight">Social Agent</p>
+            <p className="text-[10px] text-gray-500 font-medium tracking-wider">5-BLOCK MEMORY</p>
           </div>
         </div>
 
@@ -148,18 +153,27 @@ export default function AppSidebar({
               <p className="px-2 mb-1.5 text-[9px] font-semibold text-gray-600 uppercase tracking-[0.15em]">{group.title}</p>
               <div className="space-y-0.5">
                 {group.items.map(({ id, icon: Icon, label, accent }) => (
-                  <button
+                  <motion.button
                     key={id}
                     onClick={() => onSectionChange(id)}
-                    className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-[13px] transition-all ${
+                    whileHover={{ x: 2 }}
+                    whileTap={{ scale: 0.98 }}
+                    className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-[13px] transition-colors relative ${
                       activeSection === id
-                        ? `${accentColors[accent]} font-medium border border-transparent`
+                        ? `${accentColors[accent]} font-medium`
                         : 'text-gray-500 hover:text-gray-300 hover:bg-white/[0.03]'
                     }`}
                   >
+                    {activeSection === id && (
+                      <motion.div
+                        layoutId="sidebar-active"
+                        className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-4 rounded-full bg-current opacity-60"
+                        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                      />
+                    )}
                     <Icon className="w-4 h-4 shrink-0" />
                     <span className="flex-1 text-left truncate">{label}</span>
-                  </button>
+                  </motion.button>
                 ))}
               </div>
             </div>
@@ -170,19 +184,25 @@ export default function AppSidebar({
         {user && (
           <div className="px-3 py-3 border-t border-white/[0.06]">
             <p className="px-2 mb-2 text-[9px] font-semibold text-gray-600 uppercase tracking-[0.15em]">메모리 상태</p>
-            <div className="space-y-1">
+            <div className="space-y-0.5">
               {[
                 { label: 'Owner', value: human.display_name || '미설정', color: 'text-indigo-400', dot: 'bg-indigo-500' },
                 { label: 'Voice', value: (voice as any).tone_primary || voice.tone || '미설정', color: 'text-purple-400', dot: 'bg-purple-500' },
                 { label: 'Product', value: `${(memory as any).product_archive?.length || 0}개`, color: 'text-amber-400', dot: 'bg-amber-500' },
                 { label: 'Audience', value: `${memory.audience_block?.segments?.length || 0}개`, color: 'text-teal-400', dot: 'bg-teal-500' },
                 { label: 'Campaign', value: `${memory.total_campaigns || 0}건`, color: 'text-rose-400', dot: 'bg-rose-500' },
-              ].map(({ label, value, color, dot }) => (
-                <div key={label} className="flex items-center gap-2 px-2 py-1">
-                  <span className={`w-1.5 h-1.5 rounded-full ${dot} shrink-0`} />
+              ].map(({ label, value, color, dot }, i) => (
+                <motion.div
+                  key={label}
+                  initial={{ opacity: 0, x: -8 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.05, duration: 0.3 }}
+                  className="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-white/[0.02] transition-colors"
+                >
+                  <span className={`w-1.5 h-1.5 rounded-full ${dot} shrink-0 ${value !== '미설정' && value !== '0개' && value !== '0건' ? 'animate-pulse' : 'opacity-30'}`} />
                   <span className="text-[10px] text-gray-600 w-14 shrink-0">{label}</span>
                   <span className={`text-[11px] ${color} truncate`}>{value}</span>
-                </div>
+                </motion.div>
               ))}
             </div>
           </div>

@@ -4,6 +4,7 @@
  * + Archival + Recall Memory
  */
 
+import { motion } from 'framer-motion';
 import type { MemoryState } from '../memory';
 import {
   UserCircleIcon,
@@ -53,13 +54,20 @@ function MemoryCard({
   children: React.ReactNode;
 }) {
   return (
-    <div className={`rounded-2xl border bg-white shadow-sm overflow-hidden`}>
-      <div className={`flex items-center gap-2 px-4 py-3 ${accentColor}`}>
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+      whileHover={{ y: -2, boxShadow: '0 8px 24px rgba(0,0,0,0.08)' }}
+      className="rounded-2xl border border-gray-100 bg-white overflow-hidden"
+      style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}
+    >
+      <div className={`flex items-center gap-2 px-4 py-2.5 ${accentColor}`}>
         <Icon className="w-4 h-4 text-white/90" />
-        <span className="text-sm font-semibold text-white">{title}</span>
+        <span className="text-[13px] font-semibold text-white tracking-tight">{title}</span>
       </div>
       <div className="px-4 py-3 space-y-2 text-sm">{children}</div>
-    </div>
+    </motion.div>
   );
 }
 
