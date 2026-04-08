@@ -21,6 +21,8 @@ import ToolBar from '../components/tool_bar';
 import ProfileBlock from '../components/blocks/profile_block';
 import CampaignHistoryBlock from '../components/blocks/CampaignHistoryBlock';
 import BehaviorGraphBlock from '../components/blocks/BehaviorGraphBlock';
+import ProductsBlock from '../components/blocks/ProductsBlock';
+import KnowledgeBlock from '../components/blocks/KnowledgeBlock';
 import AppSidebar from '../components/AppSidebar';
 import MemoryMindMap from '../components/MemoryMindMap';
 import CreationsTab from '../components/CreationsTab';
@@ -64,8 +66,8 @@ const LandingPage = () => {
 
   // Artifact panel
   const [showArtifactPanel, setShowArtifactPanel] = useState(false);
-  const [panelView, setPanelView] = useState<'artifacts' | 'context' | 'profile' | 'history' | 'conversations' | 'memory' | 'creations' | 'behavior'>('artifacts');
-  const [sideSection, setSideSection] = useState<'chat' | 'profile' | 'history' | 'conversations' | 'memory' | 'creations' | 'behavior'>('chat');
+  const [panelView, setPanelView] = useState<'artifacts' | 'context' | 'profile' | 'history' | 'conversations' | 'memory' | 'creations' | 'behavior' | 'products' | 'knowledge'>('artifacts');
+  const [sideSection, setSideSection] = useState<'chat' | 'profile' | 'products' | 'knowledge' | 'history' | 'conversations' | 'memory' | 'creations' | 'behavior'>('chat');
   const [isToolbarOpen, setIsToolbarOpen] = useState(false);
   // Context window usage (0–100), updated from SSE state_delta._ctx_usage_pct
   const [ctxUsagePct, setCtxUsagePct] = useState(0);
@@ -814,6 +816,8 @@ const LandingPage = () => {
             }
           }
           if (s === 'profile') { setShowArtifactPanel(true); setPanelView('profile'); loadUserMemory(userId).then(setMemory); }
+          if (s === 'products') { setShowArtifactPanel(true); setPanelView('products'); }
+          if (s === 'knowledge') { setShowArtifactPanel(true); setPanelView('knowledge'); }
           if (s === 'history') { setShowArtifactPanel(true); setPanelView('history'); loadUserMemory(userId).then(setMemory); }
           if (s === 'conversations') { setShowArtifactPanel(true); setPanelView('conversations'); }
           if (s === 'memory') { setShowArtifactPanel(true); setPanelView('memory'); }
@@ -835,7 +839,7 @@ const LandingPage = () => {
               {/* Panel header */}
               <div className="shrink-0 flex items-center justify-between px-6 py-3 border-b border-gray-100 bg-white">
                 <span className="text-sm font-semibold text-gray-700">
-                  {panelView === 'artifacts' ? '아티팩트' : panelView === 'context' ? '컨텍스트' : panelView === 'profile' ? '브랜드 프로필' : panelView === 'history' ? '캠페인 히스토리' : panelView === 'conversations' ? '대화 히스토리' : panelView === 'memory' ? '메모리 맵' : panelView === 'behavior' ? 'Behavior Graph' : 'Assets'}
+                  {panelView === 'artifacts' ? '아티팩트' : panelView === 'context' ? '컨텍스트' : panelView === 'profile' ? '브랜드 프로필' : panelView === 'products' ? '제품 카탈로그' : panelView === 'knowledge' ? '도메인 지식' : panelView === 'history' ? '캠페인 히스토리' : panelView === 'conversations' ? '대화 히스토리' : panelView === 'memory' ? '메모리 맵' : panelView === 'behavior' ? 'Behavior Graph' : 'Assets'}
                 </span>
                 <div className="flex items-center gap-2">
                   {(panelView === 'artifacts' || panelView === 'context') && base && (
@@ -860,7 +864,7 @@ const LandingPage = () => {
                 </div>
               </div>
               {/* Panel content */}
-              <div className={`flex-1 overflow-hidden flex flex-col ${panelView === 'memory' || panelView === 'creations' || panelView === 'conversations' || panelView === 'behavior' ? '' : 'overflow-y-auto px-6 pb-6 pt-4'}`}>
+              <div className={`flex-1 overflow-hidden flex flex-col ${panelView === 'memory' || panelView === 'creations' || panelView === 'conversations' || panelView === 'behavior' || panelView === 'products' || panelView === 'knowledge' ? '' : 'overflow-y-auto px-6 pb-6 pt-4'}`}>
                 {panelView === 'behavior' ? (
                   <div className="overflow-y-auto px-6 pb-6 pt-4 flex-1">
                     <BehaviorGraphBlock
@@ -879,9 +883,13 @@ const LandingPage = () => {
                     isActive={isLoading}
                     onEditClick={() => { setSideSection('profile'); setPanelView('profile'); }}
                   />
+                ) : panelView === 'products' ? (
+                  <ProductsBlock userId={userId} />
+                ) : panelView === 'knowledge' ? (
+                  <KnowledgeBlock userId={userId} />
                 ) : panelView === 'profile' ? (
                   <div className="w-full">
-                    <ProfileBlock memory={memory} onSave={handleMemorySave} userId={userId} initialTab="identity" />
+                    <ProfileBlock memory={memory} onSave={handleMemorySave} userId={userId} initialTab="owner" />
                   </div>
                 ) : panelView === 'history' ? (
                   <CampaignHistoryBlock

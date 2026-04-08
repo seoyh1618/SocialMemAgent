@@ -19,13 +19,17 @@ import {
   PhotoIcon,
   ChatBubbleLeftRightIcon,
   PresentationChartLineIcon,
+  CubeIcon,
+  BookOpenIcon,
 } from '@heroicons/react/24/outline';
 import type { MemoryState } from '../memory';
 
+type SidebarSection = 'chat' | 'profile' | 'products' | 'knowledge' | 'history' | 'conversations' | 'memory' | 'creations' | 'behavior';
+
 interface AppSidebarProps {
   memory: MemoryState;
-  activeSection: 'chat' | 'profile' | 'history' | 'conversations' | 'memory' | 'creations' | 'behavior';
-  onSectionChange: (s: 'chat' | 'profile' | 'history' | 'conversations' | 'memory' | 'creations' | 'behavior') => void;
+  activeSection: SidebarSection;
+  onSectionChange: (s: SidebarSection) => void;
   totalCampaigns?: number;
 }
 
@@ -34,7 +38,7 @@ export default function AppSidebar({
   activeSection,
   onSectionChange,
   totalCampaigns = 0,
-}: AppSidebarProps & { activeSection: 'chat' | 'profile' | 'history' | 'conversations' | 'memory' | 'creations' | 'behavior'; onSectionChange: (s: 'chat' | 'profile' | 'history' | 'conversations' | 'memory' | 'creations' | 'behavior') => void }) {
+}: AppSidebarProps) {
   const { user, doLogout } = useAuth();
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
@@ -44,6 +48,8 @@ export default function AppSidebar({
   const navItems = [
     { id: 'chat' as const, icon: Squares2X2Icon, label: '콘텐츠 생성' },
     { id: 'profile' as const, icon: UserCircleIcon, label: '브랜드 프로필' },
+    { id: 'products' as const, icon: CubeIcon, label: '제품 카탈로그' },
+    { id: 'knowledge' as const, icon: BookOpenIcon, label: '도메인 지식' },
     { id: 'history' as const, icon: ClockIcon, label: '캠페인 히스토리' },
     { id: 'conversations' as const, icon: ChatBubbleLeftRightIcon, label: '대화 히스토리' },
     { id: 'memory' as const, icon: CpuChipIcon, label: '메모리 맵' },
