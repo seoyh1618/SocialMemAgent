@@ -45,17 +45,46 @@ export default function AppSidebar({
   const voice = memory.persona_block;
   const profile = memory.human_block;
 
-  const navItems = [
-    { id: 'chat' as const, icon: Squares2X2Icon, label: '콘텐츠 생성' },
-    { id: 'profile' as const, icon: UserCircleIcon, label: '브랜드 프로필' },
-    { id: 'products' as const, icon: CubeIcon, label: '제품 카탈로그' },
-    { id: 'knowledge' as const, icon: BookOpenIcon, label: '도메인 지식' },
-    { id: 'history' as const, icon: ClockIcon, label: '캠페인 히스토리' },
-    { id: 'conversations' as const, icon: ChatBubbleLeftRightIcon, label: '대화 히스토리' },
-    { id: 'memory' as const, icon: CpuChipIcon, label: '메모리 맵' },
-    { id: 'behavior' as const, icon: PresentationChartLineIcon, label: 'Behavior Graph' },
-    { id: 'creations' as const, icon: PhotoIcon, label: 'Assets' },
+  // 그룹화된 네비게이션
+  const navGroups = [
+    {
+      title: '콘텐츠',
+      items: [
+        { id: 'chat' as const, icon: Squares2X2Icon, label: '콘텐츠 생성', accent: 'indigo' },
+      ],
+    },
+    {
+      title: '5-Block 메모리',
+      items: [
+        { id: 'profile' as const, icon: UserCircleIcon, label: 'Owner · Voice', accent: 'indigo' },
+        { id: 'products' as const, icon: CubeIcon, label: '제품 카탈로그', accent: 'amber' },
+        { id: 'knowledge' as const, icon: BookOpenIcon, label: '도메인 지식', accent: 'amber' },
+      ],
+    },
+    {
+      title: '성과 · 학습',
+      items: [
+        { id: 'history' as const, icon: ClockIcon, label: '캠페인', accent: 'rose' },
+        { id: 'behavior' as const, icon: PresentationChartLineIcon, label: 'Behavior Graph', accent: 'rose' },
+      ],
+    },
+    {
+      title: '기록',
+      items: [
+        { id: 'conversations' as const, icon: ChatBubbleLeftRightIcon, label: '대화 히스토리', accent: 'teal' },
+        { id: 'memory' as const, icon: CpuChipIcon, label: '메모리 맵', accent: 'purple' },
+        { id: 'creations' as const, icon: PhotoIcon, label: 'Assets', accent: 'purple' },
+      ],
+    },
   ];
+
+  const accentColors: Record<string, string> = {
+    indigo: 'bg-indigo-500/20 text-indigo-400 border-indigo-500/30',
+    amber: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
+    rose: 'bg-rose-500/20 text-rose-400 border-rose-500/30',
+    teal: 'bg-teal-500/20 text-teal-400 border-teal-500/30',
+    purple: 'bg-purple-500/20 text-purple-400 border-purple-500/30',
+  };
 
   return (
     <>
@@ -112,74 +141,49 @@ export default function AppSidebar({
           </div>
         )}
 
-        {/* ─── Navigation ─── */}
-        <nav className="flex-1 px-3 py-4 space-y-1">
-          <p className="px-2 mb-2 text-[10px] font-semibold text-gray-600 uppercase tracking-widest">메뉴</p>
-          {navItems.map(({ id, icon: Icon, label }) => (
-            <button
-              key={id}
-              onClick={() => onSectionChange(id)}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all ${
-                activeSection === id
-                  ? 'bg-indigo-600 text-white font-medium shadow-lg shadow-indigo-900/30'
-                  : 'text-gray-400 hover:text-white hover:bg-white/5'
-              }`}
-            >
-              <Icon className="w-4.5 h-4.5 shrink-0" />
-              <span className="flex-1 text-left">{label}</span>
-              {activeSection === id && (
-                <ChevronRightIcon className="w-3.5 h-3.5" />
-              )}
-            </button>
+        {/* ─── Navigation (그룹화) ─── */}
+        <nav className="flex-1 px-3 py-3 space-y-4 overflow-y-auto">
+          {navGroups.map((group) => (
+            <div key={group.title}>
+              <p className="px-2 mb-1.5 text-[9px] font-semibold text-gray-600 uppercase tracking-[0.15em]">{group.title}</p>
+              <div className="space-y-0.5">
+                {group.items.map(({ id, icon: Icon, label, accent }) => (
+                  <button
+                    key={id}
+                    onClick={() => onSectionChange(id)}
+                    className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-[13px] transition-all ${
+                      activeSection === id
+                        ? `${accentColors[accent]} font-medium border border-transparent`
+                        : 'text-gray-500 hover:text-gray-300 hover:bg-white/[0.03]'
+                    }`}
+                  >
+                    <Icon className="w-4 h-4 shrink-0" />
+                    <span className="flex-1 text-left truncate">{label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
           ))}
         </nav>
 
-        {/* ─── Memory snapshot ─── */}
+        {/* ─── 5-Block 메모리 상태 ─── */}
         {user && (
-          <div className="px-4 py-4 border-t border-white/10">
-            <p className="text-[10px] font-semibold text-gray-600 uppercase tracking-widest mb-2.5">
-              브랜드 메모리 스냅샷
-            </p>
-            <div className="space-y-2">
-              {voice.tone ? (
-                <div className="flex items-start gap-2">
-                  <span className="text-[10px] text-gray-600 w-10 shrink-0 pt-0.5">톤</span>
-                  <span className="text-[11px] text-gray-300 italic truncate">"{voice.tone}"</span>
+          <div className="px-3 py-3 border-t border-white/[0.06]">
+            <p className="px-2 mb-2 text-[9px] font-semibold text-gray-600 uppercase tracking-[0.15em]">메모리 상태</p>
+            <div className="space-y-1">
+              {[
+                { label: 'Owner', value: human.display_name || '미설정', color: 'text-indigo-400', dot: 'bg-indigo-500' },
+                { label: 'Voice', value: (voice as any).tone_primary || voice.tone || '미설정', color: 'text-purple-400', dot: 'bg-purple-500' },
+                { label: 'Product', value: `${(memory as any).product_archive?.length || 0}개`, color: 'text-amber-400', dot: 'bg-amber-500' },
+                { label: 'Audience', value: `${memory.audience_block?.segments?.length || 0}개`, color: 'text-teal-400', dot: 'bg-teal-500' },
+                { label: 'Campaign', value: `${memory.total_campaigns || 0}건`, color: 'text-rose-400', dot: 'bg-rose-500' },
+              ].map(({ label, value, color, dot }) => (
+                <div key={label} className="flex items-center gap-2 px-2 py-1">
+                  <span className={`w-1.5 h-1.5 rounded-full ${dot} shrink-0`} />
+                  <span className="text-[10px] text-gray-600 w-14 shrink-0">{label}</span>
+                  <span className={`text-[11px] ${color} truncate`}>{value}</span>
                 </div>
-              ) : (
-                <p className="text-[11px] text-gray-600 italic">톤이 아직 설정되지 않았습니다</p>
-              )}
-
-              {voice.preferred_styles.length > 0 && (
-                <div className="flex items-start gap-2">
-                  <span className="text-[10px] text-gray-600 w-10 shrink-0 pt-0.5">스타일</span>
-                  <div className="flex flex-wrap gap-1">
-                    {voice.preferred_styles.slice(0, 3).map(s => (
-                      <span key={s} className="text-[10px] bg-indigo-900/50 text-indigo-300 px-1.5 py-0.5 rounded">
-                        {s}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {voice.signature_hashtags.length > 0 && (
-                <div className="flex items-start gap-2">
-                  <span className="text-[10px] text-gray-600 w-10 shrink-0 pt-0.5"># </span>
-                  <p className="text-[11px] text-indigo-400 truncate">
-                    {voice.signature_hashtags.slice(0, 3).join(' ')}
-                  </p>
-                </div>
-              )}
-
-              {memory.working_summary && (
-                <div className="mt-2 p-2.5 bg-white/5 rounded-lg">
-                  <p className="text-[10px] text-gray-500 mb-1">최근 세션 요약</p>
-                  <p className="text-[11px] text-gray-400 leading-relaxed line-clamp-2">
-                    {memory.working_summary}
-                  </p>
-                </div>
-              )}
+              ))}
             </div>
           </div>
         )}
