@@ -1,6 +1,88 @@
 @import "tailwindcss";
 
-/* Reasoning block collapse/expand animation */
+/* ─── Design System — CSS Variables ─────────────────────────────── */
+
+:root {
+  /* Background */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8fafc;
+  --bg-sidebar: #0a0a0f;
+  --bg-card: #ffffff;
+  --bg-hover: #f1f5f9;
+
+  /* Text */
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --text-muted: #94a3b8;
+  --text-inverse: #f8fafc;
+
+  /* Brand Colors — 5-Block */
+  --color-owner: #6366f1;      /* indigo-500 */
+  --color-voice: #a855f7;      /* purple-500 */
+  --color-business: #f59e0b;   /* amber-500 */
+  --color-audience: #14b8a6;   /* teal-500 */
+  --color-campaign: #f43f5e;   /* rose-500 */
+
+  /* Accent */
+  --color-accent: #6366f1;     /* Primary CTA */
+  --color-accent-hover: #4f46e5;
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+  --color-danger: #ef4444;
+
+  /* Border & Shadow */
+  --border-light: #e2e8f0;
+  --border-hover: #c7d2fe;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.08);
+
+  /* Radius */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.25rem;
+
+  /* Typography */
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+/* ─── Base Styles ───────────────────────────────────────────────── */
+
+body {
+  font-family: var(--font-sans);
+  color: var(--text-primary);
+  background: var(--bg-secondary);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── Card Component ────────────────────────────────────────────── */
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
+}
+
+.card:hover {
+  border-color: var(--border-hover);
+  box-shadow: var(--shadow-md);
+}
+
+/* ─── Block Accent Colors ───────────────────────────────────────── */
+
+.block-owner { border-left: 3px solid var(--color-owner); }
+.block-voice { border-left: 3px solid var(--color-voice); }
+.block-business { border-left: 3px solid var(--color-business); }
+.block-audience { border-left: 3px solid var(--color-audience); }
+.block-campaign { border-left: 3px solid var(--color-campaign); }
+
+/* ─── Animations ────────────────────────────────────────────────── */
+
+/* Reasoning block collapse/expand */
 .reasoning-content {
   overflow: hidden;
   transition: max-height 0.3s ease-in-out, opacity 0.2s ease-in-out;
@@ -16,15 +98,56 @@
   opacity: 1;
 }
 
-/* Smooth cursor blink */
+/* Cursor blink */
 @keyframes cursor-blink {
   0%, 100% { opacity: 1; }
   50% { opacity: 0; }
 }
 
-/* Custom scrollbar for chat */
+/* Fade in */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out;
+}
+
+/* Scale in (for modals) */
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.animate-scale-in {
+  animation: scale-in 0.2s ease-out;
+}
+
+/* Toast slide-in */
+@keyframes slide-in-right {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.3s ease-out;
+}
+
+/* Pulse glow (for new data) */
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.3); }
+  50% { box-shadow: 0 0 0 6px rgba(99, 102, 241, 0); }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* ─── Scrollbar ─────────────────────────────────────────────────── */
+
 .overflow-y-auto::-webkit-scrollbar {
-  width: 6px;
+  width: 5px;
 }
 
 .overflow-y-auto::-webkit-scrollbar-track {
@@ -32,31 +155,43 @@
 }
 
 .overflow-y-auto::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: rgba(0, 0, 0, 0.08);
   border-radius: 3px;
 }
 
 .overflow-y-auto::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(0, 0, 0, 0.2);
+  background-color: rgba(0, 0, 0, 0.15);
 }
 
-/* Textarea auto-height */
+/* ─── Textarea ──────────────────────────────────────────────────── */
+
 textarea {
   field-sizing: content;
 }
 
-/* Toast slide-in animation */
-@keyframes slide-in-right {
-  from {
-    transform: translateX(100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
+/* ─── Tag Badge ─────────────────────────────────────────────────── */
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem 0.5rem;
+  font-size: 0.625rem;
+  font-weight: 500;
+  border-radius: 9999px;
+  border: 1px solid;
+  transition: all 0.15s ease;
 }
 
-.animate-slide-in-right {
-  animation: slide-in-right 0.3s ease-out;
+/* ─── Skeleton Loading ──────────────────────────────────────────── */
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-sm);
 }

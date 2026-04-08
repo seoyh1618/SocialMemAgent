@@ -535,9 +535,12 @@ class ProductRecord(BaseModel):
 class RecallEntry(BaseModel):
     """
     MemGPT Recall Memory unit — one turn of conversation history.
-    Mirrors MemGPT's message store: each agent turn is appended as a timestamped entry.
-    The most recent N entries are injected into context; older entries are summarised.
+    entry_id로 conversation_archive와 연결하여 access_count를 동기화.
     """
+    entry_id: str = Field(
+        default="",
+        description="Unique ID linking to ConversationRecord.conversation_id for access_count sync."
+    )
     timestamp: str = Field(description="ISO-8601 timestamp of this turn.")
     role: str = Field(description="'user' or 'agent'.")
     content: str = Field(description="Message content (truncated to 500 chars).")
@@ -547,7 +550,7 @@ class RecallEntry(BaseModel):
     )
     access_count: int = Field(
         default=0,
-        description="MemGPT Usage Frequency — how many times this entry was retrieved/referenced. Higher = more important, preserved during compression."
+        description="MemGPT Usage Frequency — synced with ConversationRecord.access_count via entry_id."
     )
 
 

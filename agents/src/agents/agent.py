@@ -111,7 +111,10 @@ def _append_user_turn_to_recall(callback_context: CallbackContext, memory: Memor
 
         if user_query:
             from .schemas import RecallEntry
+            import uuid as _uuid
+            _entry_id = f"re_{_uuid.uuid4().hex[:12]}"
             entry = RecallEntry(
+                entry_id=_entry_id,
                 timestamp=datetime.now(timezone.utc).isoformat(),
                 role="user",
                 content=user_query,
@@ -229,6 +232,11 @@ def _inject_core_memory(callback_context: CallbackContext) -> None:
                     for cid, score, payload in relevant[:3]:
                         if cid in conv_map:
                             conv_map[cid].access_count = getattr(conv_map[cid], 'access_count', 0) + 1
+                            # Sync access_count to recall_log entries with matching entry_id
+                            for entry in memory.recall_log:
+                                if getattr(entry, 'entry_id', '') == cid:
+                                    entry.access_count = conv_map[cid].access_count
+                                    break
 
                     lines = ["▶ RELEVANT PAST CONVERSATIONS (auto-retrieved):"]
                     for cid, score, payload in relevant[:3]:
@@ -1170,7 +1178,10 @@ def _auto_save_working_summary(callback_context: CallbackContext) -> None:
             logger.info("[RECALL_SAVE] 📝 NLU skipped — short message (%d chars)", len(user_text))
         note = "; ".join(parts) if parts else "auto-logged"
 
+        import uuid as _uuid
+        _agent_entry_id = f"re_{_uuid.uuid4().hex[:12]}"
         entry = RecallEntry(
+            entry_id=_agent_entry_id,
             timestamp=datetime.now(timezone.utc).isoformat(),
             role="agent",
             content=content,
