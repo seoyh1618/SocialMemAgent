@@ -1237,6 +1237,11 @@ def _auto_save_working_summary(callback_context: CallbackContext) -> None:
                     conversation_id=conv_id, timestamp=now_iso,
                     role="user", content=user_text[:1000],
                 ))
+                # Sync entry_id: recall_log의 마지막 user entry에 conv_id 연결
+                for re in reversed(memory.recall_log):
+                    if re.role == "user" and not getattr(re, 'entry_id', ''):
+                        re.entry_id = conv_id
+                        break
 
         # Agent turn 아카이빙
         if content and not content.startswith("["):
@@ -1255,6 +1260,11 @@ def _auto_save_working_summary(callback_context: CallbackContext) -> None:
                     conversation_id=conv_id, timestamp=now_iso,
                     role="agent", content=content[:1000],
                 ))
+                # Sync entry_id: recall_log의 마지막 agent entry에 conv_id 연결
+                for re in reversed(memory.recall_log):
+                    if re.role == "agent" and not getattr(re, 'entry_id', ''):
+                        re.entry_id = conv_id
+                        break
 
         logger.info(
             "[RECALL_SAVE] ⚡ Qdrant auto-archive: user_turn=%s, agent_turn=%s",

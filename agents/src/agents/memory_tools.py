@@ -1476,6 +1476,21 @@ def memory_collect_performance(
         logger.info("[PERFORMANCE] 🔴 Campaign '%s' not found", campaign_id)
         return f"[Memory Error] Campaign '{campaign_id}' not found."
 
+    # ── Auto-validate engagement_level against past data ──
+    # 과거 평균과 비교하여 자동 보정 제안
+    _auto_note = ""
+    graph = memory.behavior_graph
+    if graph.edges and engagement_level:
+        _LEVEL_SCORE_V = {"low": 1, "medium": 2, "high": 3, "viral": 4}
+        past_scores = [_LEVEL_SCORE_V.get(e.engagement_level, 0) for e in graph.edges if e.engagement_level]
+        if past_scores:
+            avg_past = sum(past_scores) / len(past_scores)
+            current_score = _LEVEL_SCORE_V.get(engagement_level, 0)
+            if current_score > avg_past + 1.5:
+                _auto_note = f" (주의: 과거 평균 대비 높음 — avg={avg_past:.1f})"
+            elif current_score < avg_past - 1.5:
+                _auto_note = f" (주의: 과거 평균 대비 낮음 — avg={avg_past:.1f})"
+
     perf = PerformanceData(
         engagement_level=engagement_level,
         reach_level=reach_level,
