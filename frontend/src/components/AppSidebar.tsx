@@ -43,6 +43,7 @@ export default function AppSidebar({
   const { user, doLogout } = useAuth();
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
+  const human = memory.human_block;
   const voice = memory.persona_block;
   const profile = memory.human_block;
 
