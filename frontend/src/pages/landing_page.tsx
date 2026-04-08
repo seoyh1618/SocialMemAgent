@@ -837,7 +837,7 @@ const LandingPage = () => {
           {showArtifactPanel && (
             <>
               {/* Panel header */}
-              <div className="shrink-0 flex items-center justify-between px-6 py-3 border-b border-gray-100 bg-white">
+              <div className="shrink-0 flex items-center justify-between px-6 py-3 border-b border-gray-100/80 bg-white/80 backdrop-blur-sm">
                 <span className="text-sm font-semibold text-gray-700">
                   {panelView === 'artifacts' ? '아티팩트' : panelView === 'context' ? '컨텍스트' : panelView === 'profile' ? '브랜드 프로필' : panelView === 'products' ? '제품 카탈로그' : panelView === 'knowledge' ? '도메인 지식' : panelView === 'history' ? '캠페인 히스토리' : panelView === 'conversations' ? '대화 히스토리' : panelView === 'memory' ? '메모리 맵' : panelView === 'behavior' ? 'Behavior Graph' : 'Assets'}
                 </span>
@@ -938,11 +938,13 @@ const LandingPage = () => {
           showArtifactPanel ? 'w-[40%]' : 'w-full'
         }`}>
           {/* Header */}
-          <div className="shrink-0 px-5 py-3.5 border-b border-gray-100 flex items-center gap-2">
-            <SparklesIcon className="w-4 h-4 text-indigo-500" />
-            <span className="text-sm font-semibold text-gray-700">AI 에이전트</span>
+          <div className="shrink-0 px-5 py-3.5 border-b border-gray-100/80 bg-white/80 backdrop-blur-sm flex items-center gap-2.5">
+            <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center">
+              <SparklesIcon className="w-3.5 h-3.5 text-white" />
+            </div>
+            <span className="text-sm font-semibold text-gray-800 tracking-tight">AI 에이전트</span>
             {isAuthenticated && memory.total_campaigns > 0 && (
-              <span className="ml-2 text-[10px] text-indigo-400 bg-indigo-50 px-2 py-0.5 rounded-full">메모리 활성</span>
+              <span className="ml-1 text-[10px] text-indigo-500 bg-indigo-50 px-2 py-0.5 rounded-full font-medium border border-indigo-100">5-Block 활성</span>
             )}
             {!showArtifactPanel && base && (
               <button onClick={() => setShowArtifactPanel(true)}
