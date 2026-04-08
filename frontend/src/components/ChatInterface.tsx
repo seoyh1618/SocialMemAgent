@@ -1,5 +1,6 @@
 import { PaperAirplaneIcon, ChevronRightIcon, ChevronDownIcon, PhotoIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { useState, useRef, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { sendMessageToAgentSSE, extractTextFromResponse } from '../api';
 import type { Base, SocialMediaAgentOutput, OrchestratorChannelOutput } from '../base';
 import { channelsToBase } from '../base';
@@ -292,13 +293,19 @@ export default function ChatInterface({ userId, sessionId, base, setBase, should
   return (
     <div className="flex h-full flex-col">
       {/* Conversation History */}
-      <div className="flex-grow overflow-y-auto p-4 space-y-4 bg-gray-50">
+      <div className="flex-grow overflow-y-auto p-4 space-y-4 bg-gray-50/50">
+        <AnimatePresence mode="popLayout">
         {messages.map((message, index) => {
           if (message.role === 'reasoning') {
-            if (!message.content.trim()) return null; // Don't render empty reasoning
+            if (!message.content.trim()) return null;
             const isCollapsed = reasoningCollapsed[index] ?? true;
             return (
-              <div key={index} className="w-full my-2 text-gray-500">
+              <motion.div
+                key={`r-${index}`}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.25 }}
+                className="w-full my-2 text-gray-500">
                 <button
                   onClick={() =>
                     setReasoningCollapsed((prev) => ({
@@ -331,11 +338,18 @@ export default function ChatInterface({ userId, sessionId, base, setBase, should
           }
           if (message.role === 'memory_ref') {
             return (
-              <div key={index} className="w-full my-1 flex justify-start">
-                <span className="inline-flex items-center gap-1 px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-medium">
-                  📚 참조된 메모리: {message.content}
+              <motion.div
+                key={`ref-${index}`}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.2 }}
+                className="w-full my-1 flex justify-start"
+              >
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-indigo-50 text-indigo-600 rounded-full text-[11px] font-medium border border-indigo-100">
+                  <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
+                  {message.content}
                 </span>
-              </div>
+              </motion.div>
             );
           }
           if (message.role === 'base_content') {
@@ -365,32 +379,36 @@ export default function ChatInterface({ userId, sessionId, base, setBase, should
             );
           }
           return (
-            <div
-              key={index}
+            <motion.div
+              key={`m-${index}`}
+              initial={{ opacity: 0, y: 10, scale: 0.97 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
               className={`flex ${
                 message.role === 'user' ? 'justify-end' : 'justify-start'
               }`}
             >
               <div
-                className={`rounded-lg p-3 text-sm max-w-[80%] ${
+                className={`rounded-2xl px-4 py-2.5 text-sm max-w-[80%] ${
                   message.role === 'user'
-                    ? 'bg-indigo-500 text-white'
-                    : 'bg-gray-200 text-gray-900'
+                    ? 'bg-gradient-to-r from-indigo-500 to-indigo-600 text-white shadow-md shadow-indigo-200/30'
+                    : 'bg-white border border-gray-100 text-gray-800 shadow-sm'
                 }`}
               >
                 <ReactMarkdown components={markdownComponents}>{message.content}</ReactMarkdown>
                 {!message.isComplete && (
-                  <span className="inline-block animate-pulse">▋</span>
+                  <span className="inline-block animate-pulse text-indigo-300">▋</span>
                 )}
               </div>
-            </div>
+            </motion.div>
           );
         })}
+        </AnimatePresence>
         <div ref={messagesEndRef} />
       </div>
 
       {/* Input Area */}
-      <div className="border-t border-gray-200 bg-white p-4">
+      <div className="border-t border-gray-100 bg-white/80 backdrop-blur-sm p-4">
         {/* Image preview */}
         {attachedImage && (
           <div className="mb-2 relative inline-block">
@@ -425,8 +443,8 @@ export default function ChatInterface({ userId, sessionId, base, setBase, should
             type="text"
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
-            placeholder="Type your message..."
-            className="flex-grow rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2"
+            placeholder="메시지를 입력하세요..."
+            className="flex-grow rounded-xl border border-gray-200 bg-gray-50/50 px-4 py-2.5 text-sm focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400 focus:bg-white transition-all outline-none"
             disabled={isLoading}
           />
           <button
