@@ -35,7 +35,7 @@ interface ProfileBlockProps {
   memory: MemoryState;
   onSave: (updated: MemoryState) => Promise<void>;
   userId: string;
-  initialTab?: 'identity' | 'voice' | 'domain' | 'audience';
+  initialTab?: 'owner' | 'voice' | 'business' | 'audience' | 'campaign';
 }
 
 // ─── Tag list editor ─────────────────────────────────────────────────
@@ -483,12 +483,12 @@ function AudienceTabContent({
 }
 
 // ─── Main ProfileBlock ────────────────────────────────────────────────
-export default function ProfileBlock({ memory, onSave, userId, initialTab = 'identity' }: ProfileBlockProps) {
+export default function ProfileBlock({ memory, onSave, userId, initialTab = 'owner' }: ProfileBlockProps) {
   const { showToast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [draft, setDraft] = useState<MemoryState>(memory);
-  const [activeTab, setActiveTab] = useState<'identity' | 'voice' | 'domain' | 'audience'>(initialTab);
+  const [activeTab, setActiveTab] = useState<'owner' | 'voice' | 'business' | 'audience' | 'campaign'>(initialTab);
 
   const human = draft.human_block;
   const persona = draft.persona_block;
@@ -602,13 +602,14 @@ export default function ProfileBlock({ memory, onSave, userId, initialTab = 'ide
         </div>
       )}
 
-      {/* Tabs — 4 sections */}
-      <div className="flex border-b border-gray-100 px-5 pt-3">
+      {/* Tabs — 5-Block */}
+      <div className="flex border-b border-gray-100 px-5 pt-3 overflow-x-auto">
         {([
-          { key: 'identity' as const, label: '👤 사용자 정보' },
-          { key: 'voice' as const, label: '🎨 브랜드 보이스' },
-          { key: 'domain' as const, label: '🏪 도메인 프로필' },
-          { key: 'audience' as const, label: '🎯 타겟 오디언스' },
+          { key: 'owner' as const, label: '👤 Owner' },
+          { key: 'voice' as const, label: '🎨 Voice' },
+          { key: 'business' as const, label: '🏪 Business' },
+          { key: 'audience' as const, label: '🎯 Audience' },
+          { key: 'campaign' as const, label: '📊 Campaign' },
         ]).map((tab) => (
           <button
             key={tab.key}
@@ -625,8 +626,8 @@ export default function ProfileBlock({ memory, onSave, userId, initialTab = 'ide
       </div>
 
       <div className="px-5 py-4">
-        {/* ── 사용자 정보 Tab (Human Block) ── */}
-        {activeTab === 'identity' && (
+        {/* ── Owner Profile Tab (Human Block — 23필드) ── */}
+        {activeTab === 'owner' && (
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -694,6 +695,98 @@ export default function ProfileBlock({ memory, onSave, userId, initialTab = 'ide
                 </div>
               </div>
             )}
+
+            {/* 확장 필드 (5-Block) */}
+            <div className="grid grid-cols-2 gap-4 mt-4 pt-4 border-t border-gray-100">
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">대표자명</label>
+                {isEditing ? (
+                  <input type="text" value={(human as any).owner_name || ''} onChange={(e) => updateHuman({ owner_name: e.target.value } as any)} placeholder="김봄" className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm" />
+                ) : (
+                  <p className="text-sm text-gray-700">{(human as any).owner_name || '—'}</p>
+                )}
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">위치</label>
+                {isEditing ? (
+                  <input type="text" value={(human as any).business_location || ''} onChange={(e) => updateHuman({ business_location: e.target.value } as any)} placeholder="서울 성수동" className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm" />
+                ) : (
+                  <p className="text-sm text-gray-700">{(human as any).business_location || '—'}</p>
+                )}
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">업종</label>
+                {isEditing ? (
+                  <input type="text" value={(human as any).industry || ''} onChange={(e) => updateHuman({ industry: e.target.value } as any)} placeholder="베이커리" className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm" />
+                ) : (
+                  <p className="text-sm text-gray-700">{(human as any).industry || '—'}</p>
+                )}
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">사업 단계</label>
+                {isEditing ? (
+                  <select value={(human as any).business_stage || ''} onChange={(e) => updateHuman({ business_stage: e.target.value } as any)} className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm">
+                    <option value="">선택</option>
+                    <option value="startup">Startup</option>
+                    <option value="growth">Growth</option>
+                    <option value="established">Established</option>
+                  </select>
+                ) : (
+                  <p className="text-sm text-gray-700">{(human as any).business_stage || '—'}</p>
+                )}
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">마케팅 목표</label>
+                {isEditing ? (
+                  <input type="text" value={(human as any).primary_goal || ''} onChange={(e) => updateHuman({ primary_goal: e.target.value } as any)} placeholder="매장 방문 증가" className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm" />
+                ) : (
+                  <p className="text-sm text-gray-700">{(human as any).primary_goal || '—'}</p>
+                )}
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">마케팅 예산</label>
+                {isEditing ? (
+                  <input type="text" value={(human as any).monthly_marketing_budget || ''} onChange={(e) => updateHuman({ monthly_marketing_budget: e.target.value } as any)} placeholder="500,000원" className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm" />
+                ) : (
+                  <p className="text-sm text-gray-700">{(human as any).monthly_marketing_budget || '—'}</p>
+                )}
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">영업시간</label>
+                {isEditing ? (
+                  <input type="text" value={(human as any).operating_hours || ''} onChange={(e) => updateHuman({ operating_hours: e.target.value } as any)} placeholder="10:00-22:00" className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm" />
+                ) : (
+                  <p className="text-sm text-gray-700">{(human as any).operating_hours || '—'}</p>
+                )}
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">팀 규모</label>
+                {isEditing ? (
+                  <input type="number" value={(human as any).team_size || 0} onChange={(e) => updateHuman({ team_size: parseInt(e.target.value) || 0 } as any)} className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm" />
+                ) : (
+                  <p className="text-sm text-gray-700">{(human as any).team_size || '—'}명</p>
+                )}
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">웹사이트</label>
+                {isEditing ? (
+                  <input type="text" value={(human as any).website_url || ''} onChange={(e) => updateHuman({ website_url: e.target.value } as any)} placeholder="https://..." className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm" />
+                ) : (
+                  <p className="text-sm text-gray-700">{(human as any).website_url || '—'}</p>
+                )}
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">배달 가능</label>
+                {isEditing ? (
+                  <select value={(human as any).delivery_available ? 'true' : 'false'} onChange={(e) => updateHuman({ delivery_available: e.target.value === 'true' } as any)} className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm">
+                    <option value="false">아니오</option>
+                    <option value="true">예</option>
+                  </select>
+                ) : (
+                  <p className="text-sm text-gray-700">{(human as any).delivery_available ? '예' : '아니오'}</p>
+                )}
+              </div>
+            </div>
 
             {memory.working_summary && (
               <div className="mt-2 p-3 bg-gray-50 rounded-lg border border-gray-100">
@@ -763,7 +856,7 @@ export default function ProfileBlock({ memory, onSave, userId, initialTab = 'ide
         )}
 
         {/* ── 도메인 프로필 Tab (Domain Block) ── */}
-        {activeTab === 'domain' && (
+        {activeTab === 'business' && (
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -894,6 +987,100 @@ export default function ProfileBlock({ memory, onSave, userId, initialTab = 'ide
             isEditing={isEditing}
             updateAudience={updateAudience}
           />
+        )}
+
+        {/* ── Campaign Tab (BehaviorGraph 요약 + 캠페인 카탈로그) ── */}
+        {activeTab === 'campaign' && (
+          <div className="space-y-4">
+            {/* BehaviorGraph 요약 */}
+            {memory.behavior_graph && (
+              <div className="space-y-3">
+                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">학습된 전략</h3>
+                {(memory.behavior_graph as any).proven_tactics?.length > 0 && (
+                  <div>
+                    <p className="text-xs text-gray-400 mb-1">효과적인 전략</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {(memory.behavior_graph as any).proven_tactics.map((t: string) => (
+                        <span key={t} className="px-2 py-0.5 text-xs bg-green-50 text-green-700 rounded-full border border-green-200">{t}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {(memory.behavior_graph as any).failed_tactics?.length > 0 && (
+                  <div>
+                    <p className="text-xs text-gray-400 mb-1">피해야 할 전략</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {(memory.behavior_graph as any).failed_tactics.map((t: string) => (
+                        <span key={t} className="px-2 py-0.5 text-xs bg-red-50 text-red-700 rounded-full border border-red-200">{t}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                <div className="grid grid-cols-3 gap-3 mt-2">
+                  <div className="p-2 bg-gray-50 rounded-lg text-center">
+                    <p className="text-xs text-gray-400">최적 채널</p>
+                    <p className="text-sm font-medium text-gray-700">{memory.behavior_graph.overall_best_platform || '—'}</p>
+                  </div>
+                  <div className="p-2 bg-gray-50 rounded-lg text-center">
+                    <p className="text-xs text-gray-400">신뢰도</p>
+                    <p className="text-sm font-medium text-gray-700">{(memory.behavior_graph as any).confidence_level || '—'}</p>
+                  </div>
+                  <div className="p-2 bg-gray-50 rounded-lg text-center">
+                    <p className="text-xs text-gray-400">데이터</p>
+                    <p className="text-sm font-medium text-gray-700">{(memory.behavior_graph as any).total_data_points || memory.behavior_graph.edges?.length || 0}건</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* 캠페인 카탈로그 */}
+            <div className="mt-4 pt-4 border-t border-gray-100">
+              <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">캠페인 이력 ({memory.campaign_archive?.length || 0}건)</h3>
+              {memory.campaign_archive?.length > 0 ? (
+                <div className="space-y-2 max-h-60 overflow-y-auto">
+                  {[...memory.campaign_archive].reverse().slice(0, 10).map((c) => (
+                    <div key={c.campaign_id} className="p-2.5 bg-gray-50 rounded-lg border border-gray-100">
+                      <div className="flex items-center justify-between">
+                        <p className="text-xs font-medium text-gray-700 truncate flex-1">{c.goal}</p>
+                        <span className={`ml-2 px-1.5 py-0.5 text-[10px] rounded-full ${c.performance ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+                          {c.performance ? c.performance.engagement_level : '미수집'}
+                        </span>
+                      </div>
+                      <div className="flex gap-1 mt-1">
+                        {c.platforms_used?.map((p) => (
+                          <span key={p} className="text-[10px] text-gray-400">{p}</span>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-xs text-gray-400 italic">아직 캠페인이 없습니다</p>
+              )}
+            </div>
+
+            {/* Product 카탈로그 */}
+            <div className="mt-4 pt-4 border-t border-gray-100">
+              <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">제품 ({(memory as any).product_archive?.length || 0}개)</h3>
+              {(memory as any).product_archive?.length > 0 ? (
+                <div className="space-y-2">
+                  {(memory as any).product_archive.map((p: any) => (
+                    <div key={p.product_id} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg border border-gray-100">
+                      <div>
+                        <p className="text-xs font-medium text-gray-700">{p.name}</p>
+                        <p className="text-[10px] text-gray-400">{p.product_id} {p.price ? `· ${p.price}` : ''}</p>
+                      </div>
+                      {p.best_platform && (
+                        <span className="text-[10px] text-indigo-500">{p.best_platform}</span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-xs text-gray-400 italic">등록된 제품이 없습니다</p>
+              )}
+            </div>
+          </div>
         )}
 
       </div>
