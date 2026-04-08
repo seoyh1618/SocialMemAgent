@@ -104,30 +104,57 @@ function buildTree(memory: MemoryState, prevMemory: MemoryState | null): MindNod
   const isNewTag = (tag: string, prevList: string[] | undefined) =>
     !prevList?.includes(tag);
 
-  // Human Block
+  // Human Block (Owner Profile — 드릴다운)
   const humanChildren: MindNode[] = [];
   if (human.display_name)
     humanChildren.push({ id: 'h-name', label: '브랜드명', value: human.display_name, color: 'leaf', isNew: isNew(human.display_name, prevHuman?.display_name) });
-  if (human.twitter_handle)
-    humanChildren.push({ id: 'h-tw', label: '𝕏 Twitter', value: `@${human.twitter_handle}`, color: 'leaf', isNew: isNew(human.twitter_handle, prevHuman?.twitter_handle) });
-  if (human.instagram_handle)
-    humanChildren.push({ id: 'h-ig', label: '📸 Instagram', value: `@${human.instagram_handle}`, color: 'leaf', isNew: isNew(human.instagram_handle, prevHuman?.instagram_handle) });
+  if ((human as any).owner_name)
+    humanChildren.push({ id: 'h-owner', label: '대표자', value: (human as any).owner_name, color: 'leaf' });
+  if ((human as any).business_location)
+    humanChildren.push({ id: 'h-loc', label: '위치', value: (human as any).business_location, color: 'leaf' });
+  if ((human as any).industry)
+    humanChildren.push({ id: 'h-ind', label: '업종', value: (human as any).industry, color: 'leaf' });
+  if ((human as any).primary_goal)
+    humanChildren.push({ id: 'h-goal', label: '목표', value: (human as any).primary_goal, color: 'leaf' });
+  if ((human as any).business_stage)
+    humanChildren.push({ id: 'h-stage', label: '단계', value: (human as any).business_stage, color: 'leaf' });
+  // SNS 핸들 (social_handles 또는 레거시)
+  const handles = (human as any).social_handles || {};
+  const handleEntries = Object.entries(handles);
+  if (handleEntries.length > 0) {
+    humanChildren.push({
+      id: 'h-sns', label: `SNS (${handleEntries.length})`, color: 'extra',
+      children: handleEntries.map(([k, v]) => ({
+        id: `h-sns-${k}`, label: k, value: String(v), color: 'leaf' as NodeColor,
+      })),
+    });
+  } else {
+    if (human.twitter_handle)
+      humanChildren.push({ id: 'h-tw', label: '𝕏 Twitter', value: `@${human.twitter_handle}`, color: 'leaf' });
+    if (human.instagram_handle)
+      humanChildren.push({ id: 'h-ig', label: '📸 Instagram', value: `@${human.instagram_handle}`, color: 'leaf' });
+  }
   const extraEntries = Object.entries(human.extra_fields || {});
   if (extraEntries.length > 0) {
-    const prevExtra = prevHuman?.extra_fields ?? {};
     humanChildren.push({
       id: 'h-extra', label: `추가 정보 (${extraEntries.length})`, color: 'extra',
       children: extraEntries.map(([k, v]) => ({
         id: `h-extra-${k}`, label: k.replace(/_/g, ' '), value: v, color: 'leaf' as NodeColor,
-        isNew: prevExtra[k] !== v,
       })),
     });
   }
 
-  // Persona Block
+  // Persona Block (Brand Voice — 드릴다운)
   const personaChildren: MindNode[] = [];
-  if (persona.tone)
-    personaChildren.push({ id: 'p-tone', label: '톤앤매너', value: `"${persona.tone}"`, color: 'leaf', isNew: isNew(persona.tone, prevPersona?.tone) });
+  const tonePrimary = (persona as any).tone_primary || persona.tone;
+  if (tonePrimary)
+    personaChildren.push({ id: 'p-tone', label: '톤앤매너', value: `"${tonePrimary}"`, color: 'leaf', isNew: isNew(tonePrimary, (prevPersona as any)?.tone_primary || prevPersona?.tone) });
+  if ((persona as any).tone_formality)
+    personaChildren.push({ id: 'p-formal', label: '격식', value: (persona as any).tone_formality, color: 'leaf' });
+  if ((persona as any).slogan)
+    personaChildren.push({ id: 'p-slogan', label: '슬로건', value: (persona as any).slogan, color: 'leaf' });
+  if ((persona as any).emoji_usage)
+    personaChildren.push({ id: 'p-emoji', label: '이모지', value: (persona as any).emoji_usage, color: 'leaf' });
   if (persona.content_pillars.length > 0)
     personaChildren.push({
       id: 'p-pillars', label: `콘텐츠 기둥 (${persona.content_pillars.length})`, color: 'leaf',
