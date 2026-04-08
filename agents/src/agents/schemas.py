@@ -474,6 +474,29 @@ class CampaignRecord(BaseModel):
         default="",
         description="Season tag: 'spring'/'summer'/'fall'/'winter'. Auto-set from month."
     )
+    # [Phase 3] 세그먼트별 콘텐츠 — 같은 제품이라도 타겟에 따라 다른 메시지
+    generated_content_per_segment: dict = Field(
+        default_factory=dict,
+        description=(
+            "세그먼트별 생성 콘텐츠: "
+            "{'seg_001': {'instagram': {'caption': '...', 'hashtags': [...]}}, "
+            "'seg_002': {'kakao': {'caption': '...'}}}"
+        )
+    )
+    # 제품 연결
+    products_featured: List[str] = Field(
+        default_factory=list,
+        description="홍보 제품 ID (e.g., ['prod_001'])"
+    )
+    # 메시지/경쟁
+    messaging_used: str = Field(
+        default="",
+        description="사용된 핵심 메시지"
+    )
+    competitive_angle: str = Field(
+        default="",
+        description="경쟁사 차별화 메시지"
+    )
 
 
 class GeneratedAsset(BaseModel):

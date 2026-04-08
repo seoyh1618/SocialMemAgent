@@ -852,6 +852,100 @@ export default function ProfileBlock({ memory, onSave, userId, initialTab = 'own
               placeholder="politics, competitors..."
               color="red"
             />
+
+            {/* 확장 필드 (5-Block) */}
+            <div className="pt-4 border-t border-gray-100 space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 mb-1">격식 수준</label>
+                  {isEditing ? (
+                    <select value={(persona as any).tone_formality || ''} onChange={(e) => updatePersona({ tone_formality: e.target.value } as any)} className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm">
+                      <option value="">선택</option>
+                      <option value="formal">Formal</option>
+                      <option value="semi-formal">Semi-formal</option>
+                      <option value="casual">Casual</option>
+                      <option value="playful">Playful</option>
+                    </select>
+                  ) : (
+                    <p className="text-sm text-gray-700">{(persona as any).tone_formality || '—'}</p>
+                  )}
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 mb-1">이모지 사용</label>
+                  {isEditing ? (
+                    <select value={(persona as any).emoji_usage || ''} onChange={(e) => updatePersona({ emoji_usage: e.target.value } as any)} className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm">
+                      <option value="">선택</option>
+                      <option value="none">None</option>
+                      <option value="minimal">Minimal</option>
+                      <option value="moderate">Moderate</option>
+                      <option value="heavy">Heavy</option>
+                    </select>
+                  ) : (
+                    <p className="text-sm text-gray-700">{(persona as any).emoji_usage || '—'}</p>
+                  )}
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 mb-1">글쓰기 스타일</label>
+                  {isEditing ? (
+                    <select value={(persona as any).writing_style || ''} onChange={(e) => updatePersona({ writing_style: e.target.value } as any)} className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm">
+                      <option value="">선택</option>
+                      <option value="short_punchy">Short & Punchy</option>
+                      <option value="narrative">Narrative</option>
+                      <option value="informative">Informative</option>
+                    </select>
+                  ) : (
+                    <p className="text-sm text-gray-700">{(persona as any).writing_style || '—'}</p>
+                  )}
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 mb-1">CTA 스타일</label>
+                  {isEditing ? (
+                    <select value={(persona as any).preferred_cta_style || ''} onChange={(e) => updatePersona({ preferred_cta_style: e.target.value } as any)} className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm">
+                      <option value="">선택</option>
+                      <option value="direct">Direct</option>
+                      <option value="soft_invitation">Soft Invitation</option>
+                      <option value="question">Question</option>
+                    </select>
+                  ) : (
+                    <p className="text-sm text-gray-700">{(persona as any).preferred_cta_style || '—'}</p>
+                  )}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">슬로건</label>
+                {isEditing ? (
+                  <input type="text" value={(persona as any).slogan || ''} onChange={(e) => updatePersona({ slogan: e.target.value } as any)} placeholder="당신의 하루에 봄을 더합니다" className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm" />
+                ) : (
+                  <p className="text-sm text-gray-700">{(persona as any).slogan || '—'}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">브랜드 스토리</label>
+                {isEditing ? (
+                  <textarea value={(persona as any).brand_story_snippet || ''} onChange={(e) => updatePersona({ brand_story_snippet: e.target.value } as any)} placeholder="2~3문장으로 브랜드 스토리를 적어주세요" rows={3} className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm" />
+                ) : (
+                  <p className="text-sm text-gray-700">{(persona as any).brand_story_snippet || '—'}</p>
+                )}
+              </div>
+
+              <TagListEditor
+                label="이모지 세트"
+                tags={(persona as any).emoji_set || []}
+                onChange={(t) => updatePersona({ emoji_set: t } as any)}
+                placeholder="☕ 🍞 🌸"
+                color="amber"
+              />
+
+              <TagListEditor
+                label="금지 단어"
+                tags={(persona as any).avoid_words || []}
+                onChange={(t) => updatePersona({ avoid_words: t } as any)}
+                placeholder="저렴한, 싸구려..."
+                color="red"
+              />
+            </div>
           </div>
         )}
 

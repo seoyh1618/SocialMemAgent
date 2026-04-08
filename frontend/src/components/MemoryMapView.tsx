@@ -299,12 +299,29 @@ export default function MemoryMapView({ memory, onEditClick }: MemoryMapViewProp
         )}
       </div>
 
-      {/* Recall Memory */}
-      {memory.working_summary && (
-        <MemoryCard title="Recall Memory (워킹 메모리)" icon={ClockIcon} accentColor="bg-amber-500">
-          <p className="text-[13px] text-gray-700 leading-relaxed whitespace-pre-wrap">
-            {memory.working_summary}
-          </p>
+      {/* Recall Memory (3-Level) */}
+      {(memory.working_summary || memory.long_term_summary) && (
+        <MemoryCard title="Recall Memory (3-Level)" icon={ClockIcon} accentColor="bg-amber-500">
+          {memory.working_summary && (
+            <div className="mb-3">
+              <p className="text-[10px] font-medium text-amber-600 mb-1">L1 — 현재 세션 요약</p>
+              <p className="text-[12px] text-gray-700 leading-relaxed whitespace-pre-wrap">{memory.working_summary}</p>
+            </div>
+          )}
+          {memory.session_summaries && memory.session_summaries.length > 0 && (
+            <div className="mb-3 pt-2 border-t border-gray-100">
+              <p className="text-[10px] font-medium text-amber-600 mb-1">L2 — 최근 세션 ({memory.session_summaries.length}개)</p>
+              {memory.session_summaries.slice(-3).map((s, i) => (
+                <p key={i} className="text-[11px] text-gray-500 mb-1 pl-2 border-l-2 border-amber-200">{s.slice(0, 120)}...</p>
+              ))}
+            </div>
+          )}
+          {memory.long_term_summary && (
+            <div className="pt-2 border-t border-gray-100">
+              <p className="text-[10px] font-medium text-amber-600 mb-1">L3 — 장기 누적 요약</p>
+              <p className="text-[12px] text-gray-600 leading-relaxed whitespace-pre-wrap">{memory.long_term_summary.slice(0, 300)}{memory.long_term_summary.length > 300 ? '...' : ''}</p>
+            </div>
+          )}
         </MemoryCard>
       )}
 

@@ -23,6 +23,9 @@ from ...memory_tools import (
     memory_get_assets,
     memory_archive_campaign,
     memory_record_generated_asset,
+    memory_get_product,
+    memory_get_knowledge,
+    memory_get_audience_segments,
 )
 from ..channels.factory import STRATEGIST_REGISTRY
 from ...channel_spec import get_all_channels
@@ -212,6 +215,9 @@ content_orchestrator = Agent(
     tools=[
         # Memory tools (read-only + archive)
         memory_get_core_profile,
+        memory_get_product,            # ID 기반 제품 상세 조회
+        memory_get_knowledge,          # ID/category 기반 Knowledge 조회
+        memory_get_audience_segments,  # 세그먼트 상세 조회
         memory_search_campaigns,
         memory_get_behavior_insights,
         memory_get_assets,

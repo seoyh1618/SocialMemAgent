@@ -422,6 +422,8 @@ _QDRANT_HEALTHY = True
 
 _QDRANT_CAMPAIGNS_COLLECTION = "campaigns"
 _QDRANT_CONVERSATIONS_COLLECTION = "conversations"
+_QDRANT_PRODUCTS_COLLECTION = "products"
+_QDRANT_KNOWLEDGE_COLLECTION = "knowledge"
 _QDRANT_VECTOR_SIZE = 768  # text-embedding-004 output dim
 
 
@@ -440,7 +442,7 @@ def _get_qdrant_client():
 
         _qdrant_client = QdrantClient(url=url, api_key=api_key, timeout=10)
 
-        for col in [_QDRANT_CAMPAIGNS_COLLECTION, _QDRANT_CONVERSATIONS_COLLECTION]:
+        for col in [_QDRANT_CAMPAIGNS_COLLECTION, _QDRANT_CONVERSATIONS_COLLECTION, _QDRANT_PRODUCTS_COLLECTION, _QDRANT_KNOWLEDGE_COLLECTION]:
             if not _qdrant_client.collection_exists(col):
                 _qdrant_client.create_collection(
                     collection_name=col,
@@ -918,9 +920,23 @@ def memory_add_domain_knowledge(
             dp.knowledge = dp.knowledge[-50:]
         action = "Added"
 
+    # Qdrant 벡터 저장
+    try:
+        embed_text = f"{key} {value}"
+        vec = _embed(embed_text[:500])
+        if vec:
+            _qdrant_upsert(
+                _QDRANT_KNOWLEDGE_COLLECTION,
+                f"dk_{kid}",
+                vec,
+                {"knowledge_id": kid, "category": key, "title": value[:80]},
+            )
+    except Exception as e:
+        logger.warning("[Knowledge] Qdrant upsert failed: %s", e)
+
     _save_memory(tool_context, memory)
     total = len(dp.knowledge)
-    return f"[Domain Knowledge {action}] key='{key}'. Total knowledge items: {total}"
+    return f"[Domain Knowledge {action}] key='{key}' (ID: {kid}). Total: {total}"
 
 
 # ─── Product CRUD Tools ───────────────────────────────────────────────────────
@@ -1007,6 +1023,20 @@ def memory_add_product(
     # Cap
     if len(memory.product_archive) > _PRODUCT_ARCHIVE_CAP:
         memory.product_archive = memory.product_archive[-_PRODUCT_ARCHIVE_CAP:]
+
+    # Qdrant 벡터 저장
+    try:
+        embed_text = f"{name} {category} {description} {' '.join(features_list)}"
+        vec = _embed(embed_text[:500])
+        if vec:
+            _qdrant_upsert(
+                _QDRANT_PRODUCTS_COLLECTION,
+                f"prod_{product_id}",
+                vec,
+                {"product_id": product_id, "name": name, "price": price, "category": category},
+            )
+    except Exception as e:
+        logger.warning("[Product] Qdrant upsert failed: %s", e)
 
     _save_memory(tool_context, memory)
     return f"[Product] Created '{name}' (ID: {product_id}). Core에 카탈로그 반영됨."
