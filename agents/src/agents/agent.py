@@ -1461,16 +1461,60 @@ def _auto_save_working_summary(callback_context: CallbackContext) -> None:
 
 # Apply MemGPT callbacks to orchestrator — Core Memory inject 만 (archival dump 는
 # Orchestrator 가 Memory Agent service 도구 호출 시에만 수행)
-def _orch_before_chain(callback_context):
-    """before_agent_callback — Core Memory inject + state 초기화.
-    승인 여부는 키워드 매칭이 아닌, Orchestrator LLM 이 사용자 의도를 분석하여
-    `set_user_approval_status` 도구 호출로 명시 갱신합니다 (intent-based).
+def _classify_plan_response(user_text: str, plan_summary: str) -> str:
+    """LOOP 12: pending plan 이 있을 때 사용자 발화를 LLM 으로 분류.
+    반환: 'approve' | 'revise' | 'new_request' | 'ambiguous'
+    Pro 분류기 — 짧은 single-call, 룰베이스 없이 의도만 분석.
+    """
+    if not user_text:
+        return "ambiguous"
+    prompt = (
+        "You are classifying a user's response to a campaign plan that was just presented.\n"
+        "Classify into EXACTLY ONE label. Reply with ONLY the label (lowercase, no quotes):\n\n"
+        "  approve      — user accepts the plan as-is and wants to proceed\n"
+        "                 examples: '좋아 진행해줘', '네 그대로 가요', 'OK', '진행', '응 좋아',\n"
+        "                 '그렇게 해줘', '맘에 들어', '괜찮네', 'go ahead', 'looks good'\n"
+        "  revise       — user wants modifications to the SAME plan/campaign\n"
+        "                 examples: '톤 더 따뜻하게', '해시태그 다시', '컬러 바꿔',\n"
+        "                 '이미지 더 미니멀하게'\n"
+        "  new_request  — user asks for a NEW/DIFFERENT campaign (different product/channel/goal)\n"
+        "                 examples: '이번엔 페이스북도', '다른 제품으로', '핀터레스트 새로'\n"
+        "  ambiguous    — unclear, off-topic, question about something else, small talk\n\n"
+        f"Presented plan: {plan_summary[:300]}\n\n"
+        f'User response: "{user_text[:400]}"\n\n'
+        "Label:"
+    )
+    try:
+        import concurrent.futures
+        from google import genai
+        client = genai.Client()
+        def _call():
+            return client.models.generate_content(model="gemini-2.5-pro", contents=prompt)
+        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as pool:
+            resp = pool.submit(_call).result(timeout=12)
+        label = (getattr(resp, "text", "") or "").strip().lower().split()[0] if resp else ""
+        label = label.strip().strip(".").strip("'").strip('"')
+        if label in {"approve", "revise", "new_request", "ambiguous"}:
+            return label
+        if label.startswith("approv"): return "approve"
+        if label.startswith("revis"): return "revise"
+        if "new" in label: return "new_request"
+        return "ambiguous"
+    except Exception as exc:
+        logger.warning("[ORCH_BEFORE] plan-response classify failed: %s", exc)
+        return "ambiguous"
 
-    LOOP 10 추가: 이전 plan 이 archive 까지 완료된 상태에서 새 캠페인 요청이
-    들어오면 plan 관련 state 를 리셋. _unified_strategy / _approval_status /
-    plan_id 가 잔존하면 Orchestrator 가 기존 plan 재사용 모드로 단축되어 새
-    Memory retrieval (폐루프) 이 작동하지 않음.
-    _active_campaign_id / _last_archived_campaign_id 는 회상용으로 유지.
+
+def _orch_before_chain(callback_context):
+    """before_agent_callback — Core Memory inject + state 초기화 + approval state machine 강제.
+
+    LOOP 10: archive 완료 + approved 상태 → 새 캠페인 요청에 대비해 plan state reset.
+    LOOP 12: _pending_plan_id 존재 시 사용자 발화를 LLM 으로 분류해
+             - approve → callback 에서 set_user_approval_status 강제 호출
+                         (T3 LLM 비결정성 해소 — 도구 호출 누락이 결과를 좌우 못 함)
+             - revise  → _approval_status pending 유지, _revise_mode 마킹
+             - new_request → plan state reset
+             - ambiguous → 아무것도 안 함, orchestrator LLM 자율
     """
     _inject_core_memory(callback_context)
     state = callback_context.state
@@ -1491,10 +1535,60 @@ def _orch_before_chain(callback_context):
         state["_extended_brief"] = ""
         state["_campaign_memory_context"] = {}
 
+    pending_plan_id = state.get("_pending_plan_id")
+    if pending_plan_id and state.get("_approval_status") != "approved":
+        user_text = ""
+        try:
+            uc = getattr(callback_context, "user_content", None)
+            if uc and hasattr(uc, "parts"):
+                for p in (uc.parts or []):
+                    t = getattr(p, "text", None)
+                    if t:
+                        user_text = str(t)
+                        break
+        except Exception:
+            pass
+        if user_text and len(user_text) <= 4000:
+            us = state.get("_unified_strategy") or {}
+            plan_summary = ""
+            try:
+                ch = list((us.get("channels") or {}).keys()) if isinstance(us, dict) else []
+                plan_summary = (
+                    f"channels={ch}; notes={(us.get('consistency_notes') or '')[:200]}"
+                    if ch else "no channels recorded"
+                )
+            except Exception:
+                pass
+            label = _classify_plan_response(user_text, plan_summary)
+            logger.info(
+                "[ORCH_BEFORE] plan-response classified label=%r (plan_id=%s)",
+                label, pending_plan_id,
+            )
+            if label == "approve":
+                try:
+                    from . import memory_tools as _mt
+                    result = _mt.set_user_approval_status(
+                        callback_context,
+                        approved=True,
+                        plan_id=pending_plan_id,
+                        reason=f"LOOP 12 _orch_before_chain auto-classifier: approve (text={user_text[:80]!r})",
+                    )
+                    logger.info("[ORCH_BEFORE] LOOP 12 auto-approval result: %s", result)
+                except Exception as exc:
+                    logger.warning("[ORCH_BEFORE] LOOP 12 auto-approval failed: %s", exc)
+            elif label == "revise":
+                state["_revise_mode"] = True
+            elif label == "new_request":
+                state["_unified_strategy"] = {}
+                state["_pending_plan_id"] = ""
+                state["_approved_plan_id"] = ""
+                state["_approval_status"] = "pending"
+                state["_user_intent"] = {}
+                state["_extended_brief"] = ""
+
     if "_approval_status" not in state:
         state["_approval_status"] = "pending"
 
-    # Memory Agent 호출 여부 — 새 turn 마다 초기화
     state["_memory_agent_invoked"] = False
 
     us = state.get("_unified_strategy")
