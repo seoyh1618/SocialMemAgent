@@ -633,6 +633,19 @@ class RecallEntry(BaseModel):
         default=0,
         description="MemGPT Usage Frequency — synced with ConversationRecord.access_count via entry_id."
     )
+    campaign_id: str = Field(
+        default="",
+        description="FK to CampaignRecord.campaign_id — set when this turn produced or referenced a campaign. "
+                    "Enables '지난번 인스타 캠페인 뭐였지?' recall queries to map turn → campaign."
+    )
+    plan_id: str = Field(
+        default="",
+        description="FK to state['_pending_plan_id'] — set when a unified strategy plan was presented/approved in this turn."
+    )
+    channels_used: List[str] = Field(
+        default_factory=list,
+        description="Channels touched in this turn (e.g., ['instagram']). Used for channel-scoped recall queries."
+    )
 
 
 class ConversationRecord(BaseModel):
@@ -647,6 +660,18 @@ class ConversationRecord(BaseModel):
     content: str = Field(description="Message content (up to 1000 chars).")
     session_id: str = Field(default="", description="ADK session ID in which this turn occurred.")
     summary: str = Field(default="", description="Optional short summary annotation of this turn.")
+    campaign_id: str = Field(
+        default="",
+        description="FK to CampaignRecord.campaign_id — set when this turn produced/referenced a campaign."
+    )
+    plan_id: str = Field(
+        default="",
+        description="FK to state['_pending_plan_id']."
+    )
+    channels_used: List[str] = Field(
+        default_factory=list,
+        description="Channels touched in this turn."
+    )
 
 
 class MemoryState(BaseModel):

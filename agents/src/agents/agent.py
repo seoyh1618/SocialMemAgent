@@ -397,18 +397,54 @@ def _inject_core_memory(callback_context: CallbackContext) -> None:
             if top_worked or top_failed:
                 perf_lines = ["\n▶ BEHAVIOR INSIGHTS (auto-fetched — apply before generating)"]
                 if top_worked:
-                    perf_lines.append(f"  ✅ what_worked (apply these): {', '.join(top_worked)}")
+                    perf_lines.append(f"  what_worked (apply these): {', '.join(top_worked)}")
                 if top_failed:
-                    perf_lines.append(f"  ❌ what_failed (avoid these): {', '.join(top_failed)}")
+                    perf_lines.append(f"  what_failed (avoid these): {', '.join(top_failed)}")
+                # 5번째 블록 (CAMPAIGN/BehaviorGraph) 전체 inject 강화 — 폐루프 + 장기 개인화
+                try:
+                    best_platform = getattr(graph, "overall_best_platform", "") or ""
+                    if best_platform:
+                        perf_lines.append(f"  best_platform: {best_platform}")
+                    pbct = getattr(graph, "platform_best_content_type", {}) or {}
+                    if isinstance(pbct, dict) and pbct:
+                        pbct_str = ", ".join(f"{k}={v}" for k, v in pbct.items() if v)
+                        if pbct_str:
+                            perf_lines.append(f"  platform_best_content_type: {pbct_str}")
+                    conf = getattr(graph, "confidence_level", "") or ""
+                    if conf:
+                        perf_lines.append(f"  confidence_level: {conf}")
+                except Exception as _exc:
+                    logger.debug("Behavior fields extract skip: %s", _exc)
                 perf_lines.append(
-                    f"  ⚡ Total data points: {len(graph.edges)}. "
+                    f"  data points: {len(graph.edges)}. "
                     "These came from past campaign feedback — reflect them in your next content + image prompt."
                 )
                 brief_parts.append("\n".join(perf_lines))
                 logger.info(
-                    "[CORE_INJECT] 📈 Behavior insights pre-injected: worked=%s, failed=%s",
+                    "[CORE_INJECT] Behavior insights pre-injected: worked=%s, failed=%s",
                     top_worked, top_failed,
                 )
+        # CAMPAIGN 블록 카탈로그 inject — campaign_archive 최근 5건 (ID + goal)
+        # 폐루프 핵심: 매 turn prompt 에 과거 캠페인 ID 노출 → LLM 이 회상 발화 가능.
+        try:
+            camp_archive = memory.campaign_archive or []
+            if camp_archive:
+                recent = camp_archive[-5:]
+                cat_lines = ["\n▶ CAMPAIGN ARCHIVE CATALOG (recent 5 — for recall queries)"]
+                for c in recent:
+                    cd = c.model_dump() if hasattr(c, "model_dump") else dict(c)
+                    cid = cd.get("campaign_id", "?")
+                    goal = (cd.get("goal") or "")[:80]
+                    plats = ",".join(cd.get("platforms_used") or [])
+                    cat_lines.append(f"  - {cid}: goal={goal!r} platforms=[{plats}]")
+                cat_lines.append(
+                    "  Use these IDs when user asks '지난번 캠페인', 'last campaign', '직전' etc. "
+                    "For details call memory_search_campaigns(query)."
+                )
+                brief_parts.append("\n".join(cat_lines))
+                logger.info("[CORE_INJECT] Campaign archive catalog injected: %d items", len(recent))
+        except Exception as e:
+            logger.debug("Campaign archive catalog skip: %s", e)
     except Exception as e:
         logger.debug("Behavior insights pre-fetch skipped: %s", e)
 
@@ -1297,12 +1333,34 @@ def _auto_save_working_summary(callback_context: CallbackContext) -> None:
 
         import uuid as _uuid
         _agent_entry_id = f"re_{_uuid.uuid4().hex[:12]}"
+        # Recall linkage: state 에서 본 turn 에 발급/사용된 campaign_id, plan_id, channels 추출.
+        _state = callback_context.state
+        _plan_id_link = _state.get("_pending_plan_id") or _state.get("_approved_plan_id") or ""
+        _campaign_id_link = (
+            _state.get("_last_archived_campaign_id")
+            or _state.get("_active_campaign_id")
+            or ""
+        )
+        _channels_link = []
+        try:
+            _ui = _state.get("_user_intent") or {}
+            if isinstance(_ui, dict):
+                _channels_link = list(_ui.get("channels") or [])
+            if not _channels_link:
+                _us = _state.get("_unified_strategy") or {}
+                if isinstance(_us, dict):
+                    _channels_link = list((_us.get("channels") or {}).keys())
+        except Exception:
+            pass
         entry = RecallEntry(
             entry_id=_agent_entry_id,
             timestamp=datetime.now(timezone.utc).isoformat(),
             role="agent",
             content=content,
             summary_note=note,
+            campaign_id=_campaign_id_link,
+            plan_id=_plan_id_link,
+            channels_used=_channels_link,
         )
         memory.recall_log.append(entry)
 
@@ -1407,18 +1465,38 @@ def _orch_before_chain(callback_context):
     """before_agent_callback — Core Memory inject + state 초기화.
     승인 여부는 키워드 매칭이 아닌, Orchestrator LLM 이 사용자 의도를 분석하여
     `set_user_approval_status` 도구 호출로 명시 갱신합니다 (intent-based).
+
+    LOOP 10 추가: 이전 plan 이 archive 까지 완료된 상태에서 새 캠페인 요청이
+    들어오면 plan 관련 state 를 리셋. _unified_strategy / _approval_status /
+    plan_id 가 잔존하면 Orchestrator 가 기존 plan 재사용 모드로 단축되어 새
+    Memory retrieval (폐루프) 이 작동하지 않음.
+    _active_campaign_id / _last_archived_campaign_id 는 회상용으로 유지.
     """
     _inject_core_memory(callback_context)
     state = callback_context.state
 
-    # _approval_status 가 없으면 'pending' 초기화. 이미 approved 면 유지.
+    if (
+        state.get("_last_archived_campaign_id")
+        and state.get("_approval_status") == "approved"
+    ):
+        logger.info(
+            "[ORCH_BEFORE] plan-completed state detected (archived=%s) → reset for new turn",
+            state.get("_last_archived_campaign_id"),
+        )
+        state["_unified_strategy"] = {}
+        state["_pending_plan_id"] = ""
+        state["_approved_plan_id"] = ""
+        state["_approval_status"] = "pending"
+        state["_user_intent"] = {}
+        state["_extended_brief"] = ""
+        state["_campaign_memory_context"] = {}
+
     if "_approval_status" not in state:
         state["_approval_status"] = "pending"
 
     # Memory Agent 호출 여부 — 새 turn 마다 초기화
     state["_memory_agent_invoked"] = False
 
-    # plan 제시 여부를 LLM 이 판단할 수 있도록 state 에 노출
     us = state.get("_unified_strategy")
     state["_plan_presented_prev_turn"] = bool(
         isinstance(us, dict) and us.get("channels")
@@ -1429,18 +1507,55 @@ content_orchestrator.before_agent_callback = _orch_before_chain
 # orchestrator/agent.py 가 등록한 _auto_save_unified_strategy 가 여기서
 # 덮어쓰여지던 결함 수정 — 두 안전망을 모두 실행하고 end_of_agent 도 마킹.
 def _orch_after_agent_chain(callback_context):
-    # 1) _unified_strategy 누락 시 _xx_output 으로 자동 보완
+    """Orchestrator turn 종료 callback — 4 단계 안전망 (회귀 방지 순서 중요):
+       1. _unified_strategy 누락 보완 (기존 LOOP 5+7)
+       2. LOOP 11 archive 안전망 — approved 인데 archive 누락 시 자동 호출
+       3. recall_log auto-append + state→entry linkage (기존 LOOP 7)
+          (archive 후 호출되어야 _last_archived_campaign_id 가 recall 에 반영됨)
+       4. sticky 라우팅 차단 (LOOP 8/9: _event_actions.end_of_agent)
+    """
     try:
         from .sub_agents.orchestrator.agent import _auto_save_unified_strategy
         _auto_save_unified_strategy(callback_context)
     except Exception as exc:
         logger.warning("[ORCH_AFTER] _auto_save_unified_strategy skip: %s", exc)
-    # 2) recall_log 자동 append (기존 working_summary)
+
+    try:
+        state = callback_context.state
+        if (
+            state.get("_approval_status") == "approved"
+            and not state.get("_last_archived_campaign_id")
+            and isinstance(state.get("_unified_strategy"), dict)
+            and state.get("_unified_strategy", {}).get("channels")
+        ):
+            us = state["_unified_strategy"]
+            ui = state.get("_user_intent") or {}
+            ch_list = list((us.get("channels") or {}).keys())
+            goal = (
+                (ui.get("goal") if isinstance(ui, dict) else "")
+                or (us.get("consistency_notes") or "")[:300]
+                or "auto-archived campaign (LOOP 11 safety net)"
+            )
+            from . import memory_tools as _mt
+            try:
+                result = _mt.memory_archive_campaign(
+                    callback_context,
+                    goal=goal,
+                    platforms_used=ch_list,
+                    guideline_summary=(us.get("consistency_notes") or "")[:300],
+                    performance_notes="auto-archived by orchestrator after_agent_callback (LOOP 11)",
+                )
+                logger.info("[ORCH_AFTER] LOOP 11 auto-archive: %s", str(result)[:160])
+            except Exception as exc:
+                logger.warning("[ORCH_AFTER] LOOP 11 auto-archive failed: %s", exc)
+    except Exception as exc:
+        logger.warning("[ORCH_AFTER] LOOP 11 guard error: %s", exc)
+
     try:
         _auto_save_working_summary(callback_context)
     except Exception as exc:
         logger.warning("[ORCH_AFTER] _auto_save_working_summary skip: %s", exc)
-    # 3) sticky 해소 — LOOP 8 fix: _event_actions 사용
+
     actions = getattr(callback_context, "_event_actions", None)
     if actions is not None:
         try:

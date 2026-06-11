@@ -2302,9 +2302,13 @@ def memory_archive_campaign(
     logger.info("[CAMPAIGN] 📝 Added to performance_pending queue | pending_count=%d", len(memory.performance_pending))
 
     memory.total_campaigns += 1
+    # Recall linkage: _auto_save_working_summary 가 turn 종료 시 본 state 키 읽어
+    # RecallEntry.campaign_id 채움 → 향후 "지난번 캠페인" 같은 회상 발화 정확 답변 가능.
+    tool_context.state["_last_archived_campaign_id"] = record.campaign_id
+    tool_context.state["_active_campaign_id"] = record.campaign_id
     _save_memory(tool_context, memory)
 
-    logger.info("[CAMPAIGN] 🟢 Campaign archived | total_campaigns=%d", memory.total_campaigns)
+    logger.info("[CAMPAIGN] Campaign archived | total=%d id=%s", memory.total_campaigns, record.campaign_id)
     return f"[Memory Archived] Campaign '{record.campaign_id}' saved. Total campaigns: {memory.total_campaigns}"
 
 
