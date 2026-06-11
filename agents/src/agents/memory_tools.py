@@ -4121,8 +4121,26 @@ def memory_agent_query_campaign_context(
             "retrieved_at": datetime.now(timezone.utc).isoformat(),
         },
     }
-    # state 에도 저장 — Strategist 가 참조 가능
-    state["_campaign_memory_context"] = context
+    def _sanitize_for_state(obj):
+        """nested Pydantic / dataclass 를 dict 로 강제 변환 — SQLAlchemy JSON 저장 보장."""
+        if hasattr(obj, "model_dump"):
+            try: return _sanitize_for_state(obj.model_dump())
+            except Exception: return str(obj)
+        if isinstance(obj, dict):
+            return {k: _sanitize_for_state(v) for k, v in obj.items()}
+        if isinstance(obj, (list, tuple)):
+            return [_sanitize_for_state(v) for v in obj]
+        if isinstance(obj, (str, int, float, bool)) or obj is None:
+            return obj
+        try:
+            import json as _json
+            _json.dumps(obj)
+            return obj
+        except Exception:
+            return str(obj)
+
+    safe_context = _sanitize_for_state(context)
+    state["_campaign_memory_context"] = safe_context
     state["_memory_agent_invoked"] = True
 
     logger.info("[MEMORY_AGENT_QUERY] goal='%s' channels=%s | products=%d segments=%d "

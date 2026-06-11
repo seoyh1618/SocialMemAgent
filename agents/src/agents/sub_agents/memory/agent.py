@@ -63,12 +63,61 @@ from . import prompt
 logger = logging.getLogger(__name__)
 
 
+def _classify_memory_request(user_text: str) -> str:
+    """LOOP 13: memory_agent 진입 시 사용자/위임 요청을 LLM 분류.
+    Returns: 'campaign_context_query' | 'registration' | 'lookup' | 'other'
+
+    Pro 분류기 — orchestrator 위임 query 또는 사용자 직접 발화 모두 처리.
+    룰베이스 없음, 의도 분석만 사용.
+    """
+    if not user_text:
+        return "other"
+    prompt = (
+        "You are classifying a memory operation request inside a marketing agent.\n"
+        "Reply with ONLY one label (lowercase, no quotes):\n\n"
+        "  campaign_context_query\n"
+        "    — user/orchestrator needs campaign memory context for creating or revising content\n"
+        "    — explicit hints: 'goal=', 'channels=', '캠페인 컨텍스트 retrieval',\n"
+        "      '시안 만들어', '캠페인 만들어', '콘텐츠 생성', '핀터레스트 버전',\n"
+        "      '다음 캠페인', '후속 캠페인', '그거 톤 그대로'\n"
+        "  registration\n"
+        "    — user describing brand / product / audience for storage\n"
+        "    — examples: '네일샵 시작했어 메인 컬러는...', '신상 60000원'\n"
+        "  lookup\n"
+        "    — user asks to retrieve stored info by name/id (no content creation)\n"
+        "    — examples: '내 상품 목록', '저번에 등록한 페르소나 보여줘'\n"
+        "  other\n"
+        "    — chitchat, unrelated, ambiguous\n\n"
+        f'Request text: "{user_text[:600]}"\n\n'
+        "Label:"
+    )
+    try:
+        import concurrent.futures
+        from google import genai
+        client = genai.Client()
+        def _call():
+            return client.models.generate_content(model="gemini-2.5-pro", contents=prompt)
+        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as pool:
+            resp = pool.submit(_call).result(timeout=12)
+        label = (getattr(resp, "text", "") or "").strip().lower().split()[0] if resp else ""
+        label = label.strip().strip(".").strip("'").strip('"')
+        if label in {"campaign_context_query", "registration", "lookup", "other"}:
+            return label
+        if "campaign" in label or "context" in label: return "campaign_context_query"
+        if "regist" in label: return "registration"
+        if "look" in label: return "lookup"
+        return "other"
+    except Exception as exc:
+        logger.warning("[MEM_FORCE_RETRIEVAL] LOOP 13 classify failed: %s", exc)
+        return "other"
+
+
 def _force_archival_retrieval(callback_context):
     """memory_agent 진입 직전 Core 카탈로그 → Archival 상세 escalation 강제.
 
-    v23 검증 결과: 안내문이 prompt에 있어도 LLM이 escalation skip → retrieval 0회.
-    callback으로 Python 레벨에서 직접 호출 → 결과를 state["_archival_dump"]에 dump.
-    LLM은 dump를 참조해서 자연어 합성 응답 작성.
+    LOOP 13: 캠페인 컨텍스트 요청으로 분류되면 memory_agent_query_campaign_context
+    를 callback 에서 직접 호출해 _campaign_memory_context + _memory_agent_invoked 를
+    채움. LLM 이 service tool 호출을 누락해도 retrieve 흐름 보장.
     """
     from ...memory_tools import _load_memory
     state = callback_context.state
@@ -109,10 +158,61 @@ def _force_archival_retrieval(callback_context):
         if isinstance(_ui, dict) and _ui.get("goal"):
             last_user_text = f"{last_user_text} {_ui['goal']}".strip()
     except Exception: pass
-    # 기본 트리거: state에 있는 마지막 invocation 키 또는 default ON
-    is_campaign_ctx = any(kw in (last_user_text or "") for kw in
-                          ("캠페인", "campaign", "콘텐츠 생성", "시안", "메모리 컨텍스트"))
-    # campaign context 가 아니어도 retrieval 비용 미미 → 항상 시도
+    if (
+        last_user_text
+        and not state.get("_memory_agent_invoked")
+        and not (state.get("_campaign_memory_context") or {})
+    ):
+        try:
+            label = _classify_memory_request(last_user_text)
+            logger.info("[MEM_FORCE_RETRIEVAL] LOOP 13 classify=%r", label)
+            if label == "campaign_context_query":
+                ui = state.get("_user_intent") or {}
+                if isinstance(ui, str):
+                    try: ui = json.loads(ui) if ui.startswith("{") else {}
+                    except Exception: ui = {}
+                goal = ""
+                channels_str = ""
+                if isinstance(ui, dict):
+                    goal = (ui.get("goal") or "")[:300]
+                    channels_str = ",".join(ui.get("channels") or [])
+                if not goal:
+                    goal = last_user_text[:300]
+                if not channels_str:
+                    for kw, ch in [
+                        ("instagram", "instagram"), ("인스타", "instagram"),
+                        ("pinterest", "pinterest"), ("핀터레스트", "pinterest"),
+                        ("facebook", "facebook"), ("페이스북", "facebook"),
+                        ("tiktok", "tiktok"), ("틱톡", "tiktok"),
+                        ("youtube", "youtube"), ("유튜브", "youtube"),
+                        ("kakao", "kakao"), ("카카오", "kakao"),
+                        ("threads", "threads"), ("스레드", "threads"),
+                        ("linkedin", "linkedin"), ("x", "x"),
+                    ]:
+                        if kw in last_user_text.lower() and ch not in channels_str:
+                            channels_str = f"{channels_str},{ch}" if channels_str else ch
+                from ...memory_tools import memory_agent_query_campaign_context as _qctx
+                try:
+                    result = _qctx(
+                        callback_context,
+                        goal=goal,
+                        channels=channels_str,
+                        products_hint="",
+                        segments_hint="",
+                    )
+                    if isinstance(result, dict):
+                        logger.info(
+                            "[MEM_FORCE_RETRIEVAL] LOOP 13 service tool invoked: keys=%d, "
+                            "products=%d related_campaigns_kw=%d",
+                            len(result),
+                            len(result.get("referenced_products") or []),
+                            len(result.get("related_campaigns_keyword") or []),
+                        )
+                except Exception as exc:
+                    logger.warning("[MEM_FORCE_RETRIEVAL] LOOP 13 service tool failed: %s", exc)
+        except Exception as exc:
+            logger.warning("[MEM_FORCE_RETRIEVAL] LOOP 13 guard error: %s", exc)
+    is_campaign_ctx = bool(state.get("_campaign_memory_context"))
     try:
         mem = _load_memory(callback_context)
     except Exception as exc:
@@ -167,10 +267,13 @@ def _force_archival_retrieval(callback_context):
     except Exception as exc:
         logger.warning("[MEM_FORCE_RETRIEVAL] behavior: %s", exc)
 
-    # 5) 과거 캠페인 (최근 5건)
     try:
         camp_archive = mem.campaign_archive or []
-        recent_camps = camp_archive[-5:] if camp_archive else []
+        recent_camps_raw = camp_archive[-5:] if camp_archive else []
+        recent_camps = [
+            (c.model_dump() if hasattr(c, "model_dump") else dict(c))
+            for c in recent_camps_raw
+        ]
         dump["recent_campaigns"] = recent_camps
     except Exception as exc:
         logger.warning("[MEM_FORCE_RETRIEVAL] campaigns: %s", exc)
@@ -410,7 +513,23 @@ def _force_archival_retrieval(callback_context):
         logger.warning("[MEM_FORCE_RETRIEVAL] intent-driven retrieval: %s", exc)
     dump["intent_driven"] = intent_dump
 
-    state["_archival_dump"] = dump
+    def _sanitize_dump(obj):
+        if hasattr(obj, "model_dump"):
+            try: return _sanitize_dump(obj.model_dump())
+            except Exception: return str(obj)
+        if isinstance(obj, dict):
+            return {k: _sanitize_dump(v) for k, v in obj.items()}
+        if isinstance(obj, (list, tuple)):
+            return [_sanitize_dump(v) for v in obj]
+        if isinstance(obj, (str, int, float, bool)) or obj is None:
+            return obj
+        try:
+            import json as _json
+            _json.dumps(obj); return obj
+        except Exception:
+            return str(obj)
+
+    state["_archival_dump"] = _sanitize_dump(dump)
     logger.info("[MEM_FORCE_RETRIEVAL] dumped | products=%d segments=%d knowledge=%d "
                 "campaigns=%d recall=%d assets=%d",
                 len(dump.get("products", [])),
