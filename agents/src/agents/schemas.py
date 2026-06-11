@@ -30,11 +30,6 @@ class ImagePost(BaseModel):
     image_url: HttpUrl = Field(description="The URL of the image post. Get this URL from the image generation tool.")
     post_text: str = Field(description="The content text of the image post.")
 
-class VideoPost(BaseModel):
-    video_url: HttpUrl = Field(description="The URL of the video post. Get this URL from the video generation tool.")
-    title: str = Field(description="The title of the video post (e.g. YouTube video title).")
-    description: str = Field(description="A short description of the video post (e.g. YouTube video description).")
-
 
 class Base(BaseModel):
     # ── 1. Goal ────────────────────────────────────────────
@@ -48,13 +43,11 @@ class Base(BaseModel):
     # ── 3. Intermediate artifacts ─────────────────────────
     guideline: EnabledField[str]
     image_prompt: EnabledField[str]
-    video_prompt: EnabledField[str]
-    video_narration: EnabledField[str]
 
-    # ── 4. Final artifacts ────────────────────────────────
+    # ── 4. Final artifacts (이미지 전용 시스템 — video/audio 제외) ───
     twitter_post: EnabledField[str]
-    youtube_post: EnabledField[VideoPost]
-    tiktok_post: EnabledField[VideoPost]
+    youtube_post: EnabledField[ImagePost]  # 썸네일/key visual만
+    tiktok_post: EnabledField[ImagePost]   # 커버 이미지만
     instagram_post: EnabledField[ImagePost]
 
     model_config = {
@@ -102,6 +95,27 @@ class PersonaBlock(BaseModel):
     # 금지
     avoid_topics: List[str] = Field(default_factory=list, description="절대 언급 금지")
     avoid_words: List[str] = Field(default_factory=list, description="사용 금지 단어")
+    # ── 시각/이미지 전용 금기·필수 (image_generation 강제 주입용) ──
+    forbidden_visual_elements: List[str] = Field(
+        default_factory=list,
+        description="이미지 생성에서 절대 등장 금지 요소 (e.g., ['파란색 조명', 'cold metal', 'neon lighting']). image_generation_agent가 negative_prompt + positive 변환으로 자동 처리.",
+    )
+    required_color_palette: List[str] = Field(
+        default_factory=list,
+        description="이미지에 반드시 반영해야 할 브랜드 컬러 (e.g., ['warm amber', 'cream', 'brown']). 자연어 색상 명시.",
+    )
+    brand_colors_hex: List[str] = Field(
+        default_factory=list,
+        description="브랜드 컬러 hex 코드 (e.g., ['#E7823A', '#8B4513']). 팬톤·시각 가이드에서 추출.",
+    )
+    forbidden_colors: List[str] = Field(
+        default_factory=list,
+        description="이미지에 절대 등장 금지인 컬러 (e.g., ['원색 빨강', '형광색', '네온']). 자연어 명시.",
+    )
+    color_ratio_rule: str = Field(
+        default="",
+        description="브랜드 컬러 비율 규칙 (e.g., '메인 70 : 보조 30'). image prompt 합성 시 [COLOR_RATIO] 섹션으로 주입.",
+    )
     # CTA/스토리
     preferred_cta_style: str = Field(default="", description="direct / soft_invitation / question")
     brand_story_snippet: str = Field(default="", description="브랜드 스토리 (2~3문장)")
@@ -262,35 +276,6 @@ class AudienceBlock(BaseModel):
     )
 
 
-class UserProfile(BaseModel):
-    """DEPRECATED — kept for backward compatibility with old serialized sessions.
-    New code should use HumanBlock, PersonaBlock, DomainProfileBlock, AudienceBlock directly."""
-    display_name: str = Field(default="", description="User's display name or brand name.")
-    twitter_handle: Optional[str] = Field(default=None, description="Twitter/X handle (e.g., '@mybrand')")
-    instagram_handle: Optional[str] = Field(default=None, description="Instagram handle.")
-    industry: str = Field(default="", description="User's industry or niche (e.g., 'SaaS', 'Fashion', 'Fitness').")
-    target_platforms: List[str] = Field(
-        default_factory=list,
-        description="Platforms user primarily posts on. e.g. ['twitter', 'instagram']"
-    )
-    brand_voice: BrandVoice = Field(
-        default_factory=BrandVoice,
-        description="Persistent brand voice profile (Persona Block)."
-    )
-    domain_profile: DomainProfileBlock = Field(
-        default_factory=DomainProfileBlock,
-        description="Domain-specific business profile block — replaces unstructured extra_fields."
-    )
-    extra_fields: dict = Field(
-        default_factory=dict,
-        description=(
-            "Legacy dynamic key-value store. Preserved for backward compatibility. "
-            "New data should use domain_profile fields instead. "
-            "Keys are short snake_case labels; values are always strings."
-        )
-    )
-
-
 # ─── Performance & Behavior Graph Schemas ─────────────────────────────────────
 
 class PerformanceData(BaseModel):
@@ -333,6 +318,16 @@ class PerformanceData(BaseModel):
     likes: int = Field(default=0, description="Total likes/reactions count")
     shares: int = Field(default=0, description="Total shares/reposts count")
     comments: int = Field(default=0, description="Total comments count")
+    # ── PickScore-aware Performance Memory (v2 추가) ──
+    # 이미지 생성 즉시 자동 측정되는 정량 신호 — 사용자 입력 없이도 채워짐
+    pickscore: Optional[float] = Field(
+        default=None,
+        description="PickScore (0-1 sigmoid) auto-measured from generated image. CLIP-H Pick-a-Pic v2 기반 대중 선호도."
+    )
+    pickscore_percentile: Optional[float] = Field(
+        default=None,
+        description="Percentile within persona campaign history (0-100). Used for retrieval ranking."
+    )
 
 
 class PerformancePendingRequest(BaseModel):
@@ -517,6 +512,69 @@ class GeneratedAsset(BaseModel):
         description="Structured performance data for this asset."
     )
 
+
+# ─── ERD v2 — N:M Link Tables + CampaignChannelOutput + PerformanceRecord ─────
+# 슬라이드 4 ERD 반영
+# 기존 List[str] 양방향 동기는 유지(하이브리드 패턴) — Link 테이블이 정형 관계 표현
+
+class ProductSegmentLink(BaseModel):
+    """Product ↔ AudienceSegment N:M 조인 테이블 (슬라이드 4 ERD)."""
+    product_id: str = Field(description="FK → ProductRecord.product_id")
+    segment_id: str = Field(description="FK → AudienceSegment.segment_id")
+    priority: str = Field(default="medium", description="high / medium / low")
+    created_at: str = Field(default="", description="ISO-8601 link 생성 시각")
+
+
+class CampaignProductLink(BaseModel):
+    """Campaign ↔ Product N:M 조인 테이블 (슬라이드 4 ERD)."""
+    campaign_id: str = Field(description="FK → CampaignRecord.campaign_id")
+    product_id: str = Field(description="FK → ProductRecord.product_id")
+    priority: str = Field(default="medium", description="high / medium / low")
+    created_at: str = Field(default="")
+
+
+class CampaignSegmentLink(BaseModel):
+    """Campaign ↔ AudienceSegment N:M 조인 테이블 (슬라이드 4 ERD)."""
+    campaign_id: str = Field(description="FK → CampaignRecord.campaign_id")
+    segment_id: str = Field(description="FK → AudienceSegment.segment_id")
+    priority: str = Field(default="medium", description="high / medium / low")
+    created_at: str = Field(default="")
+
+
+class CampaignChannelOutput(BaseModel):
+    """
+    캠페인 × 채널 산출물 (슬라이드 4 ERD).
+    CampaignArchive 1:N CampaignChannelOutput 관계.
+    Strategist의 채널별 전략 결과와 Imagen 산출물을 정형 보존.
+    """
+    output_id: str = Field(description="Unique output identifier.")
+    campaign_id: str = Field(description="FK → CampaignRecord.campaign_id")
+    channel: str = Field(description="instagram / kakao / x / tiktok / ...")
+    caption: str = Field(default="", description="채널별 캡션·문구 본문 (슬라이드 4 ERD의 copy 대응)")
+    hashtags: List[str] = Field(default_factory=list, description="채널별 해시태그")
+    cta: str = Field(default="", description="CTA 텍스트")
+    image_prompt: str = Field(default="", description="확장된 image prompt (Orchestrator 합성본)")
+    asset_url: str = Field(default="", description="GCS URL (생성된 이미지/영상)")
+    approval_status: str = Field(default="pending", description="pending / approved / rejected")
+    created_at: str = Field(default="")
+
+
+class PerformanceRecord(BaseModel):
+    """
+    채널 산출물 × 성과 데이터 (슬라이드 4 ERD).
+    CampaignChannelOutput 1:N PerformanceRecord 관계.
+    """
+    record_id: str = Field(description="Unique performance record identifier.")
+    output_id: str = Field(description="FK → CampaignChannelOutput.output_id")
+    engagement: int = Field(default=0, description="좋아요·반응 총수")
+    save: int = Field(default=0, description="저장 수")
+    share: int = Field(default=0, description="공유 수")
+    comment: int = Field(default=0, description="댓글 수")
+    conversion_signal: str = Field(default="", description="DM·예약·구매 등 전환 시그널")
+    collected_at: str = Field(default="", description="성과 수집 시점")
+
+
+# ─── 기존 클래스 (유지) ──────────────────────────────────────────────────
 
 class ProductRecord(BaseModel):
     """
@@ -787,6 +845,30 @@ class MemoryState(BaseModel):
     last_updated: str = Field(
         default="",
         description="ISO-8601 timestamp of last memory write."
+    )
+
+    # ─── ERD v2 신규 필드 () ───────────────────
+    # 슬라이드 4 ERD의 신규 5개 entity를 MemoryState에 통합.
+    # 기존 ProductRecord.target_segments 등 List[str] 양방향 동기는 유지(하이브리드).
+    product_segment_links: List[ProductSegmentLink] = Field(
+        default_factory=list,
+        description="[ERD v2] Product ↔ Segment N:M 정형 관계. 기존 ProductRecord.target_segments와 병행 유지."
+    )
+    campaign_product_links: List[CampaignProductLink] = Field(
+        default_factory=list,
+        description="[ERD v2] Campaign ↔ Product N:M 정형 관계."
+    )
+    campaign_segment_links: List[CampaignSegmentLink] = Field(
+        default_factory=list,
+        description="[ERD v2] Campaign ↔ Segment N:M 정형 관계."
+    )
+    campaign_channel_outputs: List[CampaignChannelOutput] = Field(
+        default_factory=list,
+        description="[ERD v2] 캠페인 × 채널 산출물 정형 보존. CampaignArchive 1:N."
+    )
+    performance_records: List[PerformanceRecord] = Field(
+        default_factory=list,
+        description="[ERD v2] CampaignChannelOutput 1:N 성과 기록."
     )
 
 

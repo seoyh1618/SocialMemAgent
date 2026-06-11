@@ -27,6 +27,7 @@ All tools are pure Python callables compatible with google.adk.tools.
 import json
 import logging
 import os
+import re
 import time
 import uuid
 from datetime import datetime, timezone
@@ -41,6 +42,10 @@ from .schemas import (
     AudienceTrait,
     BrandVoice,
     CampaignRecord,
+    # ERD v2 신규 클래스
+    CampaignChannelOutput,
+    CampaignProductLink,
+    CampaignSegmentLink,
     ContentNode,
     ConversationRecord,
     DomainKnowledge,
@@ -51,10 +56,11 @@ from .schemas import (
     PerformanceData,
     PerformanceEdge,
     PerformancePendingRequest,
+    PerformanceRecord,
     PersonaBlock,
     ProductRecord,
+    ProductSegmentLink,
     RecallEntry,
-    UserProfile,
 )
 
 logger = logging.getLogger(__name__)
@@ -701,6 +707,46 @@ def memory_update_user_profile(
     return f"[Memory Updated] Human Block fields updated: {', '.join(updated_fields)} ({char_count}/{_CORE_CHAR_LIMIT_PROFILE} chars)"
 
 
+def _auto_dispatch_knowledge(memory, key: str, value, category: str,
+                              title: Optional[str] = None,
+                              source: str = "auto-dispatch") -> bool:
+    """brand_voice / domain / product 등록 시 핵심 정보를
+    domain_block.knowledge 카탈로그에도 자동으로 추가 (중복 시 갱신).
+
+    Returns True if newly added/updated, False if value empty.
+    """
+    from .schemas import DomainKnowledge
+    if value is None or value == "" or value == []:
+        return False
+    # 값을 표준 string 으로 변환
+    if isinstance(value, list):
+        if not value: return False
+        value_str = ", ".join(str(v) for v in value)
+    else:
+        value_str = str(value)
+
+    knowledge_list = memory.domain_block.knowledge
+    # 같은 key 가 이미 있으면 갱신
+    for k in knowledge_list:
+        if k.key == key:
+            k.value = value_str
+            k.confidence = "confirmed"
+            if title: k.title = title
+            return True
+    # 신규 추가
+    next_id = f"dk_{len(knowledge_list) + 1:03d}"
+    knowledge_list.append(DomainKnowledge(
+        knowledge_id=next_id,
+        key=key,
+        title=title or key,
+        value=value_str,
+        category=category,
+        confidence="confirmed",
+        source=source,
+    ))
+    return True
+
+
 def memory_update_brand_voice(
     tool_context: ToolContext,
     tone: Optional[str] = None,
@@ -708,11 +754,19 @@ def memory_update_brand_voice(
     avoid_topics: Optional[List[str]] = None,
     signature_hashtags: Optional[List[str]] = None,
     content_pillars: Optional[List[str]] = None,
+    forbidden_visual_elements: Optional[List[str]] = None,
+    required_color_palette: Optional[List[str]] = None,
+    brand_colors_hex: Optional[List[str]] = None,
+    forbidden_colors: Optional[List[str]] = None,
+    color_ratio_rule: Optional[str] = None,
+    avoid_words: Optional[List[str]] = None,
+    slogan: Optional[str] = None,
 ) -> str:
     """
     [MemGPT: Core Memory WRITE — Persona Block]
     Update the brand voice profile. This is the most important personalization signal.
-    Call this when the user expresses preferences about tone, style, hashtags, or content themes.
+    Call this when the user expresses preferences about tone, style, hashtags, content themes,
+    OR explicit visual guidelines (e.g., "절대 파란색 금지", "팬톤 #E7823A").
 
     Args:
         tone: Brand communication tone (e.g., 'casual and witty').
@@ -720,6 +774,43 @@ def memory_update_brand_voice(
         avoid_topics: Topics to never include (e.g., ['politics', 'competitors']).
         signature_hashtags: Brand hashtags to always include (e.g., ['#BuildInPublic']).
         content_pillars: Core content categories (e.g., ['Education', 'Product demos']).
+        forbidden_visual_elements: Visual elements that MUST NEVER appear in generated images.
+            ⚠️ CRITICAL: 콤마(`,`)·중점(`·`)·슬래시(`/`) 로 구분된 모든 항목을 분리해서 array 로 저장.
+            Examples:
+              - "캐주얼 일러스트, 화려한 그라데이션, 자극적 후킹 이미지, 가격표 강조"
+                → ['캐주얼 일러스트', '화려한 그라데이션', '자극적 후킹 이미지', '가격표 강조']
+              - "파란색 조명·cold metal·neon lighting"
+                → ['파란색 조명', 'cold metal', 'neon lighting']
+            한 문장 통째로 저장하지 마세요 — 회상 시 부분 매칭 실패.
+        required_color_palette: Colors that MUST be reflected in generated images.
+            ⚠️ IMPORTANT: When user mentions BOTH main AND secondary/auxiliary colors,
+            include ALL of them in this list (not just main).
+            Examples:
+              - "메인 마살라, 보조 누드핑크·샴페인 골드" → ['마살라 와인', '누드 핑크', '샴페인 골드']
+              - "warm amber 메인에 cream·brown 보조" → ['warm amber', 'cream', 'earthy brown']
+              - "주력 컬러 X" + "포인트 컬러 Y" → ['X', 'Y']
+            The PERSONA's full palette must be preserved here, not just primary.
+        brand_colors_hex: Brand hex codes for precise color matching.
+            ⚠️ Include hex codes for ALL colors mentioned (main + secondary + accent).
+            Examples: ['#E7823A', '#8B4513'].
+        forbidden_colors: Colors that MUST NEVER appear in generated images.
+            Call when user says "원색 빨강 금지", "형광색 안 써", "no neon".
+            Examples:
+              - "원색 빨강(공포 어필), 형광색" → ['원색 빨강', '형광색']
+              - "no pure red, no neon" → ['pure red', 'neon']
+        color_ratio_rule: Brand color ratio rule as natural language string.
+            Examples:
+              - "메인 70 : 보조 30"
+              - "70% primary / 30% accent"
+              - "primary 60, secondary 30, accent 10"
+            image_prompt 합성 시 [COLOR_RATIO] 섹션으로 주입됨.
+        avoid_words: Words/phrases that MUST NEVER appear in captions/copy.
+            ⚠️ Comma/middot 로 구분된 모든 항목 분리.
+            Examples:
+              - "100% 절세, 세금 면제" → ['100% 절세', '세금 면제']
+              - "최저가·역대급" → ['최저가', '역대급']
+        slogan: Brand slogan/tagline. Capture exactly as user states.
+            Examples: "복잡한 세무, 가까이서 풀어드립니다" → "복잡한 세무, 가까이서 풀어드립니다"
 
     Returns:
         Confirmation message with updated fields.
@@ -743,6 +834,57 @@ def memory_update_brand_voice(
     if content_pillars is not None:
         voice.content_pillars = content_pillars
         updated_fields.append(f"content_pillars={content_pillars}")
+    if forbidden_visual_elements is not None:
+        voice.forbidden_visual_elements = forbidden_visual_elements
+        updated_fields.append(f"forbidden_visual_elements={forbidden_visual_elements}")
+    if required_color_palette is not None:
+        voice.required_color_palette = required_color_palette
+        updated_fields.append(f"required_color_palette={required_color_palette}")
+    if brand_colors_hex is not None:
+        voice.brand_colors_hex = brand_colors_hex
+        updated_fields.append(f"brand_colors_hex={brand_colors_hex}")
+    if forbidden_colors is not None:
+        voice.forbidden_colors = forbidden_colors
+        updated_fields.append(f"forbidden_colors={forbidden_colors}")
+    if color_ratio_rule is not None:
+        voice.color_ratio_rule = color_ratio_rule
+        updated_fields.append(f"color_ratio_rule='{color_ratio_rule}'")
+    if avoid_words is not None:
+        voice.avoid_words = avoid_words
+        updated_fields.append(f"avoid_words={avoid_words}")
+    if slogan is not None:
+        voice.slogan = slogan
+        updated_fields.append(f"slogan='{slogan}'")
+
+    # ── Knowledge auto-dispatch (brand_voice → domain_knowledge 카탈로그) ──
+    dispatched = []
+    if slogan is not None and _auto_dispatch_knowledge(
+            memory, "brand_slogan", slogan, "brand_voice", title="브랜드 슬로건"):
+        dispatched.append("brand_slogan")
+    if forbidden_visual_elements is not None and _auto_dispatch_knowledge(
+            memory, "brand_forbidden_visual", forbidden_visual_elements,
+            "brand_voice", title="브랜드 시각 금기"):
+        dispatched.append("brand_forbidden_visual")
+    if forbidden_colors is not None and _auto_dispatch_knowledge(
+            memory, "brand_forbidden_colors", forbidden_colors,
+            "brand_voice", title="브랜드 컬러 금기"):
+        dispatched.append("brand_forbidden_colors")
+    if color_ratio_rule is not None and _auto_dispatch_knowledge(
+            memory, "brand_color_ratio", color_ratio_rule,
+            "brand_voice", title="브랜드 컬러 비율"):
+        dispatched.append("brand_color_ratio")
+    if avoid_words is not None and _auto_dispatch_knowledge(
+            memory, "brand_avoid_words", avoid_words,
+            "brand_voice", title="브랜드 사용금지 단어"):
+        dispatched.append("brand_avoid_words")
+    if tone is not None and _auto_dispatch_knowledge(
+            memory, "brand_tone", tone,
+            "brand_voice", title="브랜드 톤"):
+        dispatched.append("brand_tone")
+    if required_color_palette is not None and _auto_dispatch_knowledge(
+            memory, "brand_required_colors", required_color_palette,
+            "brand_voice", title="브랜드 필수 컬러"):
+        dispatched.append("brand_required_colors")
 
     # ── MemGPT: enforce Core Memory char limit (arXiv:2310.08560) ──
     char_count = _measure_voice_chars(voice)
@@ -753,10 +895,14 @@ def memory_update_brand_voice(
             "Condense existing data first with core_memory_replace."
         )
 
-    logger.info("[MEMORY_WRITE] ⚡ memory_update_brand_voice | fields_updated=%s", updated_fields)
+    logger.info("[MEMORY_WRITE] ⚡ memory_update_brand_voice | fields_updated=%s | knowledge_dispatched=%s",
+                updated_fields, dispatched)
     _save_memory(tool_context, memory)
 
-    return f"[Memory Updated] Persona Block (brand voice) updated: {'; '.join(updated_fields)} ({char_count}/{_CORE_CHAR_LIMIT_VOICE} chars)"
+    msg = f"[Memory Updated] Persona Block (brand voice) updated: {'; '.join(updated_fields)} ({char_count}/{_CORE_CHAR_LIMIT_VOICE} chars)"
+    if dispatched:
+        msg += f" | Knowledge auto-dispatched: {dispatched}"
+    return msg
 
 
 # ─── Domain Profile Block Tools ──────────────────────────────────────────────
@@ -832,6 +978,24 @@ def memory_update_domain_profile(
     if target_age_range is not None:
         ab.default_age_range = target_age_range; updated.append("default_age_range→audience_block")
 
+    # ── Knowledge auto-dispatch ──
+    dispatched = []
+    if usp is not None and _auto_dispatch_knowledge(
+            memory, "business_usp", usp, "domain_profile", title="비즈니스 USP"):
+        dispatched.append("business_usp")
+    if competitors is not None and _auto_dispatch_knowledge(
+            memory, "business_competitors", competitors, "domain_profile", title="주요 경쟁사"):
+        dispatched.append("business_competitors")
+    if seasonal_peaks is not None and _auto_dispatch_knowledge(
+            memory, "business_seasonal_peaks", seasonal_peaks, "domain_profile", title="시즌 성수기"):
+        dispatched.append("business_seasonal_peaks")
+    if industry is not None and _auto_dispatch_knowledge(
+            memory, "business_industry", industry, "domain_profile", title="업종"):
+        dispatched.append("business_industry")
+    if business_location is not None and _auto_dispatch_knowledge(
+            memory, "business_location", business_location, "domain_profile", title="비즈니스 위치"):
+        dispatched.append("business_location")
+
     # ── MemGPT: enforce Core Memory char limit (arXiv:2310.08560) ──
     char_count = _measure_domain_chars(dp)
     if char_count > _CORE_CHAR_LIMIT_DOMAIN:
@@ -841,9 +1005,13 @@ def memory_update_domain_profile(
             "Condense existing data first with core_memory_replace."
         )
 
-    logger.info("[MEMORY_WRITE] ⚡ memory_update_domain_profile | fields_updated=%s", updated)
+    logger.info("[MEMORY_WRITE] ⚡ memory_update_domain_profile | fields_updated=%s | knowledge_dispatched=%s",
+                updated, dispatched)
     _save_memory(tool_context, memory)
-    return f"[Domain Profile Updated] Fields: {', '.join(updated)} ({char_count}/{_CORE_CHAR_LIMIT_DOMAIN} chars)"
+    msg = f"[Domain Profile Updated] Fields: {', '.join(updated)} ({char_count}/{_CORE_CHAR_LIMIT_DOMAIN} chars)"
+    if dispatched:
+        msg += f" | Knowledge auto-dispatched: {dispatched}"
+    return msg
 
 
 def memory_add_domain_knowledge(
@@ -1038,8 +1206,26 @@ def memory_add_product(
     except Exception as e:
         logger.warning("[Product] Qdrant upsert failed: %s", e)
 
+    # ── Knowledge auto-dispatch: product USP, features ──
+    dispatched = []
+    if unique_selling_point and _auto_dispatch_knowledge(
+            memory, f"product_usp_{product_id}", unique_selling_point,
+            "product", title=f"{name} USP"):
+        dispatched.append(f"product_usp_{product_id}")
+    if features_list and _auto_dispatch_knowledge(
+            memory, f"product_features_{product_id}", features_list,
+            "product", title=f"{name} 특징"):
+        dispatched.append(f"product_features_{product_id}")
+    if category and _auto_dispatch_knowledge(
+            memory, f"product_category_{product_id}", category,
+            "product", title=f"{name} 카테고리"):
+        dispatched.append(f"product_category_{product_id}")
+
     _save_memory(tool_context, memory)
-    return f"[Product] Created '{name}' (ID: {product_id}). Core에 카탈로그 반영됨."
+    msg = f"[Product] Created '{name}' (ID: {product_id}). Core에 카탈로그 반영됨."
+    if dispatched:
+        msg += f" | Knowledge auto-dispatched: {dispatched}"
+    return msg
 
 
 def memory_get_product(
@@ -1172,10 +1358,12 @@ def memory_get_knowledge(
 
 # ─── Skill MD Reference Tool ─────────────────────────────────────────────────
 
-_SKILL_MD_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "..", "..", "..", "skills")
+_SKILL_MD_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "..", "..", "skills")
 _ALLOWED_SKILL_MDS = {
     "owner_profile.md", "brand_voice.md", "business_domain.md",
     "product_service.md", "audience_segment.md", "campaign_performance.md",
+    # ERD v2 신규 ()
+    "erd_relations.md",
 }
 
 
@@ -1890,6 +2078,101 @@ def memory_get_behavior_insights(tool_context: ToolContext) -> str:
     }, ensure_ascii=False)
 
 
+def memory_get_top_pickscore_keywords(
+    tool_context: ToolContext,
+    top_k: int = 5,
+    min_percentile: float = 60.0,
+) -> str:
+    """
+    [PickScore-aware Performance Memory READ]
+    PickScore 상위 N개 캠페인의 prompt 키워드를 추출해 반환.
+
+    USE WHEN strategist가 새 캠페인 prompt를 짤 때 — 과거에 대중 선호도
+    높았던 시각 키워드를 다시 활용하도록 inject.
+
+    예) "warm soft natural lighting", "minimal beige", "close-up bokeh"
+    같은 시각 키워드가 반복적으로 PickScore p80+를 받았다면, 새 prompt에
+    그 패턴을 따르는 것이 안전하다.
+
+    Args:
+        top_k: 가져올 캠페인 수 (default 5).
+        min_percentile: 이 percentile 이상만 (default 60).
+
+    Returns:
+        JSON {"top_campaigns": [{prompt_excerpt, pickscore, percentile, goal}, ...],
+              "winning_keywords": [...]}.
+        winning_keywords는 캠페인 guideline_summary + asset prompt 에서 추출한
+        반복 키워드 (간단 빈도 기반).
+    """
+    memory = _load_memory(tool_context)
+
+    # 1) Asset 단에서 PickScore p+ 상위 N개 prompt 수집
+    candidates: list[dict] = []
+    for asset in memory.asset_archive:
+        if asset.asset_type != "image":
+            continue
+        if not asset.performance:
+            continue
+        ps = asset.performance.pickscore
+        pct = asset.performance.pickscore_percentile
+        if ps is None or pct is None or pct < min_percentile:
+            continue
+        candidates.append({
+            "asset_id": asset.asset_id,
+            "prompt_excerpt": (asset.prompt_used or "")[:200],
+            "pickscore": round(ps, 3),
+            "percentile": round(pct, 1),
+            "platform": asset.platform,
+            "session_id": asset.session_id,
+        })
+    candidates.sort(key=lambda c: c["pickscore"], reverse=True)
+    top_assets = candidates[:top_k]
+
+    # 2) 캠페인 단(보강) — guideline_summary 까지 함께
+    top_campaigns: list[dict] = []
+    camp_sorted = sorted(
+        [
+            r for r in memory.campaign_archive
+            if r.performance
+            and r.performance.pickscore is not None
+            and (r.performance.pickscore_percentile or 0) >= min_percentile
+        ],
+        key=lambda r: r.performance.pickscore,
+        reverse=True,
+    )[:top_k]
+    for r in camp_sorted:
+        top_campaigns.append({
+            "campaign_id": r.campaign_id,
+            "goal": (r.goal or "")[:120],
+            "guideline_summary": (r.guideline_summary or "")[:200],
+            "trend": r.selected_trend,
+            "pickscore": round(r.performance.pickscore, 3),
+            "percentile": round(r.performance.pickscore_percentile or 0, 1),
+        })
+
+    # 3) 키워드 빈도 (1-3 grams 단순 공백 분할)
+    from collections import Counter
+    text_pool = " ".join(
+        [c["prompt_excerpt"] for c in top_assets]
+        + [c["guideline_summary"] for c in top_campaigns]
+    ).lower()
+    # 의미 있는 영문 / 한글 토큰만 (3자 이상)
+    tokens = [t.strip(".,;:!?\"'()[]{}") for t in text_pool.split()]
+    tokens = [t for t in tokens if len(t) >= 3]
+    # stopword (조사·일반어) 가벼운 거르기
+    _STOP = {"the", "and", "with", "for", "from", "into", "this", "that",
+             "image", "photo", "scene", "이미지", "사진", "장면", "the,", "and,"}
+    tokens = [t for t in tokens if t not in _STOP]
+    common = [w for w, _c in Counter(tokens).most_common(15)]
+
+    return json.dumps({
+        "top_assets": top_assets,
+        "top_campaigns": top_campaigns,
+        "winning_keywords": common,
+        "threshold_percentile": min_percentile,
+    }, ensure_ascii=False)
+
+
 # ─── Archival Memory Tools (Campaign History) ────────────────────────────────
 
 def _campaign_to_embed_text(record: CampaignRecord) -> str:
@@ -2029,15 +2312,19 @@ def memory_search_campaigns(
     tool_context: ToolContext,
     query: str,
     limit: int = 5,
+    min_pickscore_percentile: float = 0.0,
+    rerank_by_pickscore: bool = True,
 ) -> str:
     """
     [MemGPT: Archival Memory READ — Semantic Similarity Search]
-    Find campaigns SIMILAR TO a specific topic/keyword using vector similarity.
+    Find campaigns SIMILAR TO a specific topic/keyword using vector similarity,
+    with optional PickScore-aware re-ranking.
 
     USE THIS TOOL WHEN the user asks:
     - "봄 시즌 관련 캠페인 찾아줘" (topic-based search)
     - "비슷한 캠페인 있어?" (similarity search)
     - "이전에 쿠키 홍보한 적 있어?" (specific product search)
+    - "성과 좋았던 캠페인 찾아줘" (performance-driven — set min_pickscore_percentile=70)
 
     DO NOT use this for listing ALL campaigns — use memory_get_recent_campaigns instead.
 
@@ -2045,9 +2332,15 @@ def memory_search_campaigns(
         query: Specific topic/keyword to search for (any language).
                e.g., '두바이 쫀득 쿠키', '봄 시즌 프로모션', '인스타그램 패션 홍보'
         limit: Maximum number of results to return (default 5).
+        min_pickscore_percentile: PickScore percentile 임계치 (0-100). 이 값 이상인
+            캠페인만 반환. 0이면 필터링 안 함. 사용자가 "성과 좋았던" / "잘된 거"
+            맥락으로 물을 때 70-80 추천.
+        rerank_by_pickscore: True면 의미적 유사도(0.6) + PickScore(0.4) 결합으로
+            재정렬. False면 순수 의미적 유사도만 사용.
 
     Returns:
-        JSON list of matching campaign records sorted by semantic relevance.
+        JSON list of matching campaign records. 각 record는 `pickscore` /
+        `pickscore_percentile` / `combined_rank_score`를 포함.
     """
     memory = _load_memory(tool_context)
 
@@ -2059,10 +2352,11 @@ def memory_search_campaigns(
     _search_method = "keyword"
 
     # ── Path 1: Qdrant ANN search ─────────────────────────────────────────
+    # PickScore 필터/재정렬을 위해 후보 풀을 충분히 넓힌다 (limit×4).
     try:
         query_vec = _embed(query)
         qdrant_results = _qdrant_search(
-            _QDRANT_CAMPAIGNS_COLLECTION, query_vec, top_k=limit * 2
+            _QDRANT_CAMPAIGNS_COLLECTION, query_vec, top_k=limit * 4
         )
         if qdrant_results:
             for cid, sim, payload in qdrant_results:
@@ -2081,13 +2375,53 @@ def memory_search_campaigns(
             if any(kw in searchable for kw in query_lower.split()):
                 scored.append((1.0, record))
 
+    # ── PickScore 임계치 필터 ─────────────────────────────────────────────
+    if min_pickscore_percentile > 0:
+        before = len(scored)
+        scored = [
+            (s, r) for s, r in scored
+            if r.performance is not None
+            and r.performance.pickscore_percentile is not None
+            and r.performance.pickscore_percentile >= min_pickscore_percentile
+        ]
+        logger.info(
+            "[SEARCH] 🎯 PickScore filter | threshold=p%.0f | %d→%d",
+            min_pickscore_percentile, before, len(scored),
+        )
+
+    # ── PickScore-aware 재정렬 (의미적 0.6 + PickScore 0.4) ──────────────
+    def _rank_score(sim: float, rec: CampaignRecord) -> float:
+        if not rerank_by_pickscore:
+            return sim
+        ps = (
+            rec.performance.pickscore
+            if rec.performance and rec.performance.pickscore is not None
+            else None
+        )
+        if ps is None:
+            return sim * 0.85  # PickScore 미측정 캠페인 약간 감점 (신호 부재)
+        return 0.6 * sim + 0.4 * ps
+
+    scored.sort(key=lambda sr: _rank_score(sr[0], sr[1]), reverse=True)
+
     # ── [MemGPT Usage Frequency] Increment access_count for retrieved campaigns ──
     filtered = [(score, r) for score, r in scored[:limit] if score > 0.1]
     for _score, r in filtered:
         r.access_count = getattr(r, 'access_count', 0) + 1
 
-    matches = [
-        {
+    matches = []
+    for score, r in filtered:
+        ps_val = (
+            r.performance.pickscore
+            if r.performance and r.performance.pickscore is not None
+            else None
+        )
+        ps_pct = (
+            r.performance.pickscore_percentile
+            if r.performance and r.performance.pickscore_percentile is not None
+            else None
+        )
+        matches.append({
             "campaign_id": r.campaign_id,
             "timestamp": r.timestamp,
             "goal": r.goal,
@@ -2098,11 +2432,12 @@ def memory_search_campaigns(
             "platforms": r.platforms_used,
             "performance_notes": r.performance_notes,
             "performance": r.performance.model_dump() if r.performance else None,
+            "pickscore": ps_val,
+            "pickscore_percentile": ps_pct,
             "relevance_score": round(score, 3),
+            "combined_rank_score": round(_rank_score(score, r), 3),
             "access_count": r.access_count,
-        }
-        for score, r in filtered
-    ]
+        })
 
     _top_score = round(scored[0][0], 3) if scored else 0.0
     _top_goal = scored[0][1].goal[:60] if scored else ""
@@ -2444,6 +2779,44 @@ def memory_record_generated_asset(
     Returns:
         Confirmation message with the recorded asset ID.
     """
+    # ── HARD GUARD: image asset MUST have a real, fetchable GCS URL ──
+    # The strategist LLM has historically fabricated plausible-looking GCS
+    # URLs (e.g. a fresh-looking timestamp) without ever calling
+    # image_generation_agent. Reject such records loudly so the UI shows
+    # a broken state instead of silently storing a 404.
+    if asset_type == "image":
+        # 1) Must look like a GCS HTTPS URL
+        if not (isinstance(gcs_url, str) and gcs_url.startswith("https://storage.googleapis.com/")):
+            err = (
+                f"[REJECTED] image asset_id={asset_id!r} not recorded — "
+                f"gcs_url={gcs_url!r} is not a GCS https URL. "
+                "You MUST call image_generation_agent.generate_image first and "
+                "copy the returned image_url verbatim. Do NOT fabricate URLs."
+            )
+            logger.error("[ASSET_GUARD] %s", err)
+            return err
+
+        # 2) Must actually exist (HEAD with short timeout)
+        try:
+            import urllib.request
+            req = urllib.request.Request(gcs_url, method="HEAD",
+                                         headers={"User-Agent": "asset-guard/1.0"})
+            with urllib.request.urlopen(req, timeout=6) as resp:
+                http_status = resp.status
+        except Exception as e:
+            http_status = None
+            logger.warning("[ASSET_GUARD] HEAD failed for %s: %s", gcs_url[:80], e)
+
+        if http_status != 200:
+            err = (
+                f"[REJECTED] image asset_id={asset_id!r} not recorded — "
+                f"gcs_url={gcs_url!r} returned HTTP {http_status!r} (not 200). "
+                "The image does not exist at this URL. Re-invoke "
+                "image_generation_agent.generate_image and use the EXACT URL it returns."
+            )
+            logger.error("[ASSET_GUARD] %s", err)
+            return err
+
     memory = _load_memory(tool_context)
 
     asset = GeneratedAsset(
@@ -2459,13 +2832,74 @@ def memory_record_generated_asset(
         session_id=session_id,
     )
 
+    # ── PickScore-aware Performance Memory (v2) ───────────────────────────
+    # 이미지 자산에 한해 PickScore를 자동 측정해 (1) asset.performance.pickscore
+    # (2) 가장 최근 CampaignRecord.performance.pickscore 양쪽에 기록한다.
+    # 실패해도 자산 저장은 막지 않는다 (silent fail).
+    pickscore_value: Optional[float] = None
+    pickscore_pct: Optional[float] = None
+    if asset_type == "image" and prompt_used:
+        try:
+            from .compute_pickscore import (
+                compute_pickscore,
+                compute_percentile,
+                fetch_image_bytes,
+            )
+            img_bytes = fetch_image_bytes(gcs_url)
+            if img_bytes:
+                pickscore_value = compute_pickscore(img_bytes, prompt_used)
+                if pickscore_value is not None:
+                    # 같은 페르소나의 과거 PickScore 분포 안에서 percentile 계산
+                    history = []
+                    for r in memory.campaign_archive:
+                        if r.performance and r.performance.pickscore is not None:
+                            history.append(r.performance.pickscore)
+                    for a in memory.asset_archive:
+                        if a.performance and a.performance.pickscore is not None:
+                            history.append(a.performance.pickscore)
+                    pickscore_pct = compute_percentile(pickscore_value, history)
+                    logger.info(
+                        "[PICKSCORE] 🟢 asset=%s score=%.3f percentile=%.1f hist_n=%d",
+                        asset_id, pickscore_value, pickscore_pct, len(history),
+                    )
+        except Exception as e:
+            logger.warning("[PICKSCORE] ⚠ scoring skipped for %s: %s", asset_id, e)
+
+    if pickscore_value is not None:
+        asset.performance = PerformanceData(
+            pickscore=pickscore_value,
+            pickscore_percentile=pickscore_pct,
+            collected_at=_now_iso(),
+        )
+        # 가장 최근 캠페인(같은 세션 우선)에도 동기화 → memory_search_campaigns가
+        # PickScore 상위를 즉시 노출할 수 있게 한다.
+        target_campaign = None
+        if session_id:
+            for r in reversed(memory.campaign_archive):
+                if getattr(r, "session_id", "") == session_id:
+                    target_campaign = r
+                    break
+        if target_campaign is None and memory.campaign_archive:
+            target_campaign = memory.campaign_archive[-1]
+        if target_campaign is not None:
+            if target_campaign.performance is None:
+                target_campaign.performance = PerformanceData(collected_at=_now_iso())
+            target_campaign.performance.pickscore = pickscore_value
+            target_campaign.performance.pickscore_percentile = pickscore_pct
+
     memory.asset_archive.append(asset)
     # Cap at 200 assets to prevent unbounded growth
     if len(memory.asset_archive) > 200:
         memory.asset_archive = memory.asset_archive[-200:]
 
     _save_memory(tool_context, memory)
-    return f"[Memory Archived] Asset '{asset_id}' ({asset_type}, {platform}) recorded. Total assets: {len(memory.asset_archive)}"
+    ps_suffix = ""
+    if pickscore_value is not None:
+        ps_suffix = f" | PickScore={pickscore_value:.3f} (p{pickscore_pct:.0f})"
+    return (
+        f"[Memory Archived] Asset '{asset_id}' ({asset_type}, {platform}) recorded. "
+        f"Total assets: {len(memory.asset_archive)}{ps_suffix}"
+    )
 
 
 def memory_get_assets(
@@ -2960,6 +3394,9 @@ def build_memory_context_block(memory: MemoryState, user_query: str = "") -> str
         f"  Pillars     : {', '.join(voice.content_pillars) if voice.content_pillars else '(none)'}",
         f"  Hashtags    : {', '.join(voice.signature_hashtags) if voice.signature_hashtags else '(none)'}",
         f"  Avoid       : {', '.join(voice.avoid_topics) if voice.avoid_topics else '(none)'}",
+        f"  🚫 Forbidden Visuals : {', '.join(voice.forbidden_visual_elements) if voice.forbidden_visual_elements else '(none)'}",
+        f"  ✅ Required Colors   : {', '.join(voice.required_color_palette) if voice.required_color_palette else '(none)'}",
+        f"  🎨 Brand Hex Codes   : {', '.join(voice.brand_colors_hex) if voice.brand_colors_hex else '(none)'}",
         "",
         "▶ DOMAIN PROFILE BLOCK (Business Details)",
         *domain_lines,
@@ -3128,3 +3565,1105 @@ def build_memory_context_block(memory: MemoryState, user_query: str = "") -> str
         _used, int((time.time() - _t0_ctx) * 1000),
     )
     return _result
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  ERD v2 도구 ()
+#  3 Link 테이블 CRUD + CampaignChannelOutput + PerformanceRecord
+#  운영 질의 예시:
+#   - "직장인 세그먼트에 연결된 상품 다 보여줘" → memory_list_segment_products
+#   - "이번 캠페인에 사용된 상품·세그먼트 연결해줘" → memory_link_*
+#   - "지난 인스타 캠페인 결과 등록해줘" → memory_add_channel_output + add_performance_record
+# ─────────────────────────────────────────────────────────────────────────────
+
+def memory_link_product_segment(
+    tool_context: ToolContext,
+    product_id: str,
+    segment_id: str,
+    priority: str = "medium",
+) -> str:
+    """[ERD v2] Product ↔ Segment N:M 연결.
+
+    예시 질의:
+      "소세지빵을 직장인 세그먼트에 연결해줘"
+      → memory_link_product_segment(product_id="prod_003", segment_id="seg_001")
+    """
+    memory = _load_memory(tool_context)
+    # 중복 방지
+    for link in memory.product_segment_links:
+        if link.product_id == product_id and link.segment_id == segment_id:
+            link.priority = priority
+            _save_memory(tool_context, memory)
+            return f"[ERD] Updated existing link: {product_id} ↔ {segment_id} (priority={priority})"
+    # 신규 추가
+    link = ProductSegmentLink(
+        product_id=product_id,
+        segment_id=segment_id,
+        priority=priority,
+        created_at=datetime.now(timezone.utc).isoformat(),
+    )
+    memory.product_segment_links.append(link)
+    _save_memory(tool_context, memory)
+    return f"[ERD] Linked: {product_id} ↔ {segment_id} (priority={priority})"
+
+
+def memory_link_campaign_product(
+    tool_context: ToolContext,
+    campaign_id: str,
+    product_id: str,
+    priority: str = "medium",
+) -> str:
+    """[ERD v2] Campaign ↔ Product N:M 연결.
+
+    예시 질의:
+      "이번 봄 캠페인에 크로플 상품 추가해줘"
+      → memory_link_campaign_product(campaign_id="camp_017", product_id="prod_007")
+    """
+    memory = _load_memory(tool_context)
+    for link in memory.campaign_product_links:
+        if link.campaign_id == campaign_id and link.product_id == product_id:
+            link.priority = priority
+            _save_memory(tool_context, memory)
+            return f"[ERD] Updated link: {campaign_id} ↔ {product_id} (priority={priority})"
+    link = CampaignProductLink(
+        campaign_id=campaign_id,
+        product_id=product_id,
+        priority=priority,
+        created_at=datetime.now(timezone.utc).isoformat(),
+    )
+    memory.campaign_product_links.append(link)
+    _save_memory(tool_context, memory)
+    return f"[ERD] Linked: {campaign_id} ↔ {product_id} (priority={priority})"
+
+
+def memory_link_campaign_segment(
+    tool_context: ToolContext,
+    campaign_id: str,
+    segment_id: str,
+    priority: str = "medium",
+) -> str:
+    """[ERD v2] Campaign ↔ Segment N:M 연결.
+
+    예시 질의:
+      "이번 캠페인 메인 타겟을 직장인 세그먼트로 설정해줘"
+      → memory_link_campaign_segment(campaign_id="camp_017", segment_id="seg_001", priority="high")
+    """
+    memory = _load_memory(tool_context)
+    for link in memory.campaign_segment_links:
+        if link.campaign_id == campaign_id and link.segment_id == segment_id:
+            link.priority = priority
+            _save_memory(tool_context, memory)
+            return f"[ERD] Updated link: {campaign_id} ↔ {segment_id} (priority={priority})"
+    link = CampaignSegmentLink(
+        campaign_id=campaign_id,
+        segment_id=segment_id,
+        priority=priority,
+        created_at=datetime.now(timezone.utc).isoformat(),
+    )
+    memory.campaign_segment_links.append(link)
+    _save_memory(tool_context, memory)
+    return f"[ERD] Linked: {campaign_id} ↔ {segment_id} (priority={priority})"
+
+
+def memory_list_segment_products(
+    tool_context: ToolContext,
+    segment_id: str,
+) -> str:
+    """[ERD v2] 특정 세그먼트에 연결된 모든 상품 조회.
+
+    예시 질의:
+      "직장인 세그먼트에 연결된 상품 다 보여줘"
+      → memory_list_segment_products(segment_id="seg_001")
+    """
+    memory = _load_memory(tool_context)
+    # ERD v2 Link 테이블 조회 (정형 관계)
+    linked_ids = [
+        link.product_id
+        for link in memory.product_segment_links
+        if link.segment_id == segment_id
+    ]
+    # 하위 호환: 기존 ProductRecord.target_segments List[str] 도 함께 조회 (병행 유지)
+    for p in memory.product_archive:
+        if segment_id in (p.target_segments or []) and p.product_id not in linked_ids:
+            linked_ids.append(p.product_id)
+    # 상품 상세
+    products = []
+    for pid in linked_ids:
+        for p in memory.product_archive:
+            if p.product_id == pid:
+                products.append({"product_id": p.product_id, "name": p.name, "price": p.price, "category": p.category})
+                break
+    return json.dumps({"segment_id": segment_id, "total": len(products), "products": products}, ensure_ascii=False)
+
+
+def memory_list_campaign_products(
+    tool_context: ToolContext,
+    campaign_id: str,
+) -> str:
+    """[ERD v2] 특정 캠페인에 사용된 모든 상품 조회.
+
+    예시 질의:
+      "지난 캠페인에 사용된 상품 다 보여줘"
+      → memory_list_campaign_products(campaign_id="camp_017")
+    """
+    memory = _load_memory(tool_context)
+    linked_ids = [
+        link.product_id
+        for link in memory.campaign_product_links
+        if link.campaign_id == campaign_id
+    ]
+    # 하위 호환: CampaignRecord.products_featured
+    for c in memory.campaign_archive:
+        if c.campaign_id == campaign_id:
+            for pid in (c.products_featured or []):
+                if pid not in linked_ids:
+                    linked_ids.append(pid)
+            break
+    products = []
+    for pid in linked_ids:
+        for p in memory.product_archive:
+            if p.product_id == pid:
+                products.append({"product_id": p.product_id, "name": p.name})
+                break
+    return json.dumps({"campaign_id": campaign_id, "total": len(products), "products": products}, ensure_ascii=False)
+
+
+def memory_add_channel_output(
+    tool_context: ToolContext,
+    campaign_id: str,
+    channel: str,
+    caption: str = "",
+    hashtags: str = "",
+    cta: str = "",
+    image_prompt: str = "",
+    asset_url: str = "",
+    approval_status: str = "approved",
+) -> str:
+    """[ERD v2] 캠페인 × 채널 산출물 추가.
+
+    예시 질의:
+      "이번 인스타 산출물 등록해줘 (캡션·해시태그·이미지 URL)"
+      → memory_add_channel_output(campaign_id="camp_017", channel="instagram", caption="...", asset_url="https://...")
+    """
+    memory = _load_memory(tool_context)
+    output_id = f"out_{uuid.uuid4().hex[:8]}"
+    hashtags_list = [h.strip() for h in hashtags.split(",") if h.strip()] if hashtags else []
+    output = CampaignChannelOutput(
+        output_id=output_id,
+        campaign_id=campaign_id,
+        channel=channel,
+        caption=caption,
+        hashtags=hashtags_list,
+        cta=cta,
+        image_prompt=image_prompt,
+        asset_url=asset_url,
+        approval_status=approval_status,
+        created_at=datetime.now(timezone.utc).isoformat(),
+    )
+    memory.campaign_channel_outputs.append(output)
+    _save_memory(tool_context, memory)
+    return f"[ERD] Added channel output: {output_id} (campaign={campaign_id}, channel={channel})"
+
+
+def memory_add_performance_record(
+    tool_context: ToolContext,
+    output_id: str,
+    engagement: int = 0,
+    save: int = 0,
+    share: int = 0,
+    comment: int = 0,
+    conversion_signal: str = "",
+) -> str:
+    """[ERD v2] 채널 산출물 × 성과 기록 추가.
+
+    예시 질의:
+      "지난 인스타 캠페인 좋아요 200개, 저장 50개, 댓글 30개"
+      → memory_add_performance_record(output_id="out_xxx", engagement=200, save=50, comment=30)
+    """
+    memory = _load_memory(tool_context)
+    record_id = f"perf_{uuid.uuid4().hex[:8]}"
+    record = PerformanceRecord(
+        record_id=record_id,
+        output_id=output_id,
+        engagement=engagement,
+        save=save,
+        share=share,
+        comment=comment,
+        conversion_signal=conversion_signal,
+        collected_at=datetime.now(timezone.utc).isoformat(),
+    )
+    memory.performance_records.append(record)
+    _save_memory(tool_context, memory)
+    return f"[ERD] Added performance record: {record_id} (output={output_id}, engagement={engagement})"
+
+
+def set_user_approval_status(
+    tool_context: ToolContext,
+    approved: bool,
+    plan_id: str,
+    reason: str = "",
+) -> dict:
+    """[Approval State Machine — LLM 의도 분석 기반 + plan_id 참조]
+
+    Orchestrator LLM 이 사용자 발화의 의도를 분석한 결과 본 도구를 호출하여
+    state['_approval_status'] 를 갱신합니다.
+
+    ⚠️ 본 도구는 plan_id 명시 참조 필수 — 직전 turn 의 _pending_plan_id 와 일치해야 함.
+    일치하지 않으면 stale plan 또는 새 plan 요청으로 간주되어 차단.
+
+    호출 조건 (LLM 자율 판단):
+      - 직전 turn 에 캠페인 plan 이 제시되었고 (_pending_plan_id 존재),
+      - 사용자가 본 turn 에서 의미상 "그 plan 대로 진행하라"는 의도를 표현했다면
+        approved=True 로 호출.
+      - 사용자가 수정 요청이거나 다른 주제로 전환했다면 approved=False.
+
+    ⚠️ 키워드 매칭 금지 — 의도 분석. 예시:
+      "네 그대로 진행해줘"               → approved=True
+      "좀 더 따뜻한 톤으로 다시"         → approved=False (수정 요청)
+      "이거 말고 다른 상품으로 새로"     → approved=False (새 요청)
+
+    Args:
+        approved: True 면 image_generation_agent 호출 가능 상태 진입.
+        plan_id: state["_pending_plan_id"] 의 값을 그대로 전달 (참조 검증용).
+        reason: 의도 분석 근거 (1-2문장, 추적용).
+
+    Returns:
+        {"approval_status": "approved"|"pending"|"rejected_plan_mismatch",
+         "plan_id": str, "reason": "..."}
+    """
+    state = tool_context.state
+    pending_id = state.get("_pending_plan_id")
+    if not pending_id:
+        logger.warning("[APPROVAL_TOOL] no pending plan to approve (plan_id=%r)", plan_id)
+        return {"approval_status": "rejected_no_plan", "plan_id": plan_id,
+                "reason": "No pending plan exists. Call state_save_unified_strategy first."}
+    if plan_id != pending_id:
+        logger.warning("[APPROVAL_TOOL] plan_id mismatch: given=%r pending=%r", plan_id, pending_id)
+        return {"approval_status": "rejected_plan_mismatch",
+                "plan_id": plan_id, "expected_plan_id": pending_id,
+                "reason": "plan_id does not match the most recent pending plan."}
+    state["_approval_status"] = "approved" if approved else "pending"
+    state["_approval_reason"] = reason
+    if approved:
+        state["_approved_plan_id"] = plan_id
+        state["_approval_set_at"] = datetime.now(timezone.utc).isoformat()
+    logger.info("[APPROVAL_TOOL] approved=%s plan_id=%s reason=%r", approved, plan_id, reason[:200])
+    return {"approval_status": state["_approval_status"], "plan_id": plan_id, "reason": reason}
+
+
+def memory_agent_query_campaign_context(
+    tool_context: ToolContext,
+    goal: str,
+    channels: str,
+    products_hint: str = "",
+    segments_hint: str = "",
+) -> dict:
+    """[Content Orchestrator → Memory Agent service]
+    Orchestrator 가 호출하면 Memory Agent 가 Skill MD + Memory Tools + Qdrant 를 통해
+    캠페인 맥락을 조회하여 구조화된 campaign_memory_context 반환.
+
+    이 도구는 Memory Agent 의 retrieval 책임을 캡슐화한 deterministic 엔드포인트입니다.
+    Orchestrator 는 본 도구를 호출해야 캠페인 맥락을 받을 수 있습니다 — 자체 memory_*
+    도구로 retrieval 하지 마세요.
+
+    Args:
+        goal: 캠페인 목표 (예: "마살라 레드 2024 신제품 출시")
+        channels: 대상 채널 (콤마 구분, 예: "instagram,pinterest")
+        products_hint: 발화에서 언급된 product 이름 (선택)
+        segments_hint: 발화에서 언급된 segment 이름 (선택)
+
+    Returns:
+        campaign_memory_context = {
+          "brand_identity": {...},          # HumanBlock + PersonaBlock 핵심
+          "domain_profile": {...},          # 업종 + USP + competitors
+          "referenced_products": [...],     # 매칭 product 상세
+          "product_relations": {...},       # product → segment/campaign 링크
+          "referenced_segments": [...],     # 매칭 segment 상세
+          "related_campaigns_keyword": [...],
+          "related_campaigns_vector": [...],
+          "behavior_insights": {...},       # proven/failed tactics
+          "product_top_assets": {...},      # product 별 PickScore 상위
+          "knowledge_by_category": {...},
+          "channel_outputs_history": {...},
+          "channel_spec": {...},            # 채널별 ratio/format/algorithm
+          "recall_context": [...],          # 대화 이력 최근 N건
+          "uploaded_image_url": "",
+          "skill_specs_loaded": [...]       # 어떤 skill MD 가 조회 결정에 사용됐는지
+        }
+    """
+    state = tool_context.state
+    memory = _load_memory(tool_context)
+    ch_list = [c.strip() for c in (channels or "").split(",") if c.strip()]
+
+    # ── Skill MD 기반 조회 결정 (실제 MD 파일 read + retrieve_rules 추출) ──
+    skill_specs_used = []
+    skill_rules = {}
+    # 발화 분석 → 어떤 MD 가 본 요청에 관련되는지 매핑
+    intent_md_map = {
+        # always relevant for any campaign generation
+        "brand_voice.md":         True,
+        "product_service.md":     bool(products_hint or "캠페인" in (goal or "") or "콘텐츠" in (goal or "")),
+        "audience_segment.md":    bool(segments_hint or "타겟" in (goal or "") or "세그먼트" in (goal or "")),
+        "campaign_performance.md": True,
+        "business_domain.md":     True,
+        "erd_relations.md":       bool(products_hint or segments_hint),
+        "owner_profile.md":       False,  # 등록 단계 전용, 캠페인 단계 불필요
+    }
+    for md_name, need in intent_md_map.items():
+        if not need: continue
+        try:
+            md_content = read_skill_md(tool_context, filename=md_name)
+            if isinstance(md_content, str) and md_content and not md_content.startswith("[error]"):
+                skill_specs_used.append(md_name)
+                # MD 본문에서 "retrieve" / "조회" 관련 규칙 라인 추출 (간단 heuristic)
+                rules = []
+                for line in md_content.split("\n"):
+                    line_s = line.strip()
+                    if (("memory_get_" in line_s) or ("memory_search_" in line_s)
+                        or ("조회" in line_s and len(line_s) < 200)
+                        or ("retrieve" in line_s.lower() and len(line_s) < 200)):
+                        rules.append(line_s[:150])
+                if rules:
+                    skill_rules[md_name] = rules[:5]
+        except Exception as _exc:
+            logger.debug("[MEMORY_AGENT_QUERY] read_skill_md(%s) skip: %s", md_name, _exc)
+
+    # ── 1. brand_identity (HumanBlock + PersonaBlock) ──
+    hb = memory.human_block.model_dump() if hasattr(memory.human_block, "model_dump") else dict(memory.human_block)
+    pb = memory.persona_block.model_dump() if hasattr(memory.persona_block, "model_dump") else dict(memory.persona_block)
+    brand_identity = {
+        "display_name": hb.get("display_name"),
+        "industry": hb.get("industry"),
+        "tone": pb.get("tone") or pb.get("tone_primary"),
+        "slogan": pb.get("slogan"),
+        "required_color_palette": pb.get("required_color_palette") or [],
+        "brand_colors_hex": pb.get("brand_colors_hex") or [],
+        "color_ratio_rule": pb.get("color_ratio_rule") or "",
+        "forbidden_visual_elements": pb.get("forbidden_visual_elements") or [],
+        "forbidden_colors": pb.get("forbidden_colors") or [],
+        "avoid_words": pb.get("avoid_words") or [],
+        "preferred_styles": pb.get("preferred_styles") or [],
+        "signature_hashtags": pb.get("signature_hashtags") or [],
+    }
+
+    # ── 2. domain_profile ──
+    db = memory.domain_block.model_dump() if hasattr(memory.domain_block, "model_dump") else dict(memory.domain_block)
+    domain_profile = {
+        "industry": db.get("industry"),
+        "domain_type": db.get("domain_type"),
+        "usp": db.get("usp"),
+        "competitors": db.get("competitors") or [],
+        "business_location": db.get("business_location"),
+        "price_range": db.get("price_range"),
+    }
+
+    # ── 3. referenced products / segments (intent 기반) ──
+    text_for_match = f"{goal} {products_hint} {segments_hint}"
+    referenced_products = []
+    for p in memory.product_archive or []:
+        p_dict = p.model_dump() if hasattr(p, "model_dump") else dict(p)
+        p_name = p_dict.get("name") or p_dict.get("product_name") or ""
+        if p_name and (p_name in text_for_match
+                       or any(tok in text_for_match for tok in p_name.split() if len(tok) >= 2)):
+            referenced_products.append({k: v for k, v in p_dict.items()
+                                         if v not in (None, "", [], {})})
+    referenced_segments = []
+    for s_obj in memory.audience_block.segments or []:
+        s_dict = s_obj.model_dump() if hasattr(s_obj, "model_dump") else dict(s_obj)
+        s_name = s_dict.get("name") or ""
+        if s_name and (s_name in text_for_match or any(tok in text_for_match for tok in s_name.split() if len(tok) >= 2)):
+            referenced_segments.append({k: v for k, v in s_dict.items()
+                                         if v not in (None, "", [], {})})
+
+    # ── 4. product_relations (ERD 활용 — memory_trace_product_to_campaigns 등가) ──
+    product_relations = {}
+    for p in referenced_products[:3]:
+        pid = p.get("product_id")
+        if not pid: continue
+        related = {"product_id": pid, "linked_segments": [], "linked_campaigns": []}
+        for link in (memory.product_segment_links or []):
+            link_d = link.model_dump() if hasattr(link, "model_dump") else dict(link)
+            if link_d.get("product_id") == pid:
+                related["linked_segments"].append(link_d.get("segment_id"))
+        for link in (memory.campaign_product_links or []):
+            link_d = link.model_dump() if hasattr(link, "model_dump") else dict(link)
+            if link_d.get("product_id") == pid:
+                related["linked_campaigns"].append(link_d.get("campaign_id"))
+        product_relations[pid] = related
+
+    # ── 5. related_campaigns (키워드 + Qdrant 벡터) ──
+    keyword_pool = [t for t in (goal + " " + products_hint).split() if len(t) >= 2]
+    related_keyword = []
+    for c in memory.campaign_archive or []:
+        c_dict = c.model_dump() if hasattr(c, "model_dump") else dict(c)
+        blob = f"{c_dict.get('campaign_name','')} {c_dict.get('goal','')} {c_dict.get('description','')}"
+        if any(k in blob for k in keyword_pool):
+            related_keyword.append({
+                "campaign_id": c_dict.get("campaign_id"),
+                "campaign_name": c_dict.get("campaign_name"),
+                "goal": c_dict.get("goal"),
+                "performance": c_dict.get("performance_summary"),
+            })
+    related_vector = []
+    try:
+        # Qdrant 벡터 검색 — 동기적으로 호출
+        r = memory_search_campaigns(tool_context, query=goal, limit=5)
+        if isinstance(r, list): related_vector = r
+    except Exception: pass
+
+    # ── 6. behavior_insights ──
+    bg = memory.behavior_graph
+    bg_d = bg.model_dump() if hasattr(bg, "model_dump") else dict(bg)
+    behavior_insights = {
+        "proven_tactics": (bg_d.get("proven_tactics") or [])[:5],
+        "failed_tactics": (bg_d.get("failed_tactics") or [])[:5],
+        "overall_best_platform": bg_d.get("overall_best_platform"),
+        "platform_best_content_type": bg_d.get("platform_best_content_type", {}),
+        "confidence_level": bg_d.get("confidence_level"),
+    }
+
+    # ── 7. product_top_assets — PickScore 상위 ──
+    product_top_assets = {}
+    for p in referenced_products:
+        pid = p.get("product_id"); p_name = p.get("name") or ""
+        filtered = []
+        for a in (memory.asset_archive or []):
+            a_d = a.model_dump() if hasattr(a, "model_dump") else dict(a)
+            if ((a_d.get("product_id") == pid or p_name in (a_d.get("prompt") or ""))
+                and (a_d.get("pickscore") or 0) > 0):
+                filtered.append({
+                    "asset_id": a_d.get("asset_id"),
+                    "pickscore": a_d.get("pickscore"),
+                    "prompt_keywords": (a_d.get("prompt") or "")[:200],
+                })
+        filtered.sort(key=lambda x: -(x.get("pickscore") or 0))
+        product_top_assets[pid] = filtered[:3]
+
+    # ── 8. knowledge_by_category ──
+    knowledge_by_category = {}
+    for k in (memory.domain_block.knowledge or []):
+        k_d = k.model_dump() if hasattr(k, "model_dump") else dict(k)
+        cat = k_d.get("category") or k_d.get("key") or "misc"
+        knowledge_by_category.setdefault(cat, []).append({
+            "knowledge_id": k_d.get("knowledge_id"),
+            "title": k_d.get("title"),
+            "value": k_d.get("value") or k_d.get("content"),
+        })
+
+    # ── 9. channel_outputs_history ──
+    channel_outputs_history = {}
+    for ch in ch_list:
+        outs = []
+        for co in (memory.campaign_channel_outputs or []):
+            co_d = co.model_dump() if hasattr(co, "model_dump") else dict(co)
+            if (co_d.get("channel") or "").lower() == ch.lower():
+                outs.append({
+                    "campaign_id": co_d.get("campaign_id"),
+                    "caption_preview": (co_d.get("caption") or "")[:200],
+                    "hashtags": (co_d.get("hashtags") or [])[:5],
+                    "image_url": co_d.get("image_url"),
+                })
+        channel_outputs_history[ch] = outs[:5]
+
+    # ── 10. channel_spec ──
+    channel_spec = {}
+    try:
+        from .channel_spec import get_channel_spec
+        for ch in ch_list:
+            sp = get_channel_spec(ch)
+            if sp:
+                channel_spec[ch] = {
+                    "primary_ratio": getattr(sp, "primary_ratio", ""),
+                    "primary_content": getattr(sp, "primary_content", ""),
+                    "caption_limit": getattr(sp, "caption_limit", 0),
+                    "tone_guidance": getattr(sp, "tone_guidance", ""),
+                    "virality_signals": getattr(sp, "virality_signals", []),
+                }
+    except Exception: pass
+
+    # ── 11. recall_context ──
+    recall_context = []
+    for r in (memory.recall_log or [])[-10:]:
+        r_d = r.model_dump() if hasattr(r, "model_dump") else dict(r)
+        recall_context.append({
+            "speaker": r_d.get("speaker"),
+            "content": (r_d.get("content") or "")[:300],
+        })
+
+    # ── 12. uploaded image ──
+    uploaded_image_url = state.get("_referenced_asset_url") or ""
+
+    # ── 결과 종합 ──
+    context = {
+        "brand_identity": brand_identity,
+        "domain_profile": domain_profile,
+        "referenced_products": referenced_products,
+        "product_relations": product_relations,
+        "referenced_segments": referenced_segments,
+        "related_campaigns_keyword": related_keyword[:5],
+        "related_campaigns_vector": related_vector[:5],
+        "behavior_insights": behavior_insights,
+        "product_top_assets": product_top_assets,
+        "knowledge_by_category": knowledge_by_category,
+        "channel_outputs_history": channel_outputs_history,
+        "channel_spec": channel_spec,
+        "recall_context": recall_context,
+        "uploaded_image_url": uploaded_image_url,
+        "skill_specs_loaded": skill_specs_used,
+        "skill_rules_applied": skill_rules,
+        "_query_meta": {
+            "goal": goal, "channels": ch_list,
+            "products_hint": products_hint, "segments_hint": segments_hint,
+            "retrieved_at": datetime.now(timezone.utc).isoformat(),
+        },
+    }
+    # state 에도 저장 — Strategist 가 참조 가능
+    state["_campaign_memory_context"] = context
+    state["_memory_agent_invoked"] = True
+
+    logger.info("[MEMORY_AGENT_QUERY] goal='%s' channels=%s | products=%d segments=%d "
+                "knowledge_cats=%d campaigns_kw=%d campaigns_vec=%d skills=%d",
+                goal[:50], ch_list, len(referenced_products), len(referenced_segments),
+                len(knowledge_by_category), len(related_keyword), len(related_vector),
+                len(skill_specs_used))
+    return context
+
+
+def state_save_extended_brief(
+    tool_context: ToolContext,
+    brand_context: str,
+    target_audience: str,
+    visual_style: str,
+    marketing_intention: str,
+    composition: str,
+    channel_optimization: str,
+    required_constraints: str,
+) -> str:
+    """[v2 Orchestrator Step 3] 7섹션 brief를 state["_extended_brief"]에 저장.
+
+    각 섹션은 3~5문장 자연어 산문이어야 합니다 (단순 키워드 X).
+
+    예시 호출 (가로수 네일라운지):
+      brand_context="해당 브랜드는 신사동 가로수길의 1인 프라이빗 네일 살롱
+        '가로수 네일라운지'이다. 브랜드 정체성은 트렌디하고 자신감, 프라이빗
+        큐레이션, 시그니처 디자인을 중심으로 한다."
+      target_audience="메인 타겟은 26~32세 20대 후반 패션러버 여성이다. ..."
+      ...
+    """
+    brief = f"""[Brand Context]
+{brand_context}
+
+[Target Audience]
+{target_audience}
+
+[Visual Style]
+{visual_style}
+
+[Marketing Intention]
+{marketing_intention}
+
+[Composition]
+{composition}
+
+[Channel Optimization]
+{channel_optimization}
+
+[Required Constraints]
+{required_constraints}
+"""
+    # Track B 보강: 압축 거부 — memory_context 보다 짧으면 재작성 요구
+    mc = tool_context.state.get("memory_agent_output") or tool_context.state.get("_memory_context") or ""
+    mc_len = len(str(mc))
+    brief_len = len(brief)
+    target_len = int(mc_len * 1.0)  # 최소 동등 길이 (1.5배는 권장)
+
+    # 섹션별 최소 길이 (각 섹션 3~5문장 = 약 150~250자)
+    section_min = 150
+    section_lens = {
+        "brand_context": len(brand_context),
+        "target_audience": len(target_audience),
+        "visual_style": len(visual_style),
+        "marketing_intention": len(marketing_intention),
+        "composition": len(composition),
+        "channel_optimization": len(channel_optimization),
+        "required_constraints": len(required_constraints),
+    }
+    short_sections = [k for k, v in section_lens.items() if v < section_min]
+
+    if mc_len > 500 and brief_len < target_len:
+        # 압축 감지 — 재작성 요구
+        return (
+            f"[v2 REJECT] extended_brief({brief_len}자) 가 memory_context({mc_len}자) 보다 짧습니다 "
+            f"(목표: ≥{target_len}자, 권장 1.5배 = {int(mc_len*1.5)}자). "
+            f"Track B 의무: memory_context 의 구체적 ID·USP·페인포인트·proven_tactics 를 "
+            f"각 섹션에 인용·풀어쓰며 합성하세요. "
+            f"특히 짧은 섹션: {short_sections or '없음'}. "
+            f"섹션마다 3~5문장 인과 진술 ('따라서…', '이는 …과 결합하여…') 형식 권장. "
+            f"재작성 후 state_save_extended_brief 재호출."
+        )
+
+    if short_sections:
+        return (
+            f"[v2 WARNING] 다음 섹션이 부족합니다 ({section_min}자 미만): {short_sections}. "
+            f"각 섹션 3~5문장 산문으로 확장 후 재호출."
+        )
+
+    tool_context.state["_extended_brief"] = brief
+    tool_context.state["_extended_brief_at"] = datetime.now(timezone.utc).isoformat()
+    expansion = brief_len / max(mc_len, 1)
+    return f"[v2] _extended_brief saved ({brief_len} chars, 7 sections, expansion={expansion:.2f}x vs memory_context)"
+
+
+def state_save_unified_strategy(
+    tool_context: ToolContext,
+    channels_json: str,
+    consistency_notes: str = "",
+) -> str:
+    """[v2 Orchestrator Step 5] 통합 전략을 state["_unified_strategy"]에 저장.
+
+    channels_json은 JSON 문자열:
+      {"instagram": {"strategy": "...", "copy": "...", "hashtags": [...],
+                     "cta": "...", "final_image_prompt": "..."},
+       "kakao": {...}}
+
+    ⚠️ 한국어+영문 혼합 시 escape 문제 자동 보정 (3 단계 fallback).
+    """
+    if isinstance(channels_json, dict):
+        channels = channels_json
+    else:
+        # 6 단계 fallback (control character 허용 + Extra Data 복구)
+        raw = channels_json or ''
+        stripped_fences = re.sub(r'^\s*```(?:json)?\s*|\s*```\s*$', '', raw, flags=re.MULTILINE)
+        backslash_fixed = re.sub(r'\\(?![ntr"\\/bfu])', r'\\\\', stripped_fences)
+        def _escape_ctrl(s: str) -> str:
+            return (s.replace('\r\n', '\\n').replace('\n', '\\n')
+                     .replace('\r', '\\r').replace('\t', '\\t'))
+        ctrl_escaped = _escape_ctrl(backslash_fixed)
+
+        def _balance_braces(candidate: str) -> str:
+            open_n, close_n = 0, 0
+            in_str, esc = False, False
+            for ch in candidate:
+                if esc:
+                    esc = False; continue
+                if ch == '\\':
+                    esc = True; continue
+                if ch == '"':
+                    in_str = not in_str; continue
+                if in_str:
+                    continue
+                if ch == '{': open_n += 1
+                elif ch == '}': close_n += 1
+            missing = open_n - close_n
+            if missing > 0:
+                candidate += '}' * missing
+            elif missing < 0:
+                # 과잉 닫는 `}` 제거 (뒤에서)
+                stripped = candidate
+                for _ in range(-missing):
+                    last = stripped.rfind('}')
+                    if last < 0: break
+                    stripped = stripped[:last] + stripped[last+1:]
+                candidate = stripped
+            return candidate
+
+        def _recover_extra_data(s: str):
+            """LLM이 outer `{` 를 여러 차례 일찍 닫는 경우 복구.
+            depth 추적: depth==1 (outer 바로 안쪽) 에서의 `},\\s*"key":` 만 `}` 제거.
+            depth >=2 (legitimate inner) 의 `}, "key":` 는 보존.
+            """
+            if not s or '{' not in s:
+                return None
+            out = []
+            i = 0
+            depth = 0
+            in_str, esc = False, False
+            while i < len(s):
+                ch = s[i]
+                if esc:
+                    out.append(ch); esc = False; i += 1; continue
+                if ch == '\\':
+                    out.append(ch); esc = True; i += 1; continue
+                if ch == '"':
+                    out.append(ch); in_str = not in_str; i += 1; continue
+                if in_str:
+                    out.append(ch); i += 1; continue
+                if ch == '{':
+                    depth += 1; out.append(ch); i += 1; continue
+                if ch == '}':
+                    # depth==1 이고 그 뒤가 `, "key":` 패턴이면 `}` 삭제 (depth 유지)
+                    if depth == 1:
+                        j = i + 1
+                        while j < len(s) and s[j] in ' \t\r\n':
+                            j += 1
+                        if j < len(s) and s[j] == ',':
+                            k = j + 1
+                            while k < len(s) and s[k] in ' \t\r\n':
+                                k += 1
+                            if k < len(s) and s[k] == '"':
+                                # outer 닫기 잘못 — `}` 삭제, depth 유지
+                                i += 1
+                                continue
+                    depth -= 1
+                    out.append(ch); i += 1; continue
+                out.append(ch); i += 1
+            candidate = ''.join(out).rstrip().rstrip(',')
+            return _balance_braces(candidate)
+
+        recovered = _recover_extra_data(ctrl_escaped) or _recover_extra_data(backslash_fixed)
+        attempts = [
+            (raw, True),
+            (raw, False),
+            (stripped_fences, False),
+            (backslash_fixed, False),
+            (ctrl_escaped, False),
+            (recovered, False),
+        ]
+        channels = None
+        last_err = None
+        for attempt, strict in attempts:
+            if not attempt: continue
+            try:
+                channels = json.loads(attempt, strict=strict)
+                break
+            except Exception as e:
+                last_err = e
+                continue
+        if channels is None:
+            return f"[v2 ERROR] channels_json invalid after 6 fallback attempts. Last error: {last_err}. "\
+                   f"Hint: outer wrapper `{{...}}` 를 한 번만 사용하고, 모든 channel을 그 안에 nest 하세요."
+
+    # 자가 점검 결과 메타데이터 자동 기록
+    diagnostics = {}
+    if isinstance(channels, dict) and len(channels) >= 2:
+        prompts = []
+        for ch_data in channels.values():
+            if isinstance(ch_data, dict):
+                fip = (ch_data.get('final_image_prompt')
+                       or ch_data.get('final_image_prompt_primary') or '')
+                if fip: prompts.append(fip)
+        if len(prompts) >= 2:
+            # 동일성 점검
+            all_identical = all(p == prompts[0] for p in prompts)
+            diagnostics['all_channels_identical'] = all_identical
+            if all_identical:
+                diagnostics['warning'] = '⚠️ 모든 채널의 final_image_prompt가 동일합니다 — 채널 차별화 실패 가능성'
+            # 채널 키워드 차별화 점검
+            ratio_keywords = ['1:1', '4:5', '2:1', '9:16', '16:9', '2:3', '1.91:1']
+            channels_with_ratio = sum(1 for p in prompts if any(k in p for k in ratio_keywords))
+            diagnostics['channels_with_explicit_ratio'] = f"{channels_with_ratio}/{len(prompts)}"
+
+    # ── 채널 완전성 검증 — _user_intent.channels 와 일치해야 함 ──
+    expected_channels = []
+    try:
+        ui = tool_context.state.get("_user_intent") or {}
+        if isinstance(ui, str):
+            try: ui = json.loads(ui) if ui.strip().startswith("{") else {}
+            except Exception: ui = {}
+        expected_channels = ui.get("channels") if isinstance(ui, dict) else []
+        expected_channels = expected_channels or []
+    except Exception: pass
+    if expected_channels:
+        missing = [c for c in expected_channels if c not in channels.keys()]
+        if missing:
+            return (
+                f"[v2 REJECT] _unified_strategy 의 channels {list(channels.keys())} 가 "
+                f"_user_intent.channels {expected_channels} 와 불일치. "
+                f"누락 채널: {missing}. 누락 채널 strategist 를 호출한 뒤 재호출하세요."
+            )
+
+    # plan_id 발급 — 승인 시 plan 참조에 사용
+    import uuid as _uuid
+    plan_id = _uuid.uuid4().hex[:12]
+    unified = {
+        "plan_id": plan_id,
+        "channels": channels,
+        "consistency_notes": consistency_notes,
+        "saved_at": datetime.now(timezone.utc).isoformat(),
+        "diagnostics": diagnostics,
+    }
+    tool_context.state["_unified_strategy"] = unified
+    tool_context.state["_pending_plan_id"] = plan_id
+    # 승인 상태 reset — 새 plan 이 제시되었으므로 이전 승인 무효
+    tool_context.state["_approval_status"] = "pending"
+    tool_context.state["_approved_plan_id"] = None
+    result_msg = f"[v2] _unified_strategy saved (plan_id={plan_id}, {len(channels)} channels)"
+    if diagnostics.get('warning'):
+        result_msg += f" | {diagnostics['warning']}"
+    return result_msg
+
+
+def memory_list_all_products(
+    tool_context: ToolContext,
+    limit: int = 50,
+) -> str:
+    """[ERD v2] 전체 상품 카탈로그 조회.
+
+    예시 질의:
+      "내 상품 다 보여줘" / "전체 상품 목록"
+      → memory_list_all_products()
+    """
+    memory = _load_memory(tool_context)
+    products = []
+    for p in memory.product_archive[:limit]:
+        products.append({
+            "product_id": p.product_id,
+            "name": p.name,
+            "category": p.category,
+            "price": p.price,
+            "availability": p.availability,
+            "target_segments": p.target_segments,
+        })
+    return json.dumps({
+        "total": len(memory.product_archive),
+        "shown": len(products),
+        "products": products,
+    }, ensure_ascii=False)
+
+
+def memory_list_all_segments(
+    tool_context: ToolContext,
+) -> str:
+    """[ERD v2] 전체 세그먼트 카탈로그 조회.
+
+    예시 질의:
+      "내 고객 세그먼트 다 보여줘"
+      → memory_list_all_segments()
+    """
+    memory = _load_memory(tool_context)
+    segments = []
+    for seg in memory.audience_block.segments:
+        segments.append({
+            "segment_id": seg.segment_id,
+            "name": seg.name,
+            "age_range": seg.age_range,
+            "gender": seg.gender,
+            "products": seg.products,
+            "platforms": seg.platforms,
+        })
+    return json.dumps({"total": len(segments), "segments": segments}, ensure_ascii=False)
+
+
+def memory_list_all_campaigns(
+    tool_context: ToolContext,
+    limit: int = 20,
+) -> str:
+    """[ERD v2] 전체 캠페인 카탈로그 조회 (최근순).
+
+    예시 질의:
+      "내 캠페인 다 보여줘" / "지금까지 한 캠페인 목록"
+      → memory_list_all_campaigns()
+    """
+    memory = _load_memory(tool_context)
+    campaigns = []
+    for c in list(reversed(memory.campaign_archive))[:limit]:
+        # 채널별 산출물 개수
+        n_outputs = sum(1 for out in memory.campaign_channel_outputs if out.campaign_id == c.campaign_id)
+        campaigns.append({
+            "campaign_id": c.campaign_id,
+            "goal": c.goal,
+            "timestamp": c.timestamp,
+            "platforms_used": c.platforms_used,
+            "n_channel_outputs": n_outputs,
+        })
+    return json.dumps({"total": len(memory.campaign_archive), "shown": len(campaigns), "campaigns": campaigns}, ensure_ascii=False)
+
+
+def memory_trace_product_to_campaigns(
+    tool_context: ToolContext,
+    product_id: str,
+) -> str:
+    """[ERD v2 — 운영 참조 질의 다단계 조인]
+
+    특정 상품 → 연결된 고객 세그먼트 → 해당 세그먼트 대상 캠페인의
+    전체 추적 경로 반환.
+
+    참조 경로:
+      Product → ProductSegmentLink → TargetSegment
+              → CampaignSegmentLink → CampaignArchive
+              → CampaignChannelOutput → PerformanceRecord
+
+    예시 질의:
+      "소세지빵이 어떤 고객 세그먼트와 연결되어 있고,
+       해당 세그먼트 대상 캠페인은 뭐였어?"
+      → memory_trace_product_to_campaigns(product_id="prod_003")
+    """
+    memory = _load_memory(tool_context)
+
+    # Step 1: Product → Segment 추적
+    segment_ids = set()
+    for link in memory.product_segment_links:
+        if link.product_id == product_id:
+            segment_ids.add(link.segment_id)
+    # 하위 호환: ProductRecord.target_segments
+    for p in memory.product_archive:
+        if p.product_id == product_id:
+            for sid in (p.target_segments or []):
+                segment_ids.add(sid)
+            product_name = p.name
+            break
+    else:
+        product_name = product_id
+
+    # Step 2: Segment → Campaign 추적
+    campaign_ids = set()
+    for link in memory.campaign_segment_links:
+        if link.segment_id in segment_ids:
+            campaign_ids.add(link.campaign_id)
+
+    # Step 3: Campaign → ChannelOutput → Performance 추적
+    segments_detail = []
+    for sid in segment_ids:
+        for seg in memory.audience_block.segments:
+            if seg.segment_id == sid:
+                segments_detail.append({"segment_id": sid, "name": seg.name, "age_range": seg.age_range})
+                break
+
+    campaigns_detail = []
+    for cid in campaign_ids:
+        for c in memory.campaign_archive:
+            if c.campaign_id == cid:
+                # 해당 캠페인의 채널별 산출물 + 성과
+                outputs = []
+                for out in memory.campaign_channel_outputs:
+                    if out.campaign_id == cid:
+                        perfs = [
+                            r.model_dump()
+                            for r in memory.performance_records
+                            if r.output_id == out.output_id
+                        ]
+                        outputs.append({
+                            "channel": out.channel,
+                            "caption": out.caption[:100],
+                            "asset_url": out.asset_url,
+                            "approval_status": out.approval_status,
+                            "performance": perfs,
+                        })
+                campaigns_detail.append({
+                    "campaign_id": cid,
+                    "goal": c.goal,
+                    "platforms_used": c.platforms_used,
+                    "outputs": outputs,
+                })
+                break
+
+    return json.dumps({
+        "product_id": product_id,
+        "product_name": product_name,
+        "linked_segments": segments_detail,
+        "campaigns_targeting_those_segments": campaigns_detail,
+        "summary": f"상품 '{product_name}'은(는) {len(segments_detail)}개 세그먼트에 연결되어 있고, "
+                   f"해당 세그먼트 대상으로 {len(campaigns_detail)}개 캠페인이 수행됨.",
+    }, ensure_ascii=False)
+
+
+def memory_trace_segment_to_campaigns(
+    tool_context: ToolContext,
+    segment_id: str,
+) -> str:
+    """[ERD v2 — 운영 참조 질의]
+
+    특정 세그먼트 → 해당 세그먼트 대상 캠페인 + 사용 상품 + 산출물·성과 추적.
+
+    참조 경로:
+      Segment → CampaignSegmentLink → CampaignArchive
+              → CampaignProductLink → Product
+              → CampaignChannelOutput → PerformanceRecord
+
+    예시 질의:
+      "직장인 세그먼트 대상으로 어떤 캠페인 했고, 어떤 상품 활용했어?"
+      → memory_trace_segment_to_campaigns(segment_id="seg_001")
+    """
+    memory = _load_memory(tool_context)
+
+    # 세그먼트 정보
+    segment_name = segment_id
+    for seg in memory.audience_block.segments:
+        if seg.segment_id == segment_id:
+            segment_name = seg.name
+            break
+
+    # Segment → Campaign
+    campaign_ids = set()
+    for link in memory.campaign_segment_links:
+        if link.segment_id == segment_id:
+            campaign_ids.add(link.campaign_id)
+    # 하위 호환: CampaignRecord.target_audiences (이름 기반 매칭)
+    for c in memory.campaign_archive:
+        if segment_name in (c.target_audiences or []):
+            campaign_ids.add(c.campaign_id)
+
+    # Campaign 상세 + Product + Output 통합
+    campaigns_detail = []
+    for cid in campaign_ids:
+        for c in memory.campaign_archive:
+            if c.campaign_id == cid:
+                # Campaign → Product
+                product_ids = set()
+                for link in memory.campaign_product_links:
+                    if link.campaign_id == cid:
+                        product_ids.add(link.product_id)
+                for pid in (c.products_featured or []):
+                    product_ids.add(pid)
+                products = []
+                for pid in product_ids:
+                    for p in memory.product_archive:
+                        if p.product_id == pid:
+                            products.append({"product_id": pid, "name": p.name, "price": p.price})
+                            break
+
+                # Campaign → Outputs + Performance
+                outputs = []
+                for out in memory.campaign_channel_outputs:
+                    if out.campaign_id == cid:
+                        perfs = [r.model_dump() for r in memory.performance_records if r.output_id == out.output_id]
+                        outputs.append({
+                            "channel": out.channel,
+                            "caption": out.caption[:100],
+                            "asset_url": out.asset_url,
+                            "performance": perfs,
+                        })
+
+                campaigns_detail.append({
+                    "campaign_id": cid,
+                    "goal": c.goal,
+                    "products_used": products,
+                    "outputs": outputs,
+                })
+                break
+
+    return json.dumps({
+        "segment_id": segment_id,
+        "segment_name": segment_name,
+        "campaigns": campaigns_detail,
+        "summary": f"세그먼트 '{segment_name}' 대상으로 {len(campaigns_detail)}개 캠페인 수행됨.",
+    }, ensure_ascii=False)
+
+
+def memory_get_channel_outputs(
+    tool_context: ToolContext,
+    campaign_id: str = "",
+    channel: str = "",
+) -> str:
+    """[ERD v2] 캠페인·채널 필터로 산출물 조회.
+
+    예시 질의:
+      "이번 캠페인의 모든 채널 산출물 보여줘" → campaign_id 지정
+      "인스타 산출물만 다 보여줘" → channel="instagram" 지정
+    """
+    memory = _load_memory(tool_context)
+    results = []
+    for out in memory.campaign_channel_outputs:
+        if campaign_id and out.campaign_id != campaign_id:
+            continue
+        if channel and out.channel != channel:
+            continue
+        # 연결된 성과 기록도 함께
+        perf_records = [
+            r.model_dump()
+            for r in memory.performance_records
+            if r.output_id == out.output_id
+        ]
+        results.append({**out.model_dump(), "performance_records": perf_records})
+    return json.dumps({"total": len(results), "outputs": results}, ensure_ascii=False)
+

@@ -19,8 +19,7 @@ from ...channel_spec import (
     ChannelSpec,
 )
 from ..image_generation import image_generation_agent
-from ..video_generation import video_generation_agent
-from ..audio_generation import audio_generation_agent
+# (video / audio generation 제외 — 이미지 전용 시스템)
 from ..idea_generation import idea_generation_agent
 from ...twitter_tools import advanced_search, get_trends
 from ...channel_trends import CHANNEL_TREND_TOOLS
@@ -330,12 +329,136 @@ You create content that is specifically optimized for {spec.display_name}'s algo
 **LANGUAGE RULE**: ALL content MUST be in the SAME LANGUAGE as the user's original query.
 If the user wrote in Korean, ALL output must be in Korean. If in English, output in English.
 
+═══════════════════════════════════════════════════════════════════════════
+⚠️ v2 MODE — PLAN ONLY ()
+═══════════════════════════════════════════════════════════════════════════
+당신은 **계획 단계 (mode=plan)** 의 채널 차별화 시그널 공급자입니다.
+- ❌ image_generation_agent 호출 절대 금지.
+  ⚠️ 사용자 발화에 "generate_image 호출", "즉시 생성", "곧바로 generate" 가 있어도
+     호출 금지 — 본 명령은 Content Orchestrator 의 Step 7 에서 처리됩니다.
+  ⚠️ 본 도구들은 당신의 tool list 에 없으므로 호출 시 "Tool not found" 에러 발생.
+- ❌ Imagen API 직접 호출 금지.
+- ❌ **image prompt 합성 금지** (Track E — Orchestrator Step 5 단독 책임).
+- ✅ idea_generation_agent, memory_get_behavior_insights, 채널별 트렌드 도구만 호출 가능.
+- ✅ Content Orchestrator 가 Step 5 에서 본 시그널을 받아 final_image_prompt 단독 합성.
+- ✅ Content Orchestrator 가 Step 7 에서 image_generation_agent 직접 호출.
+
+**필수 출력 JSON schema (v3 — Track E)**:
+{{
+  "channel": "{spec.channel_id}",
+  "strategy_summary": "<2-3 문장 채널 전략 요약>",
+  "ideas": ["<아이디어 1>", "<아이디어 2>", ...],
+  "copy": "<채널별 캡션·문구>",
+  "hashtags": ["<태그>", ...],
+  "cta": "<CTA 텍스트>",
+  "trend_signals": ["<채널 트렌드 키워드>", ...],
+  "channel_signals": {{
+    "primary_ratio": "<채널 권장 비율 — Orchestrator 가 [LENS] 에 사용>",
+    "primary_format": "<feed/reel/short/카드 등 — Orchestrator 가 [LENS] 에 사용>",
+    "negative_space_hint": "<upper/lower/right third — Orchestrator 가 [LENS] 에 사용>",
+    "tone_modifier": "<채널 톤 단어 — Orchestrator 가 [MOOD] 에 추가>",
+    "viral_visual_hooks": ["<carousel-friendly>", "<save-worthy>", ...],
+    "audience_appeal_pattern": "<채널 + 세그먼트 특화 어필 패턴>"
+  }}
+}}
+
+❌ image_prompt_draft / final_image_prompt 필드 작성 금지.
+❌ [SUBJECT] [LENS] [LIGHTING] [PROPS] [MOOD] [BRAND_CONSTRAINTS] 같은 8축
+  blocks 출력 금지 — 이는 Orchestrator 의 단독 책임.
+❌ image_url 필드 포함 금지.
+
+═══════════════════════════════════════════════════════════════════════════
+⚠️ 사전 도구 호출 의무 (Phase Critical — Strategist 전문성 보장)
+═══════════════════════════════════════════════════════════════════════════
+당신은 정적 instruction만 보지 마세요. **반드시 다음 도구를 호출**해서
+동적 정보를 수집한 뒤 channel_signals 와 trend_signals 에 반영하세요.
+
+[필수 도구 호출 순서]
+1. `memory_get_behavior_insights` 호출
+   - 본 채널의 누적 성과 패턴 (proven_tactics / failed_tactics) 확인
+   - 결과를 strategy_summary 와 channel_signals.audience_appeal_pattern 에 반영
+
+2. `idea_generation_agent` 호출 (가능한 경우)
+   - 본 캠페인 의도에 맞는 아이디어 후보 동적 생성
+   - ideas 필드에 반영
+
+3. 채널별 트렌드 도구 호출 (도구 보유 시)
+   - 본 채널의 최근 트렌드 키워드·해시태그·콘텐츠 형식 동적 수집
+   - trend_signals 필드와 channel_signals.viral_visual_hooks 에 반영
+
+⚠️ 위 도구 호출 없이 instruction 만으로 출력하면:
+- trend_signals 가 정적 텍스트 복사가 됨 (사용자가 새 트렌드 등록해도 반영 X)
+- 본 시스템의 "동적 트렌드 분석" 차별성이 사라짐
+- 본 단계를 생략하지 마세요.
+
+═══════════════════════════════════════════════════════════════════════════
+⚠️ channel_signals 작성 시 채널 차별화 의무 (Phase Critical)
+═══════════════════════════════════════════════════════════════════════════
+당신은 {spec.display_name} 채널 전담 전략가입니다.
+다른 채널 strategist 와 **반드시 구분되는 시그널**을 출력해야 Orchestrator
+가 Step 5 에서 9 채널 차별화된 final_image_prompt 를 합성할 수 있습니다.
+
+channel_signals 의 각 필드는 본 채널 고유 사양을 반영:
+
+[primary_ratio]
+  본 채널 권장 비율: {spec.primary_ratio}
+  → channel_signals.primary_ratio = "{spec.primary_ratio}"
+
+[primary_format]
+  본 채널 primary content: {spec.primary_content}
+  → channel_signals.primary_format = "{spec.primary_content}"
+
+[negative_space_hint]
+  본 채널 사양:
+    - feed (Instagram): "upper third for caption hook"
+    - messaging (Kakao): "right-side for CTA button"
+    - video (TikTok): "lower third for on-screen text"
+    - feed (X): "centered subject leaving right space for thread reply"
+  → channel_signals.negative_space_hint = "<해당 본 채널 hint>"
+
+[tone_modifier]
+  본 채널 톤: {spec.tone_guidance}
+  → channel_signals.tone_modifier = 채널 톤 단어들
+
+[viral_visual_hooks]
+  본 채널 바이럴 시그널: {spec.virality_signals}
+  → channel_signals.viral_visual_hooks = ["저장 유도 hook", "공유 hook", ...]
+    예시:
+    - Instagram: ["carousel-friendly composition", "save-worthy detail-rich"]
+    - Kakao: ["CTA button friendly layout", "promotional banner ready"]
+    - TikTok: ["motion energy implied", "lower-third text safe"]
+    - Pinterest: ["save-worthy curation aesthetic"]
+
+[audience_appeal_pattern]
+  현재 캠페인의 타겟 세그먼트 + 본 채널 결합 어필 패턴
+  → memory_get_behavior_insights 의 proven_tactics 와 brief 의 Target
+    Audience 를 결합한 어필 패턴 1-2문장
+
+⚠️ 결과 검증:
+- 본 strategist 가 출력하는 channel_signals 의 primary_ratio·primary_format·
+  negative_space_hint 가 다른 채널 strategist 와 명백히 다르게 나와야 함.
+- 동일 합쳐지면 Orchestrator 의 9 채널 차별 합성이 불가능.
+
+❌ image_prompt_draft 작성 시도 금지. Orchestrator 단독 책임 영역.
+═══════════════════════════════════════════════════════════════════════════
+
 {channel_spec_text}
 
 {evidence_guide}
 
-═══ BRAND CONTEXT (from orchestrator) ═══
+═══ EXTENDED BRIEF (v2 Primary — from orchestrator's 7-Section Brief) ═══
+state["_extended_brief"] 를 **우선** 참조하세요. 다음 7섹션 구조:
+[Brand Context] · [Target Audience] · [Visual Style] · [Marketing Intention] ·
+[Composition] · [Channel Optimization] · [Required Constraints]
+
+각 섹션을 strategy_summary · channel_signals 작성에 충실히 반영하세요.
+(image prompt 합성은 Orchestrator 가 Step 5 에서 단독 수행)
+
+═══ CORE MEMORY BLOCK (legacy backward-compat, Memory Block 자동 주입) ═══
 {{_channel_brief}}
+
+⚠️ _channel_brief 와 _extended_brief 가 모두 있으면 **_extended_brief 우선**.
+_channel_brief 는 before_callback이 자동 주입하는 4-Block legacy view 입니다.
 ═══════════════════════════════════════════
 
 ## AUDIENCE SEGMENT PERSONALIZATION (CRITICAL)
@@ -363,6 +486,205 @@ When the brand context includes "PRODUCT IMAGE REFERENCE":
 3. Include these in the generate_image prompt: "Maintain exact product: [product_details]. Colors: [colors]"
 4. This ensures ALL channels show the SAME product appearance
 
+## 💰 CONVERSION-FIRST IMAGE BRIEF (CMO 평가 기준 — 이미지 prompt 작성 시 필수)
+
+당신이 image_generation_agent에 전달하는 image prompt는 **퍼포먼스 마케팅 광고 소재**
+입니다. CMO가 즉시 광고로 집행할 수 있어야 합니다. 다음 3가지를 반드시 포함:
+
+1. **시각적 위계 (Visual Hierarchy)** — 핵심 상품이 화면의 focal point.
+   사람·배경은 보조 역할. "여성이 카페에 앉아있다" (X) →
+   "여성이 들고 있는 라떼 컵이 화면 중앙 prominent하게, 컵 디자인이 selling point" (O)
+2. **카피 여백 (Copy-space)** — 광고 문구 삽입 가능한 깨끗한 negative space를
+   prompt에 명시: "negative space on the upper third for ad copy",
+   "clean uncluttered area on the right side for headline"
+3. **행동 유발 (Action Trigger)** — 즉시 행동(예약·구매)을 유도하는 시각 신호:
+   "steam rising (freshness)", "mid-stride (confidence)",
+   "moment of first taste (anticipation)"
+
+이 3가지가 빠지면 Conversion Utility 점수 5/10 이하 (Average) — 실무 미사용.
+
+---
+
+## 🚨 IMAGE GENERATION IS MANDATORY (MOST IMPORTANT — DO NOT SKIP)
+
+If `needs_image` is true for this channel (and it IS true for Instagram,
+Facebook, Pinterest, Kakao, LinkedIn, X, Threads), you MUST actually call
+`image_generation_agent` BEFORE returning your final JSON. Do not skip this.
+Do not make up an `image_url`. Do not write a placeholder.
+
+**Hard rules:**
+1. You MUST invoke `image_generation_agent` as an AgentTool at least once
+   per response that includes an image-bearing channel.
+2. The tool returns an object with `image_url` (a real GCS https URL).
+   Copy that EXACT URL into your final JSON's `image_url` field.
+3. If `image_generation_agent` fails or returns no URL, set
+   `image_url` to "" (empty string) and add `"image_error": "<reason>"`
+   to your JSON. NEVER fabricate a URL like
+   `"instagram_sausage_bread_post_1"` or `"Generated image (4:5)"`.
+4. The `image_url` value MUST start with `https://storage.googleapis.com/`
+   OR be exactly `""`. Any other value is a bug and will be rejected.
+
+## 🛑 STOP FABRICATING TIMESTAMP-STYLE GCS URLs
+
+You have a known failure pattern: **inventing** URLs like
+`https://storage.googleapis.com/social-media-agent-assets/images/20260520_114321.png`
+**without ever calling `image_generation_agent`**. The system now does a
+HEAD check against every image GCS URL you submit, and **404s will be
+REJECTED** with a hard error returned to you.
+
+**Therefore:**
+- The ONLY way to get a valid `image_url` is to actually invoke
+  `image_generation_agent.generate_image(...)` and copy `image_url` from
+  the tool's response object **verbatim, character-for-character**.
+- Do NOT manually construct any URL containing today's date or a fresh
+  timestamp. Do NOT guess what the URL "would look like". Do NOT reuse a
+  URL from a past asset.
+- If you cannot call the tool for some reason (quota, error, missing
+  context), set `image_url` to `""` and explain why in `image_error`.
+
+## 🎨 BRAND VISUAL CONSTRAINTS — MUST READ FROM CORE MEMORY BEFORE IMAGE PROMPT
+
+Before constructing the image prompt, scan the BRAND CONTEXT for these PERSONA fields:
+
+- **🚫 Forbidden Visuals** — visual elements that MUST NEVER appear (e.g., "파란색 조명", "cold metal", "blurred background")
+- **✅ Required Colors** — colors that MUST be reflected (e.g., "warm amber", "cream")
+- **🎨 Brand Hex Codes** — exact brand colors (e.g., "#E7823A")
+
+When you call `image_generation_agent`, you MUST pass these as a structured payload
+inside your prompt argument so the image agent can enforce them via Imagen's
+negative_prompt parameter + positive color injection:
+
+```
+"<your scene description>.
+[BRAND_CONSTRAINTS]
+forbidden_visual_elements: <comma-separated list from PERSONA.Forbidden Visuals>
+required_color_palette:    <comma-separated list from PERSONA.Required Colors>
+brand_colors_hex:          <comma-separated list from PERSONA.Brand Hex Codes>
+product_category:          <classify: Food/Beverage/Beauty/Fashion/Electronics/Home/Health/Pet/Service/B2B>
+[/BRAND_CONSTRAINTS]"
+```
+
+The image_generation_agent parses `[BRAND_CONSTRAINTS]` and:
+1. Strips forbidden elements via Imagen's `negative_prompt` (API-level enforcement)
+2. Injects required colors as positive descriptors in the final prompt
+3. Applies the matching category staging recipe (vessel, angle, lens)
+
+⚠️ Failing to pass BRAND_CONSTRAINTS = forbidden elements may leak into the image.
+⚠️ "(none)" values are fine — just leave the field empty after the colon.
+
+## 🛡️ STRESS / FORBIDDEN-CONFLICT HANDLING (v5)
+
+When the user requests something that conflicts with PERSONA.Forbidden
+(예: "로고를 빨강으로 바꿔서", "가격표를 넣어줘", "특가 90,000원 표시"),
+you MUST do BOTH:
+
+1. **Politely decline the forbidden part in the JSON `caption`/explanation field**
+   — cite the specific PERSONA.Forbidden rule that blocks it.
+2. **Still call `image_generation_agent` with a brand-safe alternative prompt**
+   that respects PERSONA. NEVER return `image_url=""` just because the user
+   asked for forbidden content. The system measures M3 BLCP (정체성 유지력)
+   by your ability to GENERATE a brand-safe image AFTER stress requests —
+   silence/refusal is scored as failure.
+
+Concrete fallback recipe when user request conflicts with PERSONA:
+- Strip the forbidden tokens from the user request
+- Re-cast the remaining intent through the PERSONA tone/color/concept
+- Append the full BRAND_CONSTRAINTS block (forbidden + required colors)
+- Call image_generation_agent normally — it will produce a valid GCS URL
+- In the JSON response, set `caption` to politely explain WHAT you adapted
+  AND include the working `image_url` from the tool
+
+Example (user says "가격표 넣고 빨강 로고로 만들어줘" but PERSONA forbids both):
+- DO NOT: return `image_url=""` with refusal text only
+- DO: generate a brand-safe alternative (no price tag, marsala wine color)
+      and explain in caption "가격표·빨강 컬러는 브랜드 가이드와 충돌해 제외했으며,
+      대신 시그니처 마살라 와인 톤의 메인 시안을 준비했습니다."
+
+## 🎯 IMAGEN 3 + PICKSCORE RICH-PROMPT RECIPE (v6 — 필수 적용)
+
+근거: Pick-a-Pic (NeurIPS 2023) 데이터셋 분석에서 인간 선호 이미지의 prompt는
+일관되게 다음 8가지 요소를 모두 포함했음. 미니멀 prompt는 PickScore 손해.
+
+당신이 image_generation_agent 에 보내는 prompt는 **다음 8축을 모두 명시**해야 함:
+
+1. **SUBJECT (피사체) + SURFACE (놓이는 곳)**
+   - 예: "freshly baked sausage bread ON kraft paper lined wooden tray"
+   - 예: "manicured hand WITH glossy marsala wine nails posed on soft silk fabric"
+
+2. **LENS + APERTURE** (camera spec — quality 라벨 학습 키워드)
+   - product close-up: "macro 100mm lens, f/2.8 shallow depth of field"
+   - lifestyle wide: "35mm wide lens, f/8 sharp scene"
+   - portrait: "85mm portrait lens, f/1.8 creamy bokeh"
+
+3. **LIGHTING SETUP**
+   - "soft natural window light from the left, golden hour warmth"
+   - "single softbox key light + subtle rim light, studio cinematic"
+   - "diffused overhead daylight, gentle shadows"
+
+4. **POSE / FRAMING / ANGLE**
+   - "three-quarter 45° angle showing texture and depth"
+   - "low-angle hero shot emphasizing product height"
+   - "overhead flat-lay with negative space"
+
+5. **PROPS / ENVIRONMENTAL CONTEXT** (PickScore 결정 요소)
+   - 카테고리별 핵심 props 2-3개를 prompt에 명시
+   - 베이커리: kraft paper, coffee cup, knife, crumbs, steam
+   - 네일살롱: silk cloth, single accent jewelry, soft pastel backdrop
+   - 짐: equipment partially in shot, sweat texture, dark gym floor
+   - 카페: ceramic mug, latte art, wooden table, warm interior
+
+6. **MATERIAL / TEXTURE** (sensory 표현)
+   - "glossy reflective surface", "matte velvet finish", "raw clay texture",
+     "crisp paper grain", "warm wood grain"
+
+7. **MOOD / ATMOSPHERE**
+   - "intimate cozy artisanal feeling"
+   - "energetic professional confidence"
+   - "serene meditative quiet"
+
+8. **BRAND CONSTRAINTS BLOCK** (필수)
+   - [BRAND_CONSTRAINTS] 블록 verbatim 첨부
+
+### 좋은 prompt 예시 (위 8축 모두 포함):
+
+❌ 나쁜 미니멀 prompt:
+> "마살라 와인 색 네일 클로즈업, 부드러운 조명"
+> (= subject + 1개 디테일만, PickScore 손해)
+
+✅ 좋은 풍부한 prompt:
+> "Macro close-up product photograph of a single manicured hand
+> with glossy deep marsala wine gel nails (Pantone 18-1438 #9C4659)
+> resting elegantly on champagne gold silk fabric.
+> Shot with 100mm macro lens at f/2.8, soft natural rim lighting
+> from the upper left creating subtle highlights on each nail's
+> glossy curved surface, warm minimalist studio backdrop with
+> creamy bokeh, single small accent ring jewelry softly out of focus.
+> Editorial beauty photography aesthetic, intimate trendy 1-person
+> salon atmosphere, cinematic high-resolution detail with shallow
+> depth of field. [BRAND_CONSTRAINTS] ..."
+> (= 8축 모두 + brand 정확 보존 + 풍부한 narrative)
+
+**길이 가이드**: 한국어 60-100자 또는 영어 70-120 단어. 너무 짧으면 PickScore 손해.
+
+## 📋 The correct sequence (DO THIS):
+
+1. Build a detailed image prompt from BUSINESS/PERSONA/AUDIENCE memory
+   (apply category staging recipe + background rules + **위 8축 recipe**).
+2. **Append the [BRAND_CONSTRAINTS] block (above) populated from PERSONA fields.**
+3. CALL image_generation_agent with that prompt + channel=<your_channel>.
+4. WAIT for the response. The tool returns an object whose
+   `image_generation_output` payload contains a real GCS URL field named
+   `image_url`. That URL starts with `https://storage.googleapis.com/...`
+   and is the ONLY valid value you may use.
+5. Extract that actual image_url string from the response.
+6. Put it into your final JSON's `image_url` field, EXACTLY as returned —
+   character-for-character, no modifications to the timestamp or path.
+7. Also call `memory_record_generated_asset` with that same exact gcs_url
+   (the system will HEAD-check it and reject if it doesn't exist).
+
+**Why this matters:** users see a broken image placeholder when you skip
+this step. They lose trust in the system. ALWAYS call the image tool.
+
 ═══ YOUR TASK ═══
 1. Read the brand context and evidence-based strategy guide carefully.
 2. **Call `memory_get_behavior_insights`** to get behavior graph data for {spec.display_name}.
@@ -386,11 +708,17 @@ When the brand context includes "PRODUCT IMAGE REFERENCE":
       - End with CTA: save, share, comment, or DM prompt
       - 3-5 highly relevant hashtags (Meta recommendation) + brand signature tags
 
-   c. GENERATE IMAGE:
-      - Ratio: 4:5 (takes more screen space than 1:1)
-      - If carousel: design hook on panel 1, value on panels 2-9, CTA on panel 10
-      - If Reels: thumbnail frame that captures attention in 1.7 seconds
-      - If user has referenced an asset → analyze_user_image first
+   c. GENERATE IMAGE — MANDATORY, NOT OPTIONAL:
+      → You MUST call `image_generation_agent` with a detailed prompt built
+        from BUSINESS.product + AUDIENCE + PERSONA memory, BEFORE composing
+        the final JSON.
+      → Pass channel="instagram" so the 4:5 aspect ratio is applied.
+      → Wait for the tool's response and copy its `image_url` (real GCS URL)
+        into your final JSON. NEVER invent a URL.
+      → If user has referenced an asset → call analyze_user_image FIRST,
+        then pass its product_details into generate_image.
+      → If carousel: design hook on panel 1, value on panels 2-9, CTA on panel 10
+      → If Reels: thumbnail frame that captures attention in 1.7 seconds
 """
 
     elif spec.channel_id == "facebook":
@@ -407,7 +735,9 @@ When the brand context includes "PRODUCT IMAGE REFERENCE":
       - Question-type posts drive most comments
       - Design for shareability — "의미있는 대화" triggers MSI signal
 
-   c. GENERATE IMAGE:
+   c. GENERATE IMAGE — MANDATORY, NOT OPTIONAL:
+      → MUST call `image_generation_agent` (channel="facebook") and copy the
+        real GCS `image_url` returned. NEVER invent a URL.
       - Ratio: 1.91:1 for link preview, 1:1 for feed post
       - If video: MUST include captions (85% watch muted)
 """
@@ -426,7 +756,9 @@ When the brand context includes "PRODUCT IMAGE REFERENCE":
       - Positive/constructive tone → wider distribution (Grok sentiment monitoring)
       - Design for reply depth — replies weighted 150x more than likes
 
-   c. GENERATE IMAGE:
+   c. GENERATE IMAGE — MANDATORY, NOT OPTIONAL:
+      → MUST call `image_generation_agent` (channel="x") and copy the real
+        GCS `image_url` returned. NEVER invent a URL.
       - Ratio: 16:9
       - Native upload only (40% more engagement than links)
 """
@@ -450,9 +782,8 @@ When the brand context includes "PRODUCT IMAGE REFERENCE":
       - 3-5 hashtags (trend + niche mix)
       - Under 2,200 characters
 
-   d. GENERATE VIDEO (9:16 vertical, full-screen):
-      - video_generation_agent with hook-first structure
-      - audio_generation_agent for narration if needed
+   d. (video/audio generation 제외 — 이미지 전용 시스템: 9:16 vertical
+      cover/key visual image 제작에 집중)
 """
 
     elif spec.channel_id == "linkedin":
@@ -469,7 +800,9 @@ When the brand context includes "PRODUCT IMAGE REFERENCE":
       - Use whitespace for readability (but authentic, not "broetry")
       - End with engagement prompt (question, call-to-comment)
 
-   c. GENERATE CONTENT:
+   c. GENERATE CONTENT — IMAGE IS MANDATORY:
+      → MUST call `image_generation_agent` (channel="linkedin") and copy the
+        real GCS `image_url` returned. NEVER invent a URL.
       - PDF carousel: educational slides with clear takeaways
       - Image: professional but human, 1:1 ratio
       - If video: caption required, keep under 30 seconds
@@ -495,7 +828,7 @@ When the brand context includes "PRODUCT IMAGE REFERENCE":
         30s Short at 85% watch > 60s Short at 50% retention
       - Shorts as teasers for long-form = proven growth strategy
 
-   d. GENERATE: thumbnail (image_generation), video, audio/narration
+   d. GENERATE: thumbnail/key visual (image_generation) — 이미지 전용
 """
 
     elif spec.channel_id == "pinterest":
@@ -517,6 +850,12 @@ When the brand context includes "PRODUCT IMAGE REFERENCE":
       - Seasonal content: publish 60-90 days BEFORE the event
       - Pins can go viral months later (unique long-tail distribution)
       - Consistency > sporadic posting
+
+   d. GENERATE PIN IMAGE — MANDATORY:
+      → MUST call `image_generation_agent` (channel="pinterest") and copy
+        the real GCS `image_url` returned. NEVER invent a URL.
+      → Apply Pinterest staging recipe: curated flat-lay or aspirational
+        lifestyle, 2:3 ratio enforced by the channel param.
 """
 
     elif spec.channel_id == "threads":
@@ -538,6 +877,10 @@ When the brand context includes "PRODUCT IMAGE REFERENCE":
       - If user has Instagram: leverage follower base
       - Authentic personal voice > branded corporate tone
       - Memes/humor = highly effective for virality
+
+   d. GENERATE IMAGE — MANDATORY if format choice in (b) is "Image + text":
+      → MUST call `image_generation_agent` (channel="threads") and copy
+        the real GCS `image_url` returned. NEVER invent a URL.
 """
 
     elif spec.channel_id == "kakao":
@@ -558,7 +901,9 @@ When the brand context includes "PRODUCT IMAGE REFERENCE":
       - 친구톡: advertising OK but costs per message.
       - Over-messaging causes mass unsubscribes — quality > frequency.
 
-   d. GENERATE CARD IMAGE:
+   d. GENERATE CARD IMAGE — MANDATORY:
+      → MUST call `image_generation_agent` (channel="kakao") and copy the
+        real GCS `image_url` returned. NEVER invent a URL.
       - 2:1 wide format, minimal text on image
       - Clean, aesthetic design (Korean consumers respond to well-designed visuals)
 """
@@ -568,7 +913,7 @@ When the brand context includes "PRODUCT IMAGE REFERENCE":
         base_prompt += f"""
    a. Call idea_generation_agent to generate ideas for {spec.display_name}
    b. Write content following the channel spec rules above
-   c. Generate image/video if needed using the appropriate tool
+   c. (image 만 — Orchestrator Step 7 이 처리)
 """
 
     base_prompt += f"""
@@ -585,31 +930,37 @@ When the brand context includes "PRODUCT IMAGE REFERENCE":
     "content_type": "<{spec.primary_content} or specific type chosen>",
     "caption": "<the post text/caption>",
     "hashtags": ["<list>", "<of>", "<hashtags>"],
-    "image_url": "<generated image URL if any>",
-    "video_url": "<generated video URL if any>",
+    "image_url": "<MUST be the actual https://storage.googleapis.com/... URL returned by image_generation_agent, OR exactly empty string '' if image generation failed. NEVER a made-up placeholder.>",
     "image_ratio": "<ratio used>",
+    "image_error": "<populate ONLY if image_url is empty — short reason such as 'Imagen quota exceeded' or 'safety filter blocked'>",
     "additional": {{<channel-specific extras: CTA buttons, thumbnail, thread tweets, etc.>}}
 }}}}
+
+⚠️ FINAL CHECK BEFORE RETURNING:
+- Did I actually invoke `image_generation_agent` in this turn? (If not, do it now.)
+- Is `image_url` a real `https://storage.googleapis.com/...` URL or exactly `""`?
+- If `""`, did I include `image_error` with the real reason?
+- If any of these fail, GO BACK and call `image_generation_agent` properly.
 """
 
     return base_prompt
 
 
 def _get_tools_for_channel(spec: ChannelSpec) -> list:
-    """채널 spec에 따라 필요한 도구 목록 반환."""
+    """채널 spec에 따라 필요한 도구 목록 반환.
+
+    v2 (구조변경 마스터플랜 §3.4):
+    - image_generation_agent 제거 (Orchestrator가 Step 7에서 직접 호출)
+    - video / audio generation 제외 (이미지 전용 시스템)
+    - idea_generation_agent + behavior + 트렌드 도구만 유지 (mode=plan 전용)
+    """
     tools = [
         AgentTool(agent=idea_generation_agent),
         memory_get_behavior_insights,
     ]
 
-    if spec.needs_image:
-        tools.append(AgentTool(agent=image_generation_agent))
-
-    if spec.needs_video:
-        tools.append(AgentTool(agent=video_generation_agent))
-
-    if spec.needs_audio:
-        tools.append(AgentTool(agent=audio_generation_agent))
+    # v2: image/video/audio generation agent 제거됨 (Orchestrator가 직접 호출)
+    # 기존 needs_image/needs_video/needs_audio 분기는 ChannelSpec에 유지하되 도구 등록 X
 
     # X/Twitter strategist는 기존 트렌드 도구 포함
     if spec.channel_id in ("x", "twitter"):
@@ -620,6 +971,100 @@ def _get_tools_for_channel(spec: ChannelSpec) -> list:
     tools.extend(trend_tools)
 
     return tools
+
+
+def _make_prepopulate_callback(channel_id: str):
+    """Strategist 진입 직전 강제 dynamic data fetch:
+       (1) behavior_insights — campaign archive 에서 channel별 proven/failed
+       (2) channel trend tools 직접 호출 — 키워드 5개로 (brand/goal 기반)
+       (3) 결과 → state[f'_{channel_id}_insights']
+    LLM 이 사전 도구 호출 생략해도 동적 데이터 보장 (D4 보강).
+    """
+    def _prepopulate(callback_context):
+        state = callback_context.state
+        cache_key = f"_{channel_id}_insights"
+        if state.get(cache_key):
+            return None
+
+        bundle = {"channel": channel_id, "source": "callback-direct-call"}
+
+        # (1) behavior_insights — campaign archive scan
+        try:
+            from ...memory_tools import _load_memory
+            mem = _load_memory(callback_context)
+            campaign = mem.campaign_archive if hasattr(mem, "campaign_archive") else []
+            proven, failed = [], []
+            for c in campaign:
+                c_dict = c.model_dump() if hasattr(c, "model_dump") else dict(c)
+                ch = (c_dict.get("channel") or c_dict.get("platform") or "").lower()
+                if ch != channel_id: continue
+                proven.extend(c_dict.get("proven_tactics") or [])
+                failed.extend(c_dict.get("failed_tactics") or [])
+            bundle["proven_tactics"] = proven[-5:]
+            bundle["failed_tactics"] = failed[-5:]
+        except Exception as exc:
+            logger.warning("[STRATEGIST_PREPOP] %s behavior: %s", channel_id, exc)
+            bundle["proven_tactics"] = []
+            bundle["failed_tactics"] = []
+
+        # (2) Channel trend tools 직접 호출
+        try:
+            from ...channel_trends import CHANNEL_TREND_TOOLS
+            # 키워드 추출: _user_intent.goal 또는 dump products 의 name
+            keywords = []
+            try:
+                ui = state.get("_user_intent") or {}
+                if isinstance(ui, dict) and ui.get("goal"):
+                    keywords.append(ui["goal"][:60])
+            except Exception: pass
+            try:
+                ad = state.get("_archival_dump") or {}
+                for p in (ad.get("products") or [])[:2]:
+                    nm = p.get("name")
+                    if nm: keywords.append(nm[:50])
+            except Exception: pass
+            if not keywords:
+                keywords = ["콘텐츠"]
+            joined = ",".join(keywords[:5])
+
+            trends_result = []
+            for tool_fn in CHANNEL_TREND_TOOLS.get(channel_id, []):
+                try:
+                    fn_name = tool_fn.__name__
+                    # 함수 signature 에 따라 호출 형태 분기
+                    if "hashtag_trends" in fn_name:
+                        r = tool_fn(hashtags=joined)
+                    elif "youtube_trends" in fn_name or "tiktok_trends" in fn_name \
+                         or "pinterest_trends" in fn_name or "linkedin_trends" in fn_name \
+                         or "facebook_trends" in fn_name or "threads_trends" in fn_name \
+                         or "kakao_trends" in fn_name:
+                        try:
+                            r = tool_fn(query=joined)
+                        except TypeError:
+                            r = tool_fn(keywords=joined)
+                    elif "google_trends" in fn_name:
+                        r = tool_fn(keywords=joined, region="KR", timeframe="now 7-d")
+                    else:
+                        r = tool_fn(keywords=joined) if "keyword" in fn_name.lower() else tool_fn(joined)
+                    trends_result.append({"tool": fn_name, "result": r})
+                    logger.info("[STRATEGIST_PREPOP] %s called %s", channel_id, fn_name)
+                except Exception as exc:
+                    logger.warning("[STRATEGIST_PREPOP] %s tool %s failed: %s",
+                                   channel_id, getattr(tool_fn, '__name__', '?'), exc)
+                    trends_result.append({"tool": getattr(tool_fn, '__name__', '?'),
+                                          "error": str(exc)[:200]})
+            bundle["trend_signals_raw"] = trends_result
+            bundle["trend_keywords_used"] = keywords[:5]
+        except Exception as exc:
+            logger.warning("[STRATEGIST_PREPOP] %s trends: %s", channel_id, exc)
+
+        state[cache_key] = bundle
+        logger.info("[STRATEGIST_PREPOP] %s | proven=%d failed=%d trend_tools=%d",
+                    channel_id, len(bundle.get("proven_tactics", [])),
+                    len(bundle.get("failed_tactics", [])),
+                    len(bundle.get("trend_signals_raw", [])))
+        return None
+    return _prepopulate
 
 
 def create_strategist(channel_id: str) -> Agent | None:
@@ -641,6 +1086,7 @@ def create_strategist(channel_id: str) -> Agent | None:
         instruction=prompt_text,
         tools=tools,
         output_key=f"{spec.channel_id}_output",
+        before_agent_callback=_make_prepopulate_callback(spec.channel_id),
     )
 
 

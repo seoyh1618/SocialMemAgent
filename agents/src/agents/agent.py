@@ -32,6 +32,7 @@ from .memory_tools import (
     memory_get_performance_pending,
     memory_mark_performance_asked,
     memory_get_behavior_insights,
+    memory_get_top_pickscore_keywords,
     memory_compress_context,
     memory_get_context_status,
     memory_append_recall,
@@ -56,24 +57,6 @@ from . import prompt
 logger = logging.getLogger(__name__)
 
 
-# ─────────────────────────────────────────────────────────────────────
-#  MemGPT Core Memory Injection — before_agent_callback
-#
-#  MemGPT 원본 설계의 핵심:
-#    "Core Memory is ALWAYS in the context window — the agent cannot
-#     choose to ignore it."
-#
-#  구현 방식:
-#    ADK의 before_agent_callback을 사용하여 에이전트가 첫 응답을
-#    생성하기 전에 session.state의 메모리를 읽고,
-#    callback_context.state['_memory_block']에 포맷된 텍스트를 저장.
-#    그러면 프롬프트의 {_memory_block} 플레이스홀더가 이를 자동 주입.
-#
-#  왜 도구 호출 방식보다 우월한가:
-#    - 도구 호출(memory_get_core_profile)은 LLM이 "잊을" 수 있음
-#    - callback은 Python 레벨에서 강제 실행 — 100% 신뢰성
-#    - 토큰 낭비 없이 정확한 위치에 삽입
-# ─────────────────────────────────────────────────────────────────────
 
 _MEMORY_STATE_KEY = "memory"
 
@@ -395,6 +378,40 @@ def _inject_core_memory(callback_context: CallbackContext) -> None:
             f"  ⚡ Adapt content tone and strategy based on these signals."
         )
 
+    # ── [Phase B-1: Performance Optimization Pre-Fetch] ──────────────────
+    # behavior_graph에서 top_what_worked / top_what_failed를 직접 추출해
+    # strategist가 memory_get_behavior_insights를 호출 안 해도 자동 인지.
+    # Phase 2 (Gen 1-3 계단식 개선) 시나리오 도달률을 보장하기 위함.
+    try:
+        graph = memory.behavior_graph
+        if graph and graph.edges:
+            worked_freq: dict[str, int] = {}
+            failed_freq: dict[str, int] = {}
+            for edge in graph.edges:
+                for tag in getattr(edge, "what_worked", []) or []:
+                    worked_freq[tag] = worked_freq.get(tag, 0) + 1
+                for tag in getattr(edge, "what_failed", []) or []:
+                    failed_freq[tag] = failed_freq.get(tag, 0) + 1
+            top_worked = [t for t, _ in sorted(worked_freq.items(), key=lambda x: x[1], reverse=True)[:5]]
+            top_failed = [t for t, _ in sorted(failed_freq.items(), key=lambda x: x[1], reverse=True)[:5]]
+            if top_worked or top_failed:
+                perf_lines = ["\n▶ BEHAVIOR INSIGHTS (auto-fetched — apply before generating)"]
+                if top_worked:
+                    perf_lines.append(f"  ✅ what_worked (apply these): {', '.join(top_worked)}")
+                if top_failed:
+                    perf_lines.append(f"  ❌ what_failed (avoid these): {', '.join(top_failed)}")
+                perf_lines.append(
+                    f"  ⚡ Total data points: {len(graph.edges)}. "
+                    "These came from past campaign feedback — reflect them in your next content + image prompt."
+                )
+                brief_parts.append("\n".join(perf_lines))
+                logger.info(
+                    "[CORE_INJECT] 📈 Behavior insights pre-injected: worked=%s, failed=%s",
+                    top_worked, top_failed,
+                )
+    except Exception as e:
+        logger.debug("Behavior insights pre-fetch skipped: %s", e)
+
     _brief_text = "\n".join(brief_parts)
     callback_context.state["_channel_brief"] = _brief_text
     logger.info(
@@ -439,11 +456,8 @@ _TOOL_DISPLAY_NAMES: dict[str, str] = {
     "get_pinterest_trends": "Pinterest 트렌드 조회 중",
     "get_kakao_trends": "카카오 트렌드 조회 중",
     "get_threads_trends": "Threads 트렌드 조회 중",
-    # ── 미디어 생성 도구 ──
+    # ── 미디어 생성 도구 (이미지 전용 시스템 — video/audio 제거 LOOP 8) ──
     "generate_image": "이미지 생성 중",
-    "generate_video": "동영상 생성 중 (최대 3분)",
-    "generate_audio": "오디오 생성 중",
-    "assemble_video_with_audio": "동영상 합성 중",
     "analyze_user_image": "첨부 이미지 분석 중",
     # ── 메모리: 프로필/브랜드 ──
     "memory_get_core_profile": "브랜드 프로필 조회 중",
@@ -475,6 +489,7 @@ _TOOL_DISPLAY_NAMES: dict[str, str] = {
     "memory_mark_performance_asked": "성과 질문 완료 처리 중",
     "memory_add_performance_notes": "성과 메모 추가 중",
     "memory_get_behavior_insights": "행동 인사이트 분석 중",
+    "memory_get_top_pickscore_keywords": "PickScore 상위 키워드 추출 중",
     # ── 채널 Strategist AgentTool ──
     "instagram_strategist": "📱 Instagram 콘텐츠 생성 중",
     "facebook_strategist": "📘 Facebook 콘텐츠 생성 중",
@@ -629,11 +644,43 @@ def _build_rich_step_detail(tool_name: str, display: str, args: dict, tool_respo
         elif tool_name == "memory_record_generated_asset":
             atype = args.get("asset_type", "")
             platform = args.get("platform", "")
+            gcs_url = args.get("gcs_url", "") or args.get("asset_id", "")
             if atype:
                 lines.append(f"  에셋 유형: {atype}")
             if platform:
                 lines.append(f"  플랫폼: {platform}")
-            lines.append("  → 에셋이 Asset Archive에 저장되었습니다.")
+            # ── 안전망: 이미지 자산인데 tool이 REJECTED 응답 반환했으면 UI에 표시 ──
+            # (memory_record_generated_asset가 GCS HEAD 체크 후 거부할 수 있음)
+            response_text = str(resp) if resp is not None else ""
+            if atype == "image" and "[REJECTED]" in response_text:
+                logger.warning(
+                    "[ASSET_VALIDATION] ⚠️ image asset REJECTED by HEAD-check guard: "
+                    "platform=%s, gcs_url=%r, asset_id=%r",
+                    platform, args.get("gcs_url", ""), args.get("asset_id", ""),
+                )
+                lines.append(
+                    "  ❌ 이미지가 실제로 생성되지 않았습니다 "
+                    f"(URL 검증 실패: {gcs_url[:60] if gcs_url else '(empty)'}). "
+                    "image_generation_agent 호출 누락 또는 위조 URL."
+                )
+            elif atype == "image":
+                is_valid_url = isinstance(gcs_url, str) and gcs_url.startswith(
+                    ("https://storage.googleapis.com/", "https://", "gs://")
+                )
+                if not is_valid_url:
+                    logger.warning(
+                        "[ASSET_VALIDATION] ⚠️ image asset recorded WITHOUT a real GCS URL: "
+                        "platform=%s, gcs_url=%r, asset_id=%r — strategist likely skipped image_generation_agent",
+                        platform, args.get("gcs_url", ""), args.get("asset_id", ""),
+                    )
+                    lines.append(
+                        f"  ⚠️ 경고: 실제 이미지 URL이 아닙니다 ({gcs_url[:60] if gcs_url else '(empty)'}). "
+                        f"image_generation_agent 호출이 누락되었을 수 있음."
+                    )
+                else:
+                    lines.append("  → 에셋이 Asset Archive에 저장되었습니다.")
+            else:
+                lines.append("  → 에셋이 Asset Archive에 저장되었습니다.")
 
         # ── 성과 수집 ──
         elif tool_name == "memory_collect_performance":
@@ -791,13 +838,7 @@ def _build_rich_step_detail(tool_name: str, display: str, args: dict, tool_respo
                     if isinstance(s, dict):
                         lines.append(f"    • {s.get('name', s.get('segment_name', ''))}")
 
-        # ── 동영상/오디오 생성 ──
-        elif tool_name in ("generate_video", "video_generation_agent"):
-            lines.append("  → 동영상 콘텐츠를 생성 중입니다.")
-        elif tool_name in ("generate_audio", "audio_generation_agent"):
-            lines.append("  → 오디오/나레이션을 생성 중입니다.")
-        elif tool_name == "assemble_video_with_audio":
-            lines.append("  → 동영상과 오디오를 합성 중입니다.")
+        # (video / audio generation 제외 — 이미지 전용 시스템)
 
         # ── 기타 도구: 간단한 결과 요약 ──
         else:
@@ -1032,6 +1073,82 @@ def _auto_save_working_summary(callback_context: CallbackContext) -> None:
     from datetime import datetime, timezone
 
     _t0_save = time.time()
+
+    # ──  _unified_strategy 누락·부분 누락 시 _xx_output 들로 자동 보완 ──
+    try:
+        agent_name = callback_context.agent_name
+        if agent_name == "content_orchestrator":
+            import json as _json, re as _re
+            us = callback_context.state.get("_unified_strategy")
+            if not isinstance(us, dict):
+                us = {}
+            channels = us.get("channels") if isinstance(us.get("channels"), dict) else {}
+            recovered = []
+
+            def _strip_fence(s: str) -> str:
+                return _re.sub(r'^\s*```(?:json)?\s*|\s*```\s*$', '', s, flags=_re.MULTILINE).strip()
+
+            def _looks_empty(d):
+                if not isinstance(d, dict):
+                    return True
+                # final, primary, draft, raw 어느 하나라도 유효하면 살아있음
+                candidates = (
+                    d.get("final_image_prompt"),
+                    d.get("final_image_prompt_primary"),
+                    d.get("image_prompt_draft"),
+                    d.get("strategy_summary"),
+                    d.get("copy"),
+                    d.get("raw_output"),
+                )
+                for c in candidates:
+                    if isinstance(c, str) and c.strip():
+                        return False
+                    if isinstance(c, dict) and c:
+                        return False
+                return True
+
+            for ch in ("instagram","facebook","x","tiktok","linkedin","youtube","pinterest","threads","kakao"):
+                if ch in channels and not _looks_empty(channels[ch]):
+                    continue
+                raw = callback_context.state.get(f"{ch}_output")
+                if not raw:
+                    continue
+                parsed = None
+                if isinstance(raw, dict):
+                    parsed = raw
+                elif isinstance(raw, str):
+                    candidate = _strip_fence(raw)
+                    if candidate.startswith("{"):
+                        try:
+                            parsed = _json.loads(candidate)
+                        except Exception:
+                            parsed = {"raw_output": raw}
+                    else:
+                        parsed = {"raw_output": raw}
+                if parsed and not _looks_empty(parsed):
+                    # final_image_prompt 누락 시 image_prompt_draft에서 승격
+                    if isinstance(parsed, dict):
+                        fip = parsed.get("final_image_prompt") or parsed.get("final_image_prompt_primary")
+                        draft = parsed.get("image_prompt_draft")
+                        if not fip and draft:
+                            parsed["final_image_prompt"] = draft
+                    channels[ch] = parsed
+                    recovered.append(ch)
+            if recovered or not us:
+                diag = us.get("diagnostics") if isinstance(us.get("diagnostics"), dict) else {}
+                diag["auto_recovered_channels"] = recovered
+                diag["final_channel_count"] = len(channels)
+                callback_context.state["_unified_strategy"] = {
+                    "channels": channels,
+                    "consistency_notes": us.get("consistency_notes") or "(auto-recovered)",
+                    "saved_at": datetime.now(timezone.utc).isoformat(),
+                    "diagnostics": diag,
+                }
+                if recovered:
+                    logger.info("[ORCH_AUTO_SAVE] recovered channels=%s, total=%d", recovered, len(channels))
+    except Exception as _exc:
+        logger.warning("[ORCH_AUTO_SAVE] skip: %s", _exc)
+
     if callback_context.state.get(_MEMORY_STATE_KEY) is None:
         return
     memory = _load_memory_from_callback(callback_context)
@@ -1284,13 +1401,58 @@ def _auto_save_working_summary(callback_context: CallbackContext) -> None:
 # content_orchestrator로 교체.
 # orchestrator가 메모리 1회 조회 → 채널 파싱 → 채널별 strategist 위임.
 
-# Apply MemGPT callbacks to orchestrator
-content_orchestrator.before_agent_callback = _inject_core_memory
-content_orchestrator.after_agent_callback = _auto_save_working_summary
+# Apply MemGPT callbacks to orchestrator — Core Memory inject 만 (archival dump 는
+# Orchestrator 가 Memory Agent service 도구 호출 시에만 수행)
+def _orch_before_chain(callback_context):
+    """before_agent_callback — Core Memory inject + state 초기화.
+    승인 여부는 키워드 매칭이 아닌, Orchestrator LLM 이 사용자 의도를 분석하여
+    `set_user_approval_status` 도구 호출로 명시 갱신합니다 (intent-based).
+    """
+    _inject_core_memory(callback_context)
+    state = callback_context.state
+
+    # _approval_status 가 없으면 'pending' 초기화. 이미 approved 면 유지.
+    if "_approval_status" not in state:
+        state["_approval_status"] = "pending"
+
+    # Memory Agent 호출 여부 — 새 turn 마다 초기화
+    state["_memory_agent_invoked"] = False
+
+    # plan 제시 여부를 LLM 이 판단할 수 있도록 state 에 노출
+    us = state.get("_unified_strategy")
+    state["_plan_presented_prev_turn"] = bool(
+        isinstance(us, dict) and us.get("channels")
+    )
+    return None
+
+content_orchestrator.before_agent_callback = _orch_before_chain
+# orchestrator/agent.py 가 등록한 _auto_save_unified_strategy 가 여기서
+# 덮어쓰여지던 결함 수정 — 두 안전망을 모두 실행하고 end_of_agent 도 마킹.
+def _orch_after_agent_chain(callback_context):
+    # 1) _unified_strategy 누락 시 _xx_output 으로 자동 보완
+    try:
+        from .sub_agents.orchestrator.agent import _auto_save_unified_strategy
+        _auto_save_unified_strategy(callback_context)
+    except Exception as exc:
+        logger.warning("[ORCH_AFTER] _auto_save_unified_strategy skip: %s", exc)
+    # 2) recall_log 자동 append (기존 working_summary)
+    try:
+        _auto_save_working_summary(callback_context)
+    except Exception as exc:
+        logger.warning("[ORCH_AFTER] _auto_save_working_summary skip: %s", exc)
+    # 3) sticky 해소 — LOOP 8 fix: _event_actions 사용
+    actions = getattr(callback_context, "_event_actions", None)
+    if actions is not None:
+        try:
+            actions.end_of_agent = True
+        except Exception as exc:
+            logger.warning("[ORCH_AFTER] set end_of_agent failed: %s", exc)
+    return None
+content_orchestrator.after_agent_callback = _orch_after_agent_chain
 content_orchestrator.after_tool_callback = _tool_heartbeat
 
 # ─── General Chat Agent ────────────────────────────────────────────────
-# [Fix 3 — MemGPT bug-fix Oct 15 2023]
+# 
 # memory_agent was previously declared but never connected to any pipeline (dead code).
 # Now exposed as AgentTool so general_chat_agent can delegate complex multi-step
 # memory operations (e.g., bulk profile update + campaign search + summary write)
@@ -1300,8 +1462,10 @@ general_chat_agent = Agent(
     model="gemini-2.5-flash",
     description=prompt.GENERAL_CHAT_DESCRIPTION,
     instruction=prompt.GENERAL_CHAT_INSTRUCTIONS,
+    # sticky 라우팅 차단 — 매 turn root_pre_dispatch 가 의도 분류.
+    disallow_transfer_to_parent=True,
     before_agent_callback=_inject_core_memory,   # ← 채팅 에이전트도 Core Memory 주입
-    after_agent_callback=_auto_save_working_summary,  # ← Auto working_summary 유지
+    after_agent_callback=_auto_save_working_summary,  # 아래 줄에서 sticky 해소 wrapping
     after_tool_callback=_tool_heartbeat,          # ← Heartbeat: 도구 완료 시 state 업데이트
     tools=[
         get_trends,
@@ -1336,21 +1500,151 @@ general_chat_agent = Agent(
         memory_get_performance_pending,
         memory_mark_performance_asked,
         memory_get_behavior_insights,
+        memory_get_top_pickscore_keywords,
         # Context Management
         memory_get_context_status,
         memory_compress_context,
         # Skill MD 참조
         read_skill_md,                     # ← 스킬 MD 파일 읽기
-        # Memory Agent 위임
-        AgentTool(agent=memory_agent),
+        # v2: AgentTool(memory_agent) 제거 — memory_agent는 이제 root_agent의 sub_agent
     ],
 )
 
 # ─── Router Agent (root) ──────────────────────────────────────────────
+# v2: memory_agent를 sub_agent로 승격 ()
+def _root_pre_dispatch(callback_context):
+    """Root 진입 시점:
+       (1) Core Memory inject
+       (2) LLM single-call 의도 분류 → deterministic transfer 강제
+    LLM 분류는 룰베이스가 아니며, 의도 분석 기반.
+    """
+    try:
+        _inject_core_memory(callback_context)
+    except Exception as exc:
+        logger.warning("[ROOT_PRE] core_inject skip: %s", exc)
+
+    # ── 사용자 발화 추출 ──
+    user_text = ""
+    try:
+        uc = getattr(callback_context, "user_content", None)
+        if uc and hasattr(uc, "parts"):
+            for p in (uc.parts or []):
+                t = getattr(p, "text", None)
+                if t: user_text = str(t); break
+    except Exception: pass
+
+    if not user_text or len(user_text) > 4000:
+        return None  # 빈/너무 긴 발화는 LLM 자율 라우팅에 맡김
+
+    # ── LLM single-call 의도 분류 (한 줄 응답) ──
+    state = callback_context.state
+    has_pending_plan = bool(
+        state.get("_unified_strategy", {}).get("channels") if isinstance(
+            state.get("_unified_strategy"), dict) else False
+    )
+    classify_prompt = (
+        "You are an intent classifier for a social media marketing agent system.\n"
+        "Classify the following Korean/English user message into EXACTLY ONE of three labels.\n"
+        "Reply with ONLY the label (lowercase, no quotes, no explanation, no markdown).\n\n"
+        "Labels and DECISION RULES:\n\n"
+        "  general_chat\n"
+        "    — pure small talk, greetings, opinions, advice questions, ambiguous chitchat\n"
+        "    — examples: '안녕', '오늘 날씨 어때?', '마케팅 조언 좀'\n\n"
+        "  memory_register\n"
+        "    — user is DESCRIBING/REGISTERING their brand, product, audience, or business info\n"
+        "      without any verb of creation/generation/strategy\n"
+        "    — verbs: '시작했어', '오픈했어', '이런 가게야', '소개할게', '이런 상품이야'\n"
+        "    — examples: '○○ 네일샵 시작했어. 메인 컬러는 ...', '신상 출시했어 가격은 ...'\n"
+        "    — NEVER classify here if the user asks for content/campaign/image creation,\n"
+        "      even if registration-like info is bundled into a creation request.\n\n"
+        "  content_create\n"
+        "    — user REQUESTS the system to PRODUCE a campaign/content/image/plan/strategy,\n"
+        "      OR is responding to a previously presented plan (approve/revise/reject)\n"
+        "    — verbs: '만들어줘', '뽑아줘', '시안', '캠페인', '콘텐츠', '이미지',\n"
+        "      '인스타 포스팅', '광고', '전략 짜줘', '진행해줘', '좋아', '수정해줘'\n"
+        "    — examples: '인스타그램 캠페인 만들어줘', '시그니처 젤네일 시안 뽑아줘',\n"
+        "      'OK 진행해', '이미지 한 장 더 만들어줘'\n\n"
+        "PRIORITY: If the message contains BOTH brand info AND a creation request,\n"
+        "  ALWAYS choose content_create (the system will retrieve brand info from memory).\n"
+        "PRIORITY: If pending_plan_exists=True and the user gives a short response,\n"
+        "  it is almost always an approval/revision → content_create.\n\n"
+        f"Context: pending_plan_exists = {has_pending_plan}\n"
+        f'User message: "{user_text[:800]}"\n\n'
+        "Label:"
+    )
+    try:
+        from google import genai
+        client = genai.Client()
+        resp = client.models.generate_content(
+            # 분류기 Pro 업그레이드 — 단일 LLM 호출이지만 의도 분류 정확도가
+            # 시스템 전체 흐름을 결정하므로 Pro 사용. 비용은 single short-completion.
+            model="gemini-2.5-pro",
+            contents=classify_prompt,
+        )
+        label = (getattr(resp, "text", "") or "").strip().lower().split()[0] if resp else ""
+        agent_map = {
+            "general_chat": "general_chat_agent",
+            "memory_register": "memory_agent",
+            "content_create": "content_orchestrator",
+        }
+        target = agent_map.get(label)
+        # ADK CallbackContext 는 'actions' 가 아니라 '_event_actions'
+        # 로 EventActions 노출. 기존 hasattr(cc, "actions") 는 항상 False → 한 번도 라우팅
+        # 작동 안 함. 이제 _event_actions.transfer_to_agent 로 직접 세팅.
+        actions = getattr(callback_context, "_event_actions", None)
+        if target and actions is not None:
+            actions.transfer_to_agent = target
+            logger.info("[ROUTER_PRE] LLM classified=%r → transfer=%s", label, target)
+        else:
+            logger.warning("[ROUTER_PRE] unknown classification=%r — fallback to router LLM "
+                           "(target=%r actions=%r)", label, target, actions)
+    except Exception as exc:
+        logger.warning("[ROUTER_PRE] classification failed: %s", exc)
+    return None
+
+
 root_agent = Agent(
     name="agents",
     model="gemini-2.5-flash",
     description="Root router agent that delegates to specialized sub-agents based on user intent.",
     instruction=prompt.ROUTER_INSTRUCTIONS,
-    sub_agents=[content_orchestrator, general_chat_agent],
+    sub_agents=[content_orchestrator, general_chat_agent, memory_agent],
+    before_agent_callback=_root_pre_dispatch,
 )
+
+
+# ──────────────────────────────────────────────────────────────────────────
+# — Sticky 라우팅 해소
+#   ADK runner._find_agent_to_run 은 last responding LlmAgent 를 다음 turn 시작
+#   agent 로 선택합니다. 매 turn 의도 분류를 다시 하려면 모든 sub-agent 가 응답
+#   종료 시 end_of_agent=True 마킹하여 _event_filter 에서 skip 되도록 해야 합니다.
+#   이렇게 하면 다음 turn 에 root_agent (before_agent_callback 으로 LLM 분류기 보유)
+#   부터 재진입.
+# ADK CallbackContext 의 EventActions 는 'actions' 가 아니라
+#   '_event_actions' 로 노출됨. 기존 callback_context.actions.end_of_agent 는
+#   AttributeError or 무용지물이었음.
+# ──────────────────────────────────────────────────────────────────────────
+def _wrap_with_end_of_agent(original_cb):
+    def _wrapped(callback_context):
+        result = None
+        if original_cb is not None:
+            try:
+                result = original_cb(callback_context)
+            except Exception as exc:
+                logger.warning("[STICKY_WRAP] inner callback failed: %s", exc)
+        actions = getattr(callback_context, "_event_actions", None)
+        if actions is not None:
+            try:
+                actions.end_of_agent = True
+            except Exception as exc:
+                logger.warning("[STICKY_WRAP] set end_of_agent failed: %s", exc)
+        return result
+    return _wrapped
+
+# orchestrator 는 이미 _orch_after_agent_chain 내부에서 end_of_agent 마킹 처리.
+general_chat_agent.after_agent_callback = _wrap_with_end_of_agent(
+    general_chat_agent.after_agent_callback)
+# memory_agent 도 자체 _memory_after_agent_chain 에서 마킹하지만, 추가 보강 차원에서
+# wrapper 적용 (idempotent — 이미 True 면 그대로).
+memory_agent.after_agent_callback = _wrap_with_end_of_agent(
+    memory_agent.after_agent_callback)
