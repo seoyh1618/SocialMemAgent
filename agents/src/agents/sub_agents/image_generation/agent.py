@@ -1010,11 +1010,103 @@ def generate_image(tool_context: ToolContext, img_prompt: str, channel: str = "i
         return {"status": "failed", "detail": f"Failed to upload image to GCS: {e}"}
 
 
+def _image_gen_after_callback(callback_context):
+    """LOOP 16: image_generation_agent turn 종료 후 memory_record_generated_asset
+    자동 호출. LLM 이 record_asset 도구 호출을 누락해도 asset_archive 가 채워지도록 보장.
+
+    state['image_generation_output'] 에서 gcs_url + prompt 후처리 후 record. 중복 방지를
+    위해 state['_recorded_asset_urls'] (set-like list) 로 추적.
+    """
+    import logging as _logging
+    _lg = _logging.getLogger(__name__)
+    try:
+        state = callback_context.state
+        raw_out = state.get("image_generation_output")
+        if not raw_out:
+            return None
+
+        records = []
+        if isinstance(raw_out, str):
+            t = raw_out.strip()
+            if t.startswith("{") or t.startswith("["):
+                try:
+                    import json as _json
+                    parsed = _json.loads(t)
+                    records = parsed if isinstance(parsed, list) else [parsed]
+                except Exception:
+                    records = []
+            else:
+                records = []
+        elif isinstance(raw_out, dict):
+            records = [raw_out]
+        elif isinstance(raw_out, list):
+            records = raw_out
+
+        if not records:
+            return None
+
+        prev_urls = set(state.get("_recorded_asset_urls") or [])
+        active_campaign = state.get("_active_campaign_id") or ""
+        ui = state.get("_user_intent") or {}
+        default_platform = ""
+        if isinstance(ui, dict):
+            chs = ui.get("channels") or []
+            if chs: default_platform = chs[0]
+
+        from ...memory_tools import memory_record_generated_asset as _rec
+        import uuid as _uuid
+
+        for rec in records:
+            if not isinstance(rec, dict):
+                continue
+            gcs_url = (
+                rec.get("gcs_url") or rec.get("asset_url") or rec.get("image_url")
+                or rec.get("url") or ""
+            )
+            if not gcs_url or gcs_url in prev_urls:
+                continue
+            asset_id = (
+                rec.get("asset_id") or rec.get("id")
+                or f"asset_{_uuid.uuid4().hex[:12]}"
+            )
+            prompt_used = (
+                rec.get("prompt_used") or rec.get("prompt")
+                or rec.get("final_prompt") or ""
+            )[:1000]
+            platform = (rec.get("platform") or rec.get("channel") or default_platform)
+            try:
+                _rec(
+                    callback_context,
+                    asset_id=str(asset_id),
+                    asset_type=str(rec.get("asset_type") or "image"),
+                    gcs_url=str(gcs_url),
+                    prompt_used=str(prompt_used),
+                    platform=str(platform),
+                    session_id="",
+                    local_filename=str(rec.get("local_filename") or ""),
+                    caption=str(rec.get("caption") or "")[:800],
+                    hashtags=str(rec.get("hashtags") or ""),
+                )
+                prev_urls.add(gcs_url)
+                _lg.info(
+                    "[IMAGE_GEN_AFTER] LOOP 16 auto-record asset: id=%s platform=%s campaign=%s",
+                    asset_id, platform, active_campaign,
+                )
+            except Exception as exc:
+                _lg.warning("[IMAGE_GEN_AFTER] LOOP 16 record_asset failed: %s", exc)
+
+        state["_recorded_asset_urls"] = list(prev_urls)
+    except Exception as exc:
+        _lg.warning("[IMAGE_GEN_AFTER] LOOP 16 guard error: %s", exc)
+    return None
+
+
 image_generation_agent = Agent(
     name="image_generation_agent",
     model="gemini-2.5-flash",
     description=prompt.DESCRIPTION,
     instruction=prompt.INSTRUCTIONS,
     output_key="image_generation_output",
+    after_agent_callback=_image_gen_after_callback,
     tools=[analyze_user_image, generate_image],
 )

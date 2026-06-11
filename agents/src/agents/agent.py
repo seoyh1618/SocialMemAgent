@@ -430,19 +430,34 @@ def _inject_core_memory(callback_context: CallbackContext) -> None:
             camp_archive = memory.campaign_archive or []
             if camp_archive:
                 recent = camp_archive[-5:]
+                state_obj = callback_context.state
+                active_id = (
+                    state_obj.get("_active_campaign_id")
+                    or state_obj.get("_last_archived_campaign_id")
+                    or ""
+                )
                 cat_lines = ["\n▶ CAMPAIGN ARCHIVE CATALOG (recent 5 — for recall queries)"]
                 for c in recent:
                     cd = c.model_dump() if hasattr(c, "model_dump") else dict(c)
                     cid = cd.get("campaign_id", "?")
                     goal = (cd.get("goal") or "")[:80]
                     plats = ",".join(cd.get("platforms_used") or [])
-                    cat_lines.append(f"  - {cid}: goal={goal!r} platforms=[{plats}]")
+                    marker = "  * ACTIVE" if cid == active_id else "  -"
+                    cat_lines.append(f"{marker} {cid}: goal={goal!r} platforms=[{plats}]")
+                if active_id:
+                    cat_lines.append(
+                        f"  CURRENT ACTIVE: {active_id} — the most recently archived campaign. "
+                        "Use this when user says '지난번', '직전', '방금 만든'."
+                    )
                 cat_lines.append(
-                    "  Use these IDs when user asks '지난번 캠페인', 'last campaign', '직전' etc. "
-                    "For details call memory_search_campaigns(query)."
+                    "  For details call memory_search_campaigns(query). "
+                    "ID 가 노출되어 있으니 회상 질문에 정확히 답할 것."
                 )
                 brief_parts.append("\n".join(cat_lines))
-                logger.info("[CORE_INJECT] Campaign archive catalog injected: %d items", len(recent))
+                logger.info(
+                    "[CORE_INJECT] Campaign archive catalog injected: %d items, active=%s",
+                    len(recent), active_id or "-",
+                )
         except Exception as e:
             logger.debug("Campaign archive catalog skip: %s", e)
     except Exception as e:
