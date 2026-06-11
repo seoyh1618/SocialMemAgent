@@ -344,6 +344,23 @@ def _inject_core_memory(callback_context: CallbackContext) -> None:
         else:
             memory_block += perf_block
 
+    pending_for_plan = callback_context.state.get("_image_gen_pending_for_plan") or ""
+    if pending_for_plan:
+        directive = (
+            "\n══════════════════════════════════════════════════════════\n"
+            "[URGENT — LOOP 17 DIRECTIVE — 최우선 처리]\n"
+            f"이전 turn 에서 plan_id={pending_for_plan} 의 image_generation_agent\n"
+            "호출이 누락되었습니다. 본 turn 에서 Step 1-6 을 건너뛰고 즉시\n"
+            "Step 7 로 직행하여 image_generation_agent 를 호출하세요.\n"
+            "(이미 _approval_status=approved, _unified_strategy 보존 상태)\n"
+            "═══════════════════════════════════════════════════════════\n"
+        )
+        memory_block = directive + memory_block
+        logger.info(
+            "[CORE_INJECT] LOOP 17(E) directive prepended for plan_id=%s",
+            pending_for_plan,
+        )
+
     callback_context.state["_memory_block"] = memory_block
     callback_context.state["_last_tool"] = "🧠 메모리 블록 로드 완료"
 
@@ -1549,6 +1566,7 @@ def _orch_before_chain(callback_context):
         state["_user_intent"] = {}
         state["_extended_brief"] = ""
         state["_campaign_memory_context"] = {}
+        state["_image_gen_pending_for_plan"] = ""
 
     pending_plan_id = state.get("_pending_plan_id")
     if pending_plan_id and state.get("_approval_status") != "approved":
@@ -1659,6 +1677,29 @@ def _orch_after_agent_chain(callback_context):
                 logger.warning("[ORCH_AFTER] LOOP 11 auto-archive failed: %s", exc)
     except Exception as exc:
         logger.warning("[ORCH_AFTER] LOOP 11 guard error: %s", exc)
+
+    try:
+        state = callback_context.state
+        plan_id = state.get("_approved_plan_id") or state.get("_pending_plan_id") or ""
+        recorded = state.get("_recorded_asset_urls") or []
+        already_marked = state.get("_image_gen_pending_for_plan") or ""
+        if recorded and already_marked:
+            state["_image_gen_pending_for_plan"] = ""
+            logger.info("[ORCH_AFTER] LOOP 17(E) cleared (image_gen 호출 완료 감지)")
+        elif (
+            state.get("_approval_status") == "approved"
+            and plan_id
+            and plan_id != already_marked
+            and not recorded
+        ):
+            state["_image_gen_pending_for_plan"] = plan_id
+            logger.info(
+                "[ORCH_AFTER] LOOP 17(E) marked plan_id=%s (image_gen 누락 감지) "
+                "→ next turn 에 directive 주입",
+                plan_id,
+            )
+    except Exception as exc:
+        logger.warning("[ORCH_AFTER] LOOP 17(E) guard error: %s", exc)
 
     try:
         _auto_save_working_summary(callback_context)
