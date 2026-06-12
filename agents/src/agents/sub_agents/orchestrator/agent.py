@@ -29,6 +29,7 @@ from ...memory_tools import (
     state_save_extended_brief,
     state_save_unified_strategy,
     set_user_approval_status,
+    execute_campaign_step7,           # LOOP 19 — Step 7 일괄 실행 단일 도구
 )
 # memory_agent_query_campaign_context 는 Orchestrator 에서 import 하지 않음 —
 # Memory Agent 내부 도구로 재배치하여 AgentTool(memory_agent) 경유를 강제.
@@ -826,9 +827,9 @@ content_orchestrator = Agent(
         # 를 호출하여 _campaign_memory_context 와 _memory_agent_invoked 를 채웁니다.
         AgentTool(agent=memory_agent),
         set_user_approval_status,        # 승인 state 머신 — LLM 의도 분석 후 호출
+        execute_campaign_step7,          # LOOP 19 — 승인 후 단일 호출로 image_gen + record + archive
         state_save_extended_brief,
         state_save_unified_strategy,
-        # Archive 는 Memory Agent 가 처리 권장 — 단, 워크플로 막판 안정성 위해 유지
         memory_archive_campaign,
         memory_record_generated_asset,
         memory_add_channel_output,

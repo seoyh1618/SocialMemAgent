@@ -3877,34 +3877,16 @@ def set_user_approval_status(
         "approval_status": "approved",
         "plan_id": plan_id,
         "reason": reason,
-        "next_required_actions": [
-            (
-                "STEP 7-A: For EACH channel in channels below, call "
-                "image_generation_agent with the channel's final_image_prompt "
-                "(or unified_strategy.channels[channel].final_image_prompt). "
-                "Do NOT skip any channel. Do NOT batch — call sequentially."
-            ),
-            (
-                "STEP 7-B: After image_generation_agent returns gcs_url, call "
-                "memory_record_generated_asset(asset_id, asset_type='image', "
-                "gcs_url, prompt_used, platform=channel_id) for each generated image."
-            ),
-            (
-                "STEP 7-C: After all images are generated and recorded, call "
-                "memory_archive_campaign(goal, platforms_used, guideline_summary, "
-                "performance_notes) ONCE to persist the campaign."
-            ),
-            (
-                "STEP 7-D: Optionally call memory_add_channel_output(channel, asset_url, "
-                "caption, hashtags, cta, image_prompt) for each channel for ERD linking."
-            ),
-        ],
+        "next_required_call": (
+            f"execute_campaign_step7(plan_id='{plan_id}')"
+        ),
         "channels_to_process": channels_list,
         "per_channel_prompts": per_channel_prompts,
         "_mandatory_directive": (
-            f"MANDATORY: 본 응답을 받은 즉시 위 next_required_actions 를 순서대로 "
-            f"실행하세요. plan_id={plan_id} 의 image 미생성 시 시스템 일관성 위반. "
-            f"image_generation_agent 호출 없이 turn 을 종료하지 마세요."
+            f"MANDATORY: 본 응답 직후 execute_campaign_step7(plan_id='{plan_id}') 를 "
+            "단일 호출하세요. 이 도구가 image_generation + asset_record + "
+            "campaign_archive 를 일괄 처리합니다. 다른 도구를 추가 호출하지 "
+            "마세요 — 중복 발생. turn 을 종료하기 전 반드시 호출."
         ),
     }
 
@@ -4742,4 +4724,187 @@ def memory_get_channel_outputs(
         ]
         results.append({**out.model_dump(), "performance_records": perf_records})
     return json.dumps({"total": len(results), "outputs": results}, ensure_ascii=False)
+
+
+def execute_campaign_step7(
+    tool_context: ToolContext,
+    plan_id: str,
+) -> dict:
+    """[LOOP 19 — Step 7 일괄 실행]
+    승인된 plan 의 image_generation + asset_record + campaign_archive 전체
+    시퀀스를 단일 도구 호출로 수행. LLM 이 set_user_approval_status 후 본 도구만
+    호출하면 asset_archive 0 건 결함 해소.
+
+    내부 순서:
+      1. state 검증 (_approval_status==approved, plan_id 매칭)
+      2. _unified_strategy.channels 각각:
+         a) final_image_prompt 추출 (없으면 skip + warning)
+         b) generate_image 동기 호출 (ThreadPool, 90s timeout per channel)
+         c) memory_record_generated_asset 호출
+      3. memory_archive_campaign 1 회 호출
+      4. state['_step7_completed_for_plan'] = plan_id 마킹 (중복 방지)
+
+    Args:
+        plan_id: state['_pending_plan_id'] 또는 _approved_plan_id 값 (검증용)
+
+    Returns:
+        {
+          "success": bool, "plan_id": str, "campaign_id": str,
+          "channels_processed": [{"channel": str, "asset_url": str,
+                                  "asset_id": str, "status": "ok"|"skip"|"error"}],
+          "errors": [str]
+        }
+    """
+    import concurrent.futures as _cf
+    import uuid as _uuid
+
+    state = tool_context.state
+    if state.get("_approval_status") != "approved":
+        return {
+            "success": False, "plan_id": plan_id, "campaign_id": "",
+            "errors": ["approval_status is not 'approved'. Call set_user_approval_status first."],
+            "channels_processed": [],
+        }
+    approved_id = state.get("_approved_plan_id") or ""
+    if plan_id and approved_id and plan_id != approved_id:
+        return {
+            "success": False, "plan_id": plan_id, "campaign_id": "",
+            "errors": [f"plan_id mismatch: given={plan_id} approved={approved_id}"],
+            "channels_processed": [],
+        }
+    if state.get("_step7_completed_for_plan") == approved_id:
+        return {
+            "success": True, "plan_id": approved_id,
+            "campaign_id": state.get("_last_archived_campaign_id") or "",
+            "channels_processed": [], "errors": [],
+            "note": "already completed for this plan — skipped to prevent duplicate",
+        }
+    us = state.get("_unified_strategy") or {}
+    channels_dict = us.get("channels") if isinstance(us, dict) else {}
+    if not isinstance(channels_dict, dict) or not channels_dict:
+        return {
+            "success": False, "plan_id": approved_id, "campaign_id": "",
+            "errors": ["_unified_strategy.channels is empty or invalid"],
+            "channels_processed": [],
+        }
+
+    from .sub_agents.image_generation.agent import generate_image as _gen
+
+    recorded_urls = list(state.get("_recorded_asset_urls") or [])
+    channels_processed = []
+    errors = []
+
+    for ch_id, ch_data in channels_dict.items():
+        entry = {"channel": ch_id, "asset_url": "", "asset_id": "", "status": "skip"}
+        if not isinstance(ch_data, dict):
+            entry["status"] = "skip"
+            entry["reason"] = "channel data not a dict"
+            channels_processed.append(entry)
+            continue
+        prompt_text = (
+            ch_data.get("final_image_prompt") or ch_data.get("image_prompt") or ""
+        )
+        if not isinstance(prompt_text, str) or len(prompt_text.strip()) < 20:
+            entry["status"] = "skip"
+            entry["reason"] = "no usable final_image_prompt"
+            channels_processed.append(entry)
+            errors.append(f"channel={ch_id}: no usable image prompt")
+            continue
+        try:
+            def _call():
+                return _gen(tool_context, img_prompt=prompt_text[:2000], channel=ch_id)
+            with _cf.ThreadPoolExecutor(max_workers=1) as pool:
+                result = pool.submit(_call).result(timeout=90)
+            gcs_url = ""
+            if isinstance(result, dict):
+                gcs_url = (
+                    result.get("gcs_url") or result.get("asset_url")
+                    or result.get("image_url") or ""
+                )
+            elif isinstance(result, str) and result.startswith("http"):
+                gcs_url = result
+            if not gcs_url:
+                entry["status"] = "error"
+                entry["reason"] = "generate_image returned no gcs_url"
+                channels_processed.append(entry)
+                errors.append(f"channel={ch_id}: generate_image no url")
+                continue
+            if gcs_url in recorded_urls:
+                entry["status"] = "skip"
+                entry["reason"] = "url already recorded"
+                entry["asset_url"] = gcs_url
+                channels_processed.append(entry)
+                continue
+            asset_id = f"asset_{_uuid.uuid4().hex[:12]}"
+            try:
+                memory_record_generated_asset(
+                    tool_context,
+                    asset_id=asset_id,
+                    asset_type="image",
+                    gcs_url=str(gcs_url),
+                    prompt_used=prompt_text[:1000],
+                    platform=str(ch_id),
+                    session_id="",
+                    local_filename="",
+                    caption=str(ch_data.get("copy") or "")[:800],
+                    hashtags=",".join(ch_data.get("hashtags") or []) if isinstance(ch_data.get("hashtags"), list) else str(ch_data.get("hashtags") or ""),
+                )
+                recorded_urls.append(gcs_url)
+                entry["status"] = "ok"
+                entry["asset_url"] = gcs_url
+                entry["asset_id"] = asset_id
+            except Exception as exc:
+                entry["status"] = "error"
+                entry["reason"] = f"record_asset failed: {exc}"
+                errors.append(f"channel={ch_id}: record_asset {exc}")
+        except _cf.TimeoutError:
+            entry["status"] = "error"
+            entry["reason"] = "generate_image timeout"
+            errors.append(f"channel={ch_id}: generate_image timeout 90s")
+        except Exception as exc:
+            entry["status"] = "error"
+            entry["reason"] = f"generate_image failed: {exc}"
+            errors.append(f"channel={ch_id}: {exc}")
+        channels_processed.append(entry)
+
+    state["_recorded_asset_urls"] = recorded_urls
+
+    campaign_id_archived = state.get("_last_archived_campaign_id") or ""
+    if not campaign_id_archived:
+        ui = state.get("_user_intent") or {}
+        goal = ""
+        if isinstance(ui, dict):
+            goal = (ui.get("goal") or "")[:300]
+        if not goal:
+            goal = (us.get("consistency_notes") or "")[:300] or "campaign (LOOP 19 step7_executor)"
+        try:
+            archive_msg = memory_archive_campaign(
+                tool_context,
+                goal=goal,
+                platforms_used=list(channels_dict.keys()),
+                guideline_summary=(us.get("consistency_notes") or "")[:300],
+                performance_notes="archived by execute_campaign_step7 (LOOP 19)",
+            )
+            campaign_id_archived = state.get("_last_archived_campaign_id") or ""
+            logger.info("[STEP7_EXEC] archive ok: %s", str(archive_msg)[:160])
+        except Exception as exc:
+            errors.append(f"archive failed: {exc}")
+            logger.warning("[STEP7_EXEC] archive failed: %s", exc)
+
+    success_count = sum(1 for e in channels_processed if e.get("status") == "ok")
+    state["_step7_completed_for_plan"] = approved_id
+    success = bool(success_count > 0 and campaign_id_archived)
+
+    logger.info(
+        "[STEP7_EXEC] LOOP 19 done plan_id=%s channels=%d ok=%d campaign=%s errors=%d",
+        approved_id, len(channels_dict), success_count,
+        campaign_id_archived or "-", len(errors),
+    )
+    return {
+        "success": success,
+        "plan_id": approved_id,
+        "campaign_id": campaign_id_archived,
+        "channels_processed": channels_processed,
+        "errors": errors,
+    }
 
