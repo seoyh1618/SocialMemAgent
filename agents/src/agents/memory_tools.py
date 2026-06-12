@@ -3852,7 +3852,61 @@ def set_user_approval_status(
         state["_approved_plan_id"] = plan_id
         state["_approval_set_at"] = datetime.now(timezone.utc).isoformat()
     logger.info("[APPROVAL_TOOL] approved=%s plan_id=%s reason=%r", approved, plan_id, reason[:200])
-    return {"approval_status": state["_approval_status"], "plan_id": plan_id, "reason": reason}
+
+    if not approved:
+        return {
+            "approval_status": state["_approval_status"], "plan_id": plan_id, "reason": reason,
+        }
+    us = state.get("_unified_strategy") or {}
+    channels_dict = us.get("channels") if isinstance(us, dict) else {}
+    channels_list = list((channels_dict or {}).keys())
+    per_channel_prompts = []
+    for ch in channels_list:
+        ch_data = channels_dict.get(ch) if isinstance(channels_dict, dict) else None
+        if isinstance(ch_data, dict):
+            fip = ch_data.get("final_image_prompt") or ch_data.get("image_prompt") or ""
+            per_channel_prompts.append({
+                "channel": ch,
+                "final_image_prompt_preview": (fip or "")[:200],
+                "has_prompt": bool(fip and len(fip.strip()) >= 20),
+            })
+        else:
+            per_channel_prompts.append({"channel": ch, "has_prompt": False})
+
+    return {
+        "approval_status": "approved",
+        "plan_id": plan_id,
+        "reason": reason,
+        "next_required_actions": [
+            (
+                "STEP 7-A: For EACH channel in channels below, call "
+                "image_generation_agent with the channel's final_image_prompt "
+                "(or unified_strategy.channels[channel].final_image_prompt). "
+                "Do NOT skip any channel. Do NOT batch — call sequentially."
+            ),
+            (
+                "STEP 7-B: After image_generation_agent returns gcs_url, call "
+                "memory_record_generated_asset(asset_id, asset_type='image', "
+                "gcs_url, prompt_used, platform=channel_id) for each generated image."
+            ),
+            (
+                "STEP 7-C: After all images are generated and recorded, call "
+                "memory_archive_campaign(goal, platforms_used, guideline_summary, "
+                "performance_notes) ONCE to persist the campaign."
+            ),
+            (
+                "STEP 7-D: Optionally call memory_add_channel_output(channel, asset_url, "
+                "caption, hashtags, cta, image_prompt) for each channel for ERD linking."
+            ),
+        ],
+        "channels_to_process": channels_list,
+        "per_channel_prompts": per_channel_prompts,
+        "_mandatory_directive": (
+            f"MANDATORY: 본 응답을 받은 즉시 위 next_required_actions 를 순서대로 "
+            f"실행하세요. plan_id={plan_id} 의 image 미생성 시 시스템 일관성 위반. "
+            f"image_generation_agent 호출 없이 turn 을 종료하지 마세요."
+        ),
+    }
 
 
 def memory_agent_query_campaign_context(
